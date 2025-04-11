@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<div class="text-center">
+    <button onclick="orderCoffe()" id="orderCoffe">order coffe (working)</button>
+    <p style="display:none" id="notImplemented">coffe was ordered</p>
+</div>
+
+<script>
+    function orderCoffe(){
+        document.getElementById('orderCoffe').style.display = 'none'
+        document.getElementById('notImplemented').style.display = 'block'
+    }
+</script>

@@ -1,0 +1,6 @@
+@ClickCaféAPI_HostAddress = http://localhost:5194
+
+GET {{ClickCaféAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

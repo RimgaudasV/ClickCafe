@@ -1,4 +1,13 @@
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHttpClient("ClickCaféAPI")
+    .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
+    {
+        ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+    })
+    .ConfigureHttpClient((serviceProvider, client) =>
+    {
+        client.BaseAddress = new Uri("https://localhost:7281");
+    });
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();

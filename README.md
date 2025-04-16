@@ -10,7 +10,8 @@ Team name: Programų sistemų karaliai.
 2. Change SQL server name and oher configuration (if needed) in DefaultConnection string (ClickCaféAPI appsettings.json)
 
    
-3. Update database
+3. Update database:
+
    Go to Tools -> NuGet Package Manager -> NuGet Package Console. Write update-database command (Microsoft Visual Studio)
    
    Or

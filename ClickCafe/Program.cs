@@ -1,5 +1,5 @@
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddHttpClient("ClickCaféAPI")
+builder.Services.AddHttpClient("ClickCafeAPI")
     .ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler
     {
         ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true

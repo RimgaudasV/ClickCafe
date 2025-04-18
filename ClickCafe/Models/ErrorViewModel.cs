@@ -1,4 +1,4 @@
-namespace ClickCafé.Models
+namespace ClickCafe.Models
 {
     public class ErrorViewModel
     {

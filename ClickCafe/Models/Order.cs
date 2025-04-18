@@ -1,4 +1,4 @@
-﻿namespace ClickCaféAPI.Models
+﻿namespace ClickCafe.Models
 {
     public class Order
     {

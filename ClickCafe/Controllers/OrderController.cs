@@ -3,9 +3,9 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ClickCafé.Models;
+using ClickCafe.Models;
 
-namespace ClickCafé.Controllers
+namespace ClickCafe.Controllers
 {
     public class OrderController : Controller
     {
@@ -15,7 +15,7 @@ namespace ClickCafé.Controllers
 
         public OrderController(IHttpClientFactory httpClientFactory, ILogger<OrderController> logger)
         {
-            _httpClient = httpClientFactory.CreateClient("ClickCaféAPI");
+            _httpClient = httpClientFactory.CreateClient("ClickCafeAPI");
             _logger = logger;
 
             _logger.LogInformation("HttpClient is using base address: {BaseAddress}", _httpClient.BaseAddress);

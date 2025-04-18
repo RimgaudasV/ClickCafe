@@ -1,8 +1,8 @@
-using ClickCafé.Models;
+using ClickCafe.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
-namespace ClickCafé.Controllers
+namespace ClickCafe.Controllers
 {
     public class HomeController : Controller
     {

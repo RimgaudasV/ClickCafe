@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ClickCaféAPI.Context;
-using ClickCaféAPI.Models;
+using ClickCafeAPI.Context;
+using ClickCafeAPI.Models;
 
-namespace ClickCaféAPI.Controllers
+namespace ClickCafeAPI.Controllers
 {
     [ApiController]
     [Route("api/")]
     public class OrderController : ControllerBase
     {
     
-        private readonly ClickCaféContext _context;
+        private readonly ClickCafeContext _context;
 
-        public OrderController(ClickCaféContext context)
+        public OrderController(ClickCafeContext context)
         {
             _context = context;
         }

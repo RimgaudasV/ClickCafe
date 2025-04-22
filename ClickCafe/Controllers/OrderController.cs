@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ClickCafe.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClickCafe.Controllers
 {
@@ -37,6 +38,7 @@ namespace ClickCafe.Controllers
             return Content(orders, "application/json");
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateOrder()
         {

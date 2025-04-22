@@ -9,7 +9,7 @@ namespace ClickCafeAPI.Context
         public ClickCafeContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ClickCafeContext>();
-            optionsBuilder.UseSqlServer("Server=MSI\\MSSQLSERVER06;Database=ClickCafe;Trusted_Connection=True;TrustServerCertificate=True;");
+            optionsBuilder.UseSqlServer("Server=MSI\\SQLEXPRESS;Database=ClickCafe;Trusted_Connection=True;TrustServerCertificate=True;");
 
             return new ClickCafeContext(optionsBuilder.Options);
         }

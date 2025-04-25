@@ -17,8 +17,9 @@ public class AuthController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
-        var apiUrl = "/api/login";
+        var apiUrl = "/api/auth/login";
         var response = await _httpClient.PostAsJsonAsync(apiUrl, model);
+
 
         if (response.IsSuccessStatusCode)
         {
@@ -36,7 +37,7 @@ public class AuthController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
-        var apiUrl = "/api/register";
+        var apiUrl = "/api/auth/register";
         var response = await _httpClient.PostAsJsonAsync(apiUrl, model);
 
         if (response.IsSuccessStatusCode)

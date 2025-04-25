@@ -1,0 +1,8 @@
+﻿@model ClickCafe.ViewModels.RegisterViewModel
+
+<h2>Register</h2>
+<form action="/Auth/Register" method="post">
+    <input asp-for="Email" placeholder="Email" />
+    <input asp-for="Password" placeholder="Password" type="password" />
+    <button type="submit">Register</button>
+</form>

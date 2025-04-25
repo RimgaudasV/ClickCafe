@@ -11,16 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ClickCafeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentityCore<User>(options =>
+builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequiredLength = 3;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireLowercase = false;
 })
     .AddEntityFrameworkStores<ClickCafeContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddAuthorization();
-builder.Services.AddAuthentication().AddCookie(IdentityConstants.ApplicationScheme)
-    .AddBearerToken(IdentityConstants.BearerScheme);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

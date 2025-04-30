@@ -19,6 +19,8 @@ namespace ClickCafeAPI.Context
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<OrderItem>()
                 .HasOne(oi => oi.MenuItem)
                 .WithMany(mi => mi.OrderItems)

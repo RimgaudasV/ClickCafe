@@ -38,11 +38,11 @@ namespace ClickCafe.Controllers
         //    return Content(orders, "application/json");
         //}
 
-        [Authorize]
+/*        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateOrder()
         {
-            var newOrder = new Order { Id = Guid.NewGuid() };
+            var newOrder = new Order { Id = Guid.NewGuid() };*/
 
         //    var content = new StringContent(JsonSerializer.Serialize(newOrder), Encoding.UTF8, "application/json");
 

@@ -27,12 +27,14 @@ namespace ClickCafeAPI.Controllers
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByNameAsync(model.Email);
-                return Ok(new { User = user });
-            }
-            return BadRequest();
+                var user = await _userManager.FindByEmailAsync(model.Email);
 
+                return Ok(new { userId = user.Id });
+            }
+
+            return BadRequest("Invalid login attempt");
         }
+
 
 
         [HttpPost("register")]

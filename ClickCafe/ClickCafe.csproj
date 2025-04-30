@@ -18,4 +18,12 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ClickCafeAPI\ClickCafeAPI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="clientapp\" />
+  </ItemGroup>
+
 </Project>

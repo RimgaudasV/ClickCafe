@@ -7,7 +7,7 @@ Team name: Programų sistemų karaliai.
 # Database setup
 
 1. Download and setup Microsoft SQL Server
-2. Change SQL server name and oher configuration (if needed) in DefaultConnection string (ClickCaféAPI appsettings.json)
+2. Change SQL server name and oher configuration (if needed) in DefaultConnection string (ClickCafeAPI appsettings.json) and ClickCafeContextFactory
 
    
 3. Update database:

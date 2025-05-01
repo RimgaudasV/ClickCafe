@@ -1,7 +1,23 @@
-﻿namespace ClickCafe.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace ClickCafe.Models
 {
     public class Order
     {
-        public Guid Id { get; set; }
+        public int OrderId { get; set; }
+        [Required]
+        public int UserId { get; set; }
+        [Required]
+        public DateTime OrderDateTime { get; set; }
+        [Required]
+        public OrderStatus Status { get; set; }
+        [Required]
+        public OrderPaymentStatus PaymentStatus { get; set; }
+        [Required]
+        public decimal TotalAmount { get; set; }
+        [Required]
+        public DateTime PickupDateTime { get; set; }
+        public ICollection<OrderItem> Items { get; set; }
+        public User User { get; set; }
     }
 }

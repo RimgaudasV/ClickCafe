@@ -9,32 +9,32 @@ namespace ClickCafeAPI.Controllers
     public class OrderController : ControllerBase
     {
     
-        private readonly ClickCafeContext _context;
+        //private readonly ClickCafeContext _context;
 
-        public OrderController(ClickCafeContext context)
-        {
-            _context = context;
-        }
+        //public OrderController(ClickCafeContext context)
+        //{
+        //    _context = context;
+        //}
 
-        [HttpGet("orders")]
-        public IActionResult GetOrders()
-        {
-            var orders = _context.Orders.ToList();
-            return Ok(orders);
-        }
+        //[HttpGet("orders")]
+        //public IActionResult GetOrders()
+        //{
+        //    var orders = _context.Orders.ToList();
+        //    return Ok(orders);
+        //}
         
-        [HttpPost("orders")]
-        public IActionResult CreateOrder([FromBody] Order order)
-        {
-            if (order == null)
-            {
-                return BadRequest("Order cannot be null.");
-            }
+        //[HttpPost("orders")]
+        //public IActionResult CreateOrder([FromBody] Order order)
+        //{
+        //    if (order == null)
+        //    {
+        //        return BadRequest("Order cannot be null.");
+        //    }
 
-            _context.Orders.Add(order);
-            _context.SaveChanges();
+        //    _context.Orders.Add(order);
+        //    _context.SaveChanges();
 
-            return CreatedAtAction(nameof(GetOrders), new { id = order.Id }, order);
-        }
+        //    return CreatedAtAction(nameof(GetOrders), new { id = order.Id }, order);
+        //}
     }
 }

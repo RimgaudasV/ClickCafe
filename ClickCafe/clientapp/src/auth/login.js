@@ -3,13 +3,14 @@ import { useState } from 'react'
 
 function LoginPage() {
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [user, setUser] = useState(null);
-    const navigate = useNavigate(); // <-- useNavigate hook
+    const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-        e.preventDefault();  // Prevent default form submission behavior
+        e.preventDefault();
 
         if (!email || !password) {
             setError("Both fields are required!");
@@ -19,7 +20,7 @@ function LoginPage() {
         try {
             const response = await fetch("https://localhost:7281/api/auth/login", {
                 method: "POST",
-                credentials: "include", // This ensures cookies are sent along with the request
+                credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -31,9 +32,11 @@ function LoginPage() {
 
             if (response.ok) {
                 const data = await response.json();
+                setEmail(data.email);
+                setUser(data);
+                console.log(data.username)
+                console.log(data.email)
                 console.log("Login successful!");
-                // Use navigate for redirect
-                navigate("/MainPage"); // Redirect to MainPage
             } else {
                 setError("Invalid username or password. Please try again.");
             }
@@ -49,7 +52,7 @@ function LoginPage() {
             {error && <p style={{ color: "red" }}>{error}</p>}
             {user ? (
                 <div>
-                    <p>Welcome, {user.email}!</p>
+                    <p>Welcome, {email}!</p>
                 </div>
             ) : (
                 <form onSubmit={handleLogin}>
@@ -72,8 +75,9 @@ function LoginPage() {
                         />
                     </div>
                     <button type="submit">Log In</button>
-                </form>
+                    </form>
             )}
+            <p>Don't have an account? <a href="/register">Register here</a></p>
         </div>
     );
 }

@@ -1,18 +1,19 @@
 ﻿import { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoginPage from './login';
+import LoginPage from './auth/login';
+import RegisterPage from './auth/register'
 
 function App() {
     const [message, setMessage] = useState('');
 
     return (
         <Router>
-            <div style={{ padding: 20 }}>
-                <h1>Welcome to ClickCafe ☕</h1>
-                <Routes>
-                    <Route path="/" element={<LoginPage />} />
-                </Routes>
-            </div>
+            <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                {/*<Route path="/mainpage" element={<MainPage />} />*/}
+                <Route path="/" element={<LoginPage />} />
+            </Routes>
         </Router>
     );
 }

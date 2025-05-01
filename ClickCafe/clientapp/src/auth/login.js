@@ -34,6 +34,7 @@ function LoginPage() {
                 const data = await response.json();
                 setEmail(data.email);
                 setUser(data);
+                console.log(data)
                 console.log(data.username)
                 console.log(data.email)
                 console.log("Login successful!");

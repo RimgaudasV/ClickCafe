@@ -29,7 +29,7 @@ namespace ClickCafeAPI.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
 
-                return Ok(new { userId = user.Id });
+                return Ok(new { userId = user.Id, username = user.UserName, email = user.Email });
             }
 
             return BadRequest("Invalid login attempt");

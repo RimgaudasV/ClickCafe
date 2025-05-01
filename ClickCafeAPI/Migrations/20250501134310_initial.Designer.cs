@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClickCafeAPI.Migrations
 {
     [DbContext(typeof(ClickCafeContext))]
-    [Migration("20250501131308_initial")]
+    [Migration("20250501134310_initial")]
     partial class initial
     {
         /// <inheritdoc />

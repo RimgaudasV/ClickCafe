@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using ClickCafe.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ClickCafe.Controllers
 {
@@ -37,10 +38,11 @@ namespace ClickCafe.Controllers
         //    return Content(orders, "application/json");
         //}
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateOrder()
-        //{
-        //    var newOrder = new Order { Id = Guid.NewGuid() };
+/*        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> CreateOrder()
+        {
+            var newOrder = new Order { Id = Guid.NewGuid() };*/
 
         //    var content = new StringContent(JsonSerializer.Serialize(newOrder), Encoding.UTF8, "application/json");
 

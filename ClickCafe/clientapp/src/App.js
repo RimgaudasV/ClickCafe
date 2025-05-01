@@ -1,20 +1,23 @@
 ﻿import { useEffect, useState } from 'react';
 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from './auth/login';
+import RegisterPage from './auth/register'
+
+
 function App() {
     const [message, setMessage] = useState('');
 
-    useEffect(() => {
-        fetch('/api/hello')  // Call the backend API
-            .then(response => response.text())
-            .then(data => setMessage(data))
-            .catch(error => console.error('Error fetching backend:', error));
-    }, []);
 
     return (
-        <div style={{ padding: 20 }}>
-            <h1>Welcome to ClickCafe ☕</h1>
-            <p>Backend says: {message}</p>
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                {/*<Route path="/mainpage" element={<MainPage />} />*/}
+                <Route path="/" element={<LoginPage />} />
+            </Routes>
+        </Router>
     );
 }
 

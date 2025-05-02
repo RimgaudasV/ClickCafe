@@ -1,9 +1,50 @@
-﻿function newOrder() {
+﻿// clientapp/src/components/NewOrder.jsx
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+function NewOrder() {
+    const [cafes, setCafes] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        fetch("https://localhost:7281/api/Cafes", { credentials: "include" })
+            .then(res => {
+                if (!res.ok) throw new Error("Failed to load cafés");
+                return res.json();
+            })
+            .then(data => {
+                setCafes(data);
+                setLoading(false);
+            })
+            .catch(err => {
+                console.error(err);
+                setError("Could not load cafés");
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) return <p>Loading cafés…</p>;
+    if (error) return <p style={{ color: "red" }}>{error}</p>;
+
     return (
         <div>
-            <h2>new order to be implemented</h2>
+            <h2>Select a Café</h2>
+            <ul>
+                {cafes.map(cafe => (
+                    <li
+                        key={cafe.cafeId}
+                        style={{ cursor: "pointer", margin: "0.5rem 0" }}
+                        onClick={() => navigate(`/newOrder/${cafe.cafeId}`)}
+                    >
+                        <strong>{cafe.name}</strong><br />
+                        {cafe.address}
+                    </li>
+                ))}
+            </ul>
         </div>
     );
 }
 
-export default newOrder;
+export default NewOrder;

@@ -1,5 +1,6 @@
 ﻿import { useNavigate } from 'react-router-dom';
 import { useState } from 'react'
+import { login } from '../../actions/authActions'
 
 function LoginPage({ setUser }) {
     const [email, setEmail] = useState("");
@@ -9,37 +10,8 @@ function LoginPage({ setUser }) {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-
-        if (!email || !password) {
-            setError("Both fields are required!");
-            return;
-        }
-
-        try {
-            const response = await fetch("https://localhost:7281/api/auth/login", {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    email,
-                    password,
-                }),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setUser(data);
-                console.log("Login successful!");
-                navigate("/");
-            } else {
-                setError("Invalid username or password. Please try again.");
-            }
-        } catch (error) {
-            console.error("Error during login: ", error);
-            setError("An error occurred during login. Please try again later.");
-        }
+        await login(email, password, setUser, setError);
+        navigate("/"); 
     };
 
     return (

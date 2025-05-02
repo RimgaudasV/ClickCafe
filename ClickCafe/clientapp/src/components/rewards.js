@@ -1,4 +1,4 @@
-﻿function rewards() {
+﻿function Rewards() {
     return (
         <div>
             <h2>Rewards to be implemented</h2>
@@ -6,4 +6,4 @@
     );
 }
 
-export default rewards;
+export default Rewards;

@@ -43,7 +43,7 @@ function LoginPage({ setUser }) {
     };
 
     return (
-        <div>
+        <div style={{ maxWidth: 400, margin: "0 auto", padding: "2rem" }}>
             <h2>Login</h2>
             <form onSubmit={handleLogin}>
                 <div>

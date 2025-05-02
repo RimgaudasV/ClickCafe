@@ -1,5 +1,6 @@
 ﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { register } from '../../actions/authActions'
 
 function RegisterPage() {
     const [username, setUsername] = useState("");
@@ -12,41 +13,17 @@ function RegisterPage() {
     const handleRegister = async (e) => {
         e.preventDefault();
 
-        if (!username || !email || !password || !repeatPassword) {
-            setError("All fields are required.");
-            return;
-        }
-
         if (password !== repeatPassword) {
             setError("Passwords do not match.");
             return;
         }
 
-        try {
-            const response = await fetch("https://localhost:7281/api/auth/register", {
-                method: "POST",
-                credentials: "include",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    username,
-                    email,
-                    password,
-                }),
-            });
+        const success = await register(username, email, password, setError);
 
-            if (!response.ok) {
-                const data = await response.json();
-                setError(data.message || "Registration failed.");
-                return;
-            }
-
+        if (success) {
             navigate("/login");
-        } catch (err) {
-            console.error("Registration error:", err);
-            setError("An error occurred during registration.");
         }
+
     };
 
     return (

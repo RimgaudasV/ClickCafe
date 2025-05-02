@@ -1,4 +1,4 @@
-﻿function newOrder() {
+﻿function NewOrder() {
     return (
         <div>
             <h2>new order to be implemented</h2>
@@ -6,4 +6,4 @@
     );
 }
 
-export default newOrder;
+export default NewOrder;

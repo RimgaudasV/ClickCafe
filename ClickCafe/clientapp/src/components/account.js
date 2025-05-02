@@ -1,4 +1,4 @@
-﻿function account() {
+﻿function Account() {
     return (
         <div>
             <h2>Account page to be implemented</h2>
@@ -6,4 +6,4 @@
     );
 }
 
-export default account;
+export default Account;

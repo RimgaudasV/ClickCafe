@@ -1,4 +1,4 @@
-﻿function status() {
+﻿function Status() {
     return (
         <div>
             <h2>Status page to be implemented</h2>
@@ -6,4 +6,4 @@
     );
 }
 
-export default status;
+export default Status;

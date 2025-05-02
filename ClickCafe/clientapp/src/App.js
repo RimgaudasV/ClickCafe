@@ -1,15 +1,15 @@
 ﻿import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState } from 'react';
-import LoginPage from './components/auth/login';
-import RegisterPage from './components/auth/register';
-import MainPage from './components/main';
-import NewOrder from './components/newOrder';
-import Status from './components/status';
-import Rewards from './components/rewards';
-import History from './components/history';
-import Account from './components/account';
-import Settings from './components/settings';
-import Navbar from './components/navbar';
+import LoginPage from './components/auth/Login';
+import RegisterPage from './components/auth/Register';
+import MainPage from './components/Main';
+import NewOrder from './components/NewOrder';
+import Status from './components/Status';
+import Rewards from './components/Rewards';
+import History from './components/History';
+import Account from './components/Account';
+import Settings from './components/Settings';
+import Navbar from './components/Navbar';
 import PrivateRoute from './PrivateRoute';
 
 function App() {

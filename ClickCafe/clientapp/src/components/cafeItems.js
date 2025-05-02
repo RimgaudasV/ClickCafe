@@ -1,5 +1,4 @@
-﻿
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 function CafeItems() {
@@ -11,7 +10,6 @@ function CafeItems() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Fetch café details
         fetch(`https://localhost:7281/api/Cafes/${cafeId}`, { credentials: "include" })
             .then(r => {
                 if (!r.ok) throw new Error("Café not found");
@@ -23,7 +21,6 @@ function CafeItems() {
                 setError("Could not load café");
             });
 
-        // Fetch all menu items and filter by this café
         fetch("https://localhost:7281/api/MenuItems", { credentials: "include" })
             .then(r => {
                 if (!r.ok) throw new Error("Failed to load menu items");

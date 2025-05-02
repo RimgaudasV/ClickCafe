@@ -29,7 +29,7 @@ namespace ClickCafeAPI.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
 
-                return Ok(new { userId = user.Id, username = user.UserName, email = user.Email });
+                return Ok(user);
             }
 
             return BadRequest("Invalid login attempt");
@@ -40,7 +40,7 @@ namespace ClickCafeAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
-            var user = new User { UserName = model.Email, Email = model.Email };
+            var user = new User { UserName = model.Email, Email = model.Email, DisplayName = model.UserName};
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)

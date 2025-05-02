@@ -1,12 +1,10 @@
 ﻿import { useNavigate } from 'react-router-dom';
 import { useState } from 'react'
 
-function LoginPage() {
+function LoginPage({ setUser }) {
     const [email, setEmail] = useState("");
-    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
-    const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -32,12 +30,9 @@ function LoginPage() {
 
             if (response.ok) {
                 const data = await response.json();
-                setEmail(data.email);
                 setUser(data);
-                console.log(data)
-                console.log(data.username)
-                console.log(data.email)
                 console.log("Login successful!");
+                navigate("/");
             } else {
                 setError("Invalid username or password. Please try again.");
             }
@@ -48,37 +43,30 @@ function LoginPage() {
     };
 
     return (
-        <div style={{ maxWidth: 400, margin: "0 auto" }}>
+        <div>
             <h2>Login</h2>
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            {user ? (
+            <form onSubmit={handleLogin}>
                 <div>
-                    <p>Welcome, {email}!</p>
+                    <label>Email:</label><br />
+                    <input
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                    />
                 </div>
-            ) : (
-                <form onSubmit={handleLogin}>
-                    <div>
-                        <label>Email:</label><br />
-                        <input
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label>Password:</label><br />
-                        <input
-                            type="password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <button type="submit">Log In</button>
-                    </form>
-            )}
-            <p>Don't have an account? <a href="/register">Register here</a></p>
+                <div>
+                    <label>Password:</label><br />
+                    <input
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                    />
+                </div>
+                <button type="submit">Log In</button>
+                </form>
+                <p>Don't have an account? <a href="/register">Register here</a></p>
         </div>
     );
 }

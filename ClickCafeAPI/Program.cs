@@ -13,6 +13,7 @@ builder.Services.AddDbContext<ClickCafeContext>(options =>
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
+    options.User.RequireUniqueEmail = true;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequiredLength = 3;
     options.Password.RequireUppercase = false;
@@ -25,10 +26,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:3000")  // Allow frontend URL
-              .AllowAnyMethod()  // Allow any HTTP method (GET, POST, etc.)
-              .AllowAnyHeader()  // Allow any header (e.g., Content-Type)
-              .AllowCredentials();  // Allow cookies to be sent with the request
+        policy.WithOrigins("http://localhost:3000")
+              .AllowAnyMethod()
+              .AllowAnyHeader()
+              .AllowCredentials();
     }
  );
 });

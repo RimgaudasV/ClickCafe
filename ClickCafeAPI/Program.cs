@@ -63,12 +63,15 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
+app.UseStaticFiles();
 app.UseCors("AllowReactApp");
-
+app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers(); // Maps controller routes
+});
 app.MapControllers();
 
 app.Run();

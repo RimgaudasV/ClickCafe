@@ -5,6 +5,7 @@ import RegisterPage from './components/auth/register';
 import MainPage from './components/main';
 import NewOrder from './components/newOrder';
 import CafeItems from './components/cafeItems'
+
 import Status from './components/status';
 import Rewards from './components/rewards';
 import History from './components/history';

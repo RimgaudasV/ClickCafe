@@ -5,7 +5,8 @@ namespace ClickCafeAPI.Models
 {
     public class User : IdentityUser
     {
-
+        [Required]
+        public string DisplayName {  get; set; }
         [Required]
         public UserRole Role { get; set; }
         public ICollection<Order>? OrderHistory { get; set; }

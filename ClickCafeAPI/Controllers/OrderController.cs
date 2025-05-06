@@ -23,7 +23,7 @@ namespace ClickCafeAPI.Controllers
             var dto = orders.Select(o => new OrderDto
             {
                 OrderId = o.OrderId,
-                UserId = int.Parse(o.UserId),
+                UserId = o.UserId,
                 OrderDateTime = o.OrderDateTime,
                 Status = o.Status,
                 PaymentStatus = o.PaymentStatus,
@@ -48,7 +48,7 @@ namespace ClickCafeAPI.Controllers
             var dto = new OrderDto
             {
                 OrderId = order.OrderId,
-                UserId = int.Parse(order.UserId),
+                UserId = order.UserId,
                 OrderDateTime = order.OrderDateTime,
                 Status = order.Status,
                 PaymentStatus = order.PaymentStatus,
@@ -75,6 +75,8 @@ namespace ClickCafeAPI.Controllers
                 Items = new List<OrderItem>()
             };
 
+            decimal totalAmount = 0;
+
             foreach (var itemDto in createDto.Items)
             {
                 var menuItem = await _db.MenuItems.FindAsync(itemDto.MenuItemId);
@@ -87,7 +89,7 @@ namespace ClickCafeAPI.Controllers
                 {
                     MenuItemId = itemDto.MenuItemId,
                     Quantity = itemDto.Quantity,
-                    Price = itemDto.Price,
+                    Price = menuItem.BasePrice,
                     Customizations = new List<Customization>()
                 };
 
@@ -98,10 +100,17 @@ namespace ClickCafeAPI.Controllers
                         .ToListAsync();
 
                     orderItem.Customizations = customizations;
+
+                    decimal customizationCost = customizations.Sum(c => c.ExtraCost);
+                    orderItem.Price += customizationCost; // Add customization cost to item price
+                    orderItem.Customizations = customizations;
                 }
 
                 order.Items.Add(orderItem);
+                totalAmount += orderItem.Price * orderItem.Quantity;
             }
+
+            order.TotalAmount = totalAmount;
 
             _db.Orders.Add(order);
             await _db.SaveChangesAsync();
@@ -109,7 +118,7 @@ namespace ClickCafeAPI.Controllers
             var dto = new OrderDto
             {
                 OrderId = order.OrderId,
-                UserId = int.Parse(order.UserId),
+                UserId = order.UserId,
                 OrderDateTime = order.OrderDateTime,
                 Status = order.Status,
                 PaymentStatus = order.PaymentStatus,
@@ -123,7 +132,7 @@ namespace ClickCafeAPI.Controllers
 
         // PUT: api/orders/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, CreateOrderDto dto)
+        public async Task<IActionResult> Update(int id, UpdateOrderDto updateDto)
         {
             var order = await _db.Orders
                 .Include(o => o.Items)
@@ -132,39 +141,44 @@ namespace ClickCafeAPI.Controllers
 
             if (order == null) return NotFound();
 
-            order.Status = dto.Status;
-            order.PaymentStatus = dto.PaymentStatus;
-            order.TotalAmount = dto.TotalAmount;
-            order.PickupDateTime = dto.PickupDateTime;
-            order.OrderDateTime = dto.OrderDateTime;
+            if (order.Status != default) order.Status = updateDto.Status;
+            if (order.PaymentStatus != default) order.PaymentStatus = updateDto.PaymentStatus;
+            if (updateDto.TotalAmount != default) order.TotalAmount = updateDto.TotalAmount;
+            if (updateDto.PickupDateTime != default) order.PickupDateTime = updateDto.PickupDateTime;
+            if (updateDto.OrderDateTime != default) order.OrderDateTime = updateDto.OrderDateTime;
 
-            _db.OrderItems.RemoveRange(order.Items);
-            order.Items = new List<OrderItem>();
-
-            foreach (var itemDto in dto.Items)
+            if (updateDto.ItemsToAdd != null)
             {
-                var menuItem = await _db.MenuItems.FindAsync(itemDto.MenuItemId);
-                if (menuItem == null) return BadRequest($"MenuItem ID {itemDto.MenuItemId} not found.");
-
-                var orderItem = new OrderItem
+                foreach (var itemDto in updateDto.ItemsToAdd)
                 {
-                    MenuItemId = itemDto.MenuItemId,
-                    Quantity = itemDto.Quantity,
-                    Price = itemDto.Price,
-                    Customizations = new List<Customization>()
-                };
+                    var menuItem = await _db.MenuItems.FindAsync(itemDto.MenuItemId);
+                    if (menuItem == null) return BadRequest($"MenuItem with ID {itemDto.MenuItemId} not found.");
 
-                if (itemDto.CustomizationIds != null)
-                {
-                    var customizations = await _db.Customizations
-                        .Where(c => itemDto.CustomizationIds.Contains(c.CustomizationId))
-                        .ToListAsync();
+                    var orderItem = new OrderItem
+                    {
+                        MenuItemId = itemDto.MenuItemId,
+                        Quantity = itemDto.Quantity,
+                        Price = menuItem.BasePrice,
+                        Customizations = new List<Customization>()
+                    };
 
-                    orderItem.Customizations = customizations;
+                    if (itemDto.CustomizationIds != null)
+                    {
+                        var customizations = await _db.Customizations
+                            .Where(c => itemDto.CustomizationIds.Contains(c.CustomizationId))
+                            .ToListAsync();
+                        orderItem.Customizations = customizations;
+                    }
+                    order.Items.Add(orderItem);
                 }
-
-                order.Items.Add(orderItem);
             }
+
+            decimal totalAmount = 0;
+            foreach (var item in order.Items)
+            {
+                totalAmount += item.Price * item.Quantity;
+            }
+            order.TotalAmount = totalAmount;
 
             await _db.SaveChangesAsync();
             return NoContent();

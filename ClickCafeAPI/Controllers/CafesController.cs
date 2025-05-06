@@ -95,5 +95,38 @@ namespace ClickCafeAPI.Controllers
             
             return CreatedAtAction(nameof(GetById), new { id = dto.CafeId }, dto);
         }
+
+        // PUT : api/Cafes/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, UpdateCafeDto updateDto)
+        {
+            var cafe = await _db.Cafes
+                .Include(ca => ca.MenuItems)
+                .FirstOrDefaultAsync(ca => ca.CafeId == id);
+            if (cafe == null) return NotFound();
+
+            // Update the cafe entity for the fields that are not null or empty
+            if (!string.IsNullOrEmpty(updateDto.Name)) cafe.Name = updateDto.Name;
+            if (!string.IsNullOrEmpty(updateDto.Address)) cafe.Address = updateDto.Address;
+            if (!string.IsNullOrEmpty(updateDto.PhoneNumber)) cafe.PhoneNumber = updateDto.PhoneNumber;
+            if (!string.IsNullOrEmpty(updateDto.OperatingHours)) cafe.OperatingHours = updateDto.OperatingHours;
+
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
+        // DELETE: api/Cafes/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var cafe = await _db.Cafes
+                .Include(ca => ca.MenuItems)
+                .FirstOrDefaultAsync(ca => ca.CafeId == id);
+            if (cafe == null) return NotFound();
+
+            _db.Cafes.Remove(cafe);
+            await _db.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

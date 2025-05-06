@@ -4,6 +4,8 @@ import LoginPage from './components/auth/login';
 import RegisterPage from './components/auth/register';
 import MainPage from './components/main';
 import NewOrder from './components/newOrder';
+import CafeItems from './components/cafeItems'
+
 import Status from './components/status';
 import Rewards from './components/rewards';
 import History from './components/history';
@@ -33,6 +35,11 @@ function App() {
                 <Route path="/newOrder" element={
                     <PrivateRoute user={user}>
                         <NewOrder />
+                    </PrivateRoute>
+                } />
+                <Route path="/newOrder/:cafeId" element={
+                    <PrivateRoute user={user}>
+                        <CafeItems />
                     </PrivateRoute>
                 } />
                 <Route path="/status" element={

@@ -1,4 +1,7 @@
-﻿using ClickCafeAPI.Context;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using ClickCafeAPI.Context;
 using ClickCafeAPI.DTOs;
 using ClickCafeAPI.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -20,8 +23,8 @@ namespace ClickCafeAPI.Controllers
         {
             var menuItems = await _db.MenuItems
                 .Include(mi => mi.Cafe)
-                .Include(mi => mi.AvailableCustomizations)
-                .ToListAsync();
+                                 .Include(mi => mi.AvailableCustomizations)
+                                 .ToListAsync();
 
             var dtos = menuItems.Select(mi => new MenuItemDto
             {
@@ -130,6 +133,7 @@ namespace ClickCafeAPI.Controllers
                 menuItem.AvailableCustomizations = customizations;
             }
 
+            _db.MenuItems.Add(entity);
             await _db.SaveChangesAsync();
             return NoContent();
         }
@@ -137,7 +141,7 @@ namespace ClickCafeAPI.Controllers
         // DELETE: api/MenuItems/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
-        {
+            {
             var menuItem = await _db.MenuItems
                 .Include(mi => mi.AvailableCustomizations)
                 .FirstOrDefaultAsync(mi => mi.MenuItemId == id);
@@ -145,7 +149,7 @@ namespace ClickCafeAPI.Controllers
             if (menuItem == null) return NotFound();
             _db.MenuItems.Remove(menuItem);
             await _db.SaveChangesAsync();
-            
+
             return NoContent();
         }
     }

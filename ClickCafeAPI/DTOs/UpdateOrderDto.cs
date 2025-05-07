@@ -12,5 +12,6 @@ namespace ClickCafeAPI.DTOs
         public decimal TotalAmount { get; set; }
         public DateTime PickupDateTime { get; set; }
         public IEnumerable<int> OrderItemIds { get; set; } = new List<int>();
+        public IEnumerable<CreateOrderItemDto> ItemsToAdd { get; set; } = new List<CreateOrderItemDto>();
     }
 }

@@ -1,17 +1,23 @@
 ﻿import { useNavigate } from 'react-router-dom';
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { login } from '../../actions/authActions'
 
-function LoginPage({ setUser }) {
+function LoginPage({ setUser, user }) {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (user) {
+            navigate("/", { replace: true });
+        }
+    }, [user, navigate]);
+
     const handleLogin = async (e) => {
         e.preventDefault();
         await login(email, password, setUser, setError);
-        navigate("/"); 
+        navigate("/");
     };
 
     return (

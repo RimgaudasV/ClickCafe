@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClickCafeAPI.Migrations
 {
     [DbContext(typeof(ClickCafeContext))]
-    [Migration("20250508151803_options")]
-    partial class options
+    [Migration("20250508182155_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

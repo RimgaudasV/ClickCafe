@@ -53,7 +53,10 @@ function CafeItems() {
                 : (
                     <ul>
                         {items.map(item => (
-                            <li key={item.menuItemId}>
+                            <li key={item.menuItemId}
+                                style={{ cursor: "pointer", margin: "0.5rem 0" }}
+                                onClick={() => navigate(`/orderItem/${item.menuItemId}`)}
+                            >
                                 {item.name} — €{item.basePrice.toFixed(2)}
                             </li>
                         ))}

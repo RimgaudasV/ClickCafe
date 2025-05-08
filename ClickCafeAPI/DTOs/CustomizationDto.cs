@@ -1,11 +1,13 @@
-﻿namespace ClickCafeAPI.DTOs
+﻿using ClickCafeAPI.Models;
+
+namespace ClickCafeAPI.DTOs
 {
     public class CustomizationDto
     {
         public int CustomizationId { get; set; }
         public string Name { get; set; } = null!;
-        public IEnumerable<string> Options { get; set; } = new List<string>();
-        public decimal ExtraCost { get; set; }
+        public CustomizationType Type { get; set; }
+        public IEnumerable<int> OptionIds { get; set; } = new List<int>();
         public IEnumerable<int> MenuItemIds { get; set; } = new List<int>();
         public IEnumerable<int> OrderItemIds { get; set; } = new List<int>();
     }

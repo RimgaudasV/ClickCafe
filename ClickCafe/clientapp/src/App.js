@@ -15,6 +15,7 @@ import Navbar from './components/navbar';
 import PrivateRoute from './PrivateRoute';
 import OrderItems from './components/orderItems';
 import Checkout from './components/checkout'
+import { OrderProvider } from './context/OrderContext';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -41,17 +42,23 @@ function App() {
                 } />
                 <Route path="/newOrder/:cafeId" element={
                     <PrivateRoute user={user}>
-                        <CafeItems />
+                        <OrderProvider>
+                            <CafeItems />
+                        </OrderProvider>
                     </PrivateRoute>
                 } />
                 <Route path="/orderItem/:itemId" element={
                     <PrivateRoute user={user}>
-                        <OrderItems />
+                        <OrderProvider>
+                            <OrderItems />
+                        </OrderProvider>
                     </PrivateRoute>
                 } />
                 <Route path="/checkout" element={
                     <PrivateRoute user={user}>
-                        <Checkout />
+                        <OrderProvider>
+                            <Checkout />
+                        </OrderProvider>
                     </PrivateRoute>
                 } />
                 <Route path="/status" element={

@@ -67,22 +67,20 @@ function CafeItems() {
                     </ul>
                 )}
 
-            <div style={{
-                position: "fixed",
-                top: "0",
-                right: "0",
-                height: "100vh",
-                width: "300px",
-                padding: "1rem",
-                backgroundColor: "#f9f9f9",
-                borderLeft: "1px solid #ccc",
-                overflowY: "auto",
-                boxShadow: "-2px 0 6px rgba(0,0,0,0.1)"
-            }}>
-                <h3>Your Order</h3>
-                {orderItems.length === 0 ? (
-                    <p>No items yet.</p>
-                ) : (
+            {orderItems.length > 0 && (
+                <div style={{
+                    position: "fixed",
+                    top: "0",
+                    right: "0",
+                    height: "100vh",
+                    width: "300px",
+                    padding: "1rem",
+                    backgroundColor: "#f9f9f9",
+                    borderLeft: "1px solid #ccc",
+                    overflowY: "auto",
+                    boxShadow: "-2px 0 6px rgba(0,0,0,0.1)"
+                }}>
+                    <h3>Your Order</h3>
                     <ul>
                         {orderItems.map((item, index) => (
                             <li key={index} style={{ marginBottom: "0.75rem" }}>
@@ -90,18 +88,19 @@ function CafeItems() {
                             </li>
                         ))}
                     </ul>
-                )}
-                <div>
-                    <label>
-                        Total price: {orderItems.reduce((sum, item) => sum + item.total, 0).toFixed(2)} €
-                    </label>
-                    <button
-                        onClick={() => navigate('/checkout')}
-                        style={{ marginLeft: '5px' }}
-                    >Checkout
-                    </button>
+                    <div>
+                        <label>
+                            Total price: {orderItems.reduce((sum, item) => sum + item.total, 0).toFixed(2)} €
+                        </label>
+                        <button
+                            onClick={() => navigate('/checkout')}
+                            style={{ marginLeft: '5px' }}
+                        >Checkout
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
+
 
         </div>
     );

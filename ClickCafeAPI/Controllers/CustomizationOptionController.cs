@@ -15,6 +15,7 @@ namespace ClickCafeAPI.Controllers
         public CustomizationOptionController(ClickCafeContext db)
             => _db = db;
 
+        //GET: api/CustomizationOption
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CustomizationOptionDto>>> GetAll()
         {
@@ -30,6 +31,7 @@ namespace ClickCafeAPI.Controllers
             return Ok(dtos);
         }
 
+        //GET: api/CustomizationOption/{id}
         [HttpGet("{id}")]
         public async Task<ActionResult<CustomizationOptionDto>> GetById(int id)
         {
@@ -44,6 +46,7 @@ namespace ClickCafeAPI.Controllers
             });
         }
 
+        //POST: api/CustomizationOption
         [HttpPost]
         public async Task<ActionResult<CustomizationOptionDto>> Create(CreateCustomizationOptionDto createDto)
         {
@@ -66,6 +69,7 @@ namespace ClickCafeAPI.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.CustomizationOptionId }, result);
         }
 
+        //PUT: api/CustomizationOption
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, UpdateCustomizationOptionDto dto)
         {
@@ -79,6 +83,7 @@ namespace ClickCafeAPI.Controllers
             return NoContent();
         }
 
+        //DELETE: api/CustomizationOption
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {

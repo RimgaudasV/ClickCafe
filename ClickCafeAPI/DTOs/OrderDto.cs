@@ -8,6 +8,7 @@ namespace ClickCafeAPI.DTOs
     {
         public int OrderId { get; set; }
         public required string UserId { get; set; }
+        public string UserName { get; set; }
         public DateTime OrderDateTime { get; set; }
         public OrderStatus Status { get; set; }
         public OrderPaymentStatus PaymentStatus { get; set; }

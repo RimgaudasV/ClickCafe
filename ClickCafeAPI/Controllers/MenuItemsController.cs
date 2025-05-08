@@ -133,7 +133,7 @@ namespace ClickCafeAPI.Controllers
                 menuItem.AvailableCustomizations = customizations;
             }
 
-            _db.MenuItems.Add(entity);
+            _db.MenuItems.Add(menuItem);
             await _db.SaveChangesAsync();
             return NoContent();
         }

@@ -3,6 +3,8 @@ using ClickCafeAPI.Context;
 using ClickCafeAPI.Models;
 using ClickCafeAPI.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace ClickCafeAPI.Controllers
 {
@@ -59,6 +61,34 @@ namespace ClickCafeAPI.Controllers
 
             return dto;
         }
+
+        // GET: api/userOrders
+        [HttpGet("userOrders")]
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetCurrentUserOrders()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized("User not authorized");
+
+            var orders = await _db.Orders
+                .Where(o => o.UserId == userId)
+                .Include(o => o.Items)
+                .ToListAsync();
+
+            var dto = orders.Select(o => new OrderDto
+            {
+                OrderId = o.OrderId,
+                UserId = o.UserId,
+                OrderDateTime = o.OrderDateTime,
+                Status = o.Status,
+                PaymentStatus = o.PaymentStatus,
+                TotalAmount = o.TotalAmount,
+                PickupDateTime = o.PickupDateTime,
+                OrderItemIds = o.Items.Select(i => i.OrderItemId)
+            });
+
+            return Ok(dto);
+        }
+
 
         // POST: api/orders
         [HttpPost("orders")]

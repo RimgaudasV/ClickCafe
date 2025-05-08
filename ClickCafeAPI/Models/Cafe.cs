@@ -13,6 +13,7 @@ namespace ClickCafeAPI.Models
         public string PhoneNumber { get; set; }
         [Required]
         public string OperatingHours { get; set; }
+        public string? Image { get; set; }
         public ICollection<MenuItem> MenuItems { get; set; }
     }
 }

@@ -37,6 +37,18 @@ function NewOrder() {
                         style={{ cursor: "pointer", margin: "0.5rem 0" }}
                         onClick={() => navigate(`/newOrder/${cafe.cafeId}`)}
                     >
+                        {cafe.image && (
+                            <img src={cafe.image}
+                                alt={cafe.name}
+                                style={{
+                                    width: 100,
+                                    height: 100,
+                                    objectFit: 'cover',
+                                    marginRight: 8,
+                                }}
+                            />
+                        )}
+
                         <strong>{cafe.name}</strong><br />
                         {cafe.address}
                     </li>

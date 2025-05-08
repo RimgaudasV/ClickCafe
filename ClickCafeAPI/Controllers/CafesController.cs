@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using ClickCafeAPI.Context;
 using ClickCafeAPI.DTOs;
 using ClickCafeAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Hosting;
 
 namespace ClickCafeAPI.Controllers
 {
@@ -14,8 +13,12 @@ namespace ClickCafeAPI.Controllers
     public class CafesController : ControllerBase
     {
         private readonly ClickCafeContext _db;
-        public CafesController(ClickCafeContext db)
-            => _db = db;
+        private readonly IWebHostEnvironment _env;
+        public CafesController(ClickCafeContext db, IWebHostEnvironment env)
+        {
+            _db = db;
+            _env = env;
+        }
 
         // GET: api/Cafes
         [HttpGet]
@@ -34,6 +37,7 @@ namespace ClickCafeAPI.Controllers
                 Address = c.Address,
                 PhoneNumber = c.PhoneNumber,
                 OperatingHours = c.OperatingHours,
+                Image = c.Image,
                 MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId)
             });
 
@@ -59,6 +63,7 @@ namespace ClickCafeAPI.Controllers
                 Address = c.Address,
                 PhoneNumber = c.PhoneNumber,
                 OperatingHours = c.OperatingHours,
+                Image = c.Image,
                 MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId)
             };
             return Ok(dto);
@@ -74,7 +79,8 @@ namespace ClickCafeAPI.Controllers
                 Name = createDto.Name,
                 Address = createDto.Address,
                 PhoneNumber = createDto.PhoneNumber,
-                OperatingHours = createDto.OperatingHours
+                OperatingHours = createDto.OperatingHours,
+                Image = createDto.Image
             };
 
             // Persist
@@ -89,11 +95,42 @@ namespace ClickCafeAPI.Controllers
                 Address = cafe.Address,
                 PhoneNumber = cafe.PhoneNumber,
                 OperatingHours = cafe.OperatingHours,
+                Image = cafe.Image,
                 MenuItemIds = new List<int>()  
             };
 
             
             return CreatedAtAction(nameof(GetById), new { id = dto.CafeId }, dto);
+        }
+
+        // POST: api/Cafes/{id}/image
+        [HttpPost("{id}/image")]
+        public async Task<IActionResult> UploadImage(int id, IFormFile file)
+        {
+            var cafe = await _db.Cafes.FindAsync(id);
+            if (cafe == null) return NotFound();
+
+            if (file == null || file.Length == 0)
+                return BadRequest("No image file provided.");
+
+            // set wwwroot/cafeImages
+            var imagesDir = Path.Combine(_env.WebRootPath, "cafeImages");
+            if (!Directory.Exists(imagesDir))
+                Directory.CreateDirectory(imagesDir);
+
+            var ext = Path.GetExtension(file.FileName);
+            var fileName = $"{Path.GetRandomFileName()}{ext}";
+            var filePath = Path.Combine(imagesDir, fileName);
+
+            // save to disk
+            await using var stream = System.IO.File.Create(filePath);
+            await file.CopyToAsync(stream);
+
+            // update DB
+            cafe.Image = $"/cafeImages/{fileName}";
+            await _db.SaveChangesAsync();
+
+            return NoContent();
         }
 
         // PUT : api/Cafes/{id}
@@ -110,6 +147,7 @@ namespace ClickCafeAPI.Controllers
             if (!string.IsNullOrEmpty(updateDto.Address)) cafe.Address = updateDto.Address;
             if (!string.IsNullOrEmpty(updateDto.PhoneNumber)) cafe.PhoneNumber = updateDto.PhoneNumber;
             if (!string.IsNullOrEmpty(updateDto.OperatingHours)) cafe.OperatingHours = updateDto.OperatingHours;
+            if (!string.IsNullOrEmpty(updateDto.Image)) cafe.Image = updateDto.Image;
 
             await _db.SaveChangesAsync();
             return NoContent();

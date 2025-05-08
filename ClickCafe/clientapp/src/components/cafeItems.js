@@ -49,6 +49,18 @@ function CafeItems() {
             <button onClick={() => navigate("/newOrder")}>
                 &larr; Back to cafés
             </button>
+            {cafe.image && (
+                <img src={cafe.image}                  
+                    alt={`${cafe.name} logo`}
+                    style={{
+                        width: 120,
+                        height: 120,
+                        objectFit: "cover",
+                        borderRadius: "50%",               
+                        marginBottom: "1rem"
+                    }}
+                />
+            )}
             <h2>{cafe.name}</h2>
             <p>{cafe.address}</p>
             <h3>Menu</h3>

@@ -1,5 +1,5 @@
 ﻿import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LoginPage from './components/auth/login';
 import RegisterPage from './components/auth/register';
 import MainPage from './components/main';
@@ -15,19 +15,41 @@ import Navbar from './components/navbar';
 import PrivateRoute from './PrivateRoute';
 import OrderItems from './components/orderItems';
 import Checkout from './components/checkout'
+import OrderDetails from './components/orderDetails';
+
 import { OrderProvider } from './context/OrderContext';
+
+
+
 
 function App() {
     const [user, setUser] = useState(null);
-    const handleLogout = () => {
-        setUser(null);
-    };
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch("/api/auth/current", { credentials: "include" })
+            .then(res => {
+                if (!res.ok) throw new Error("Not authenticated");
+                return res.json();
+            })
+            .then(data => {
+                setUser(data);
+            })
+            .catch(() => {
+                setUser(null);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    }, []);
+
+    if (loading) return <p>Loading...</p>;
 
     return (
         <Router>
-            {user && <Navbar user={user} onLogout={handleLogout} />}
+            {user && <Navbar user={user} setUser={setUser} />}
             <Routes>
-                <Route path="/login" element={<LoginPage setUser={setUser} />} />
+                <Route path="/login" element={<LoginPage setUser={setUser} user={user} />} />
                 <Route path="/register" element={<RegisterPage />} />
 
                 <Route path="/" element={
@@ -84,6 +106,11 @@ function App() {
                 <Route path="/settings" element={
                     <PrivateRoute user={user}>
                         <Settings />
+                    </PrivateRoute>
+                } />
+                <Route path="/order/:orderId" element={
+                    <PrivateRoute user={user}>
+                        <OrderDetails />
                     </PrivateRoute>
                 } />
             </Routes>

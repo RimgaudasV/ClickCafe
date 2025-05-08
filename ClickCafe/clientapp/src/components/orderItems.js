@@ -1,13 +1,17 @@
 ﻿import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useOrder } from "../context/OrderContext";
 
 function OrderItems() {
     const { itemId } = useParams();
     const [item, setItem] = useState(null);
     const [customizations, setCustomizations] = useState([]);
     const [error, setError] = useState(null);
-
+    const [quantity, setQuantity] = useState(1);
     const [selectedIds, setSelectedIds] = useState([]);
+
+    const { addToOrder } = useOrder();
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -55,12 +59,68 @@ function OrderItems() {
                     })
                 );
                 setCustomizations(withOptions);
+                const defaultRadioSelections = withOptions
+                    .filter(c => c.type === 1 && c.customizationOptions.length > 0)
+                    .map(c => c.customizationOptions[0].customizationOptionId);
+
+                setSelectedIds(prev =>
+                    Array.from(new Set([...prev, ...defaultRadioSelections]))
+                );
             })
             .catch(err => {
                 console.error(err);
                 setError("Failed to load customizations");
             });
     }, [item]);
+
+    const handleChange = (customization, optionId) => {
+        if (customization.type === 1) {
+            const otherOptionIds = customization.customizationOptions.map(o => o.customizationOptionId);
+            setSelectedIds([
+                ...selectedIds.filter(id => !otherOptionIds.includes(id)),
+                optionId,
+            ]);
+        } else {
+            if (selectedIds.includes(optionId)) {
+                setSelectedIds(selectedIds.filter(id => id !== optionId));
+            } else {
+                setSelectedIds([...selectedIds, optionId]);
+            }
+        }
+    };
+
+    const calculateExtraCost = () => {
+        let total = 0;
+        for (const c of customizations) {
+            for (const opt of c.customizationOptions) {
+                if (selectedIds.includes(opt.customizationOptionId)) {
+                    total += opt.extraCost || 0;
+                }
+            }
+        }
+        return total;
+    };
+
+    const handleAddToOrder = () => {
+        const selectedOptions = customizations
+            .flatMap(c => c.customizationOptions)
+            .filter(opt => selectedIds.includes(opt.customizationOptionId));
+
+        const newItem = {
+            menuItemId: item.menuItemId,
+            name: item.name,
+            basePrice: item.basePrice,
+            quantity,
+            customizations: selectedOptions,
+            total: totalPrice
+        };
+
+        addToOrder(newItem);
+        navigate(`/newOrder/${item.cafeId}`);
+    };
+
+    const totalPrice = item ? (item.basePrice + calculateExtraCost()) * quantity : 0;
+
 
     if (!item) return <p>Loading item...</p>;
 
@@ -74,39 +134,59 @@ function OrderItems() {
             <ul>
                 {customizations.map(c => (
                     <li key={c.customizationId}>
-                        <label>
-                            <p>{c.name}</p>
-                            {c.customizationOptions?.map(opt => (
-                                <div key={opt.customizationOptionId}>
+                        <p>{c.name}</p>
+                        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "10px" }}>
+                            {c.customizationOptions?.map(opt => {
+                                const inputType = c.type === 1 ? "radio" : "checkbox";
+                                const inputName = `customization-${c.customizationId}`;
+                                const isChecked = selectedIds.includes(opt.customizationOptionId);
 
-                                    <input
-                                        type="checkbox"
-                                        value={opt.customizationOptionId}
-                                        checked={selectedIds.includes(opt.customizationOptionId)}
-                                        onChange={(e) => {
-                                            const id = opt.customizationOptionId;
-                                            if (e.target.checked) {
-                                                setSelectedIds([...selectedIds, id]);
-                                            } else {
-                                                setSelectedIds(selectedIds.filter(i => i !== id));
-                                            }
-                                        }}
-                                    />
-
-                                    <label style={{ marginLeft: "5px" }}>
-                                        {opt.name}
-                                        {opt.extraCost > 0 && (
-                                            <span style={{ marginLeft: "10px", color: "gray" }}>
-                                                (+€{opt.extraCost.toFixed(2)})
-                                            </span>
-                                        )}
+                                return (
+                                    <label
+                                        key={opt.customizationOptionId}
+                                    >
+                                        <input
+                                            type={inputType}
+                                            name={inputType === "radio" ? inputName : undefined}
+                                            value={opt.customizationOptionId}
+                                            checked={isChecked}
+                                            onChange={() => handleChange(c, opt.customizationOptionId)}
+                                        />
+                                        <span>
+                                            {opt.name}
+                                            {opt.extraCost > 0 && (
+                                                <span style={{ marginLeft: "6px", color: "gray" }}>
+                                                    (+€{opt.extraCost.toFixed(2)})
+                                                </span>
+                                            )}
+                                        </span>
                                     </label>
-                                </div>
-                            ))}
-                        </label>
+                                );
+                            })}
+                        </div>
                     </li>
                 ))}
             </ul>
+
+            <div style={{ marginTop: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <button
+                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                        disabled={quantity === 1}
+                    >–</button>
+                    <span>Quantity: {quantity}</span>
+                    <button onClick={() => setQuantity(q => q + 1)}>+</button>
+                </div>
+
+                <button
+                    style={{ marginTop: "10px", padding: "8px 16px", fontSize: "16px" }}
+                    onClick={handleAddToOrder}
+                >
+                    Add to order — €{totalPrice.toFixed(2)}
+                </button>
+            </div>
+
+
         </div>
     );
 }

@@ -1,9 +1,10 @@
 ﻿import { Link, useNavigate } from 'react-router-dom';
 
-function Navbar({ user, onLogout }) {
+function Navbar({ user, setUser, onLogout }) {
     const navigate = useNavigate();
-    const handleLogoutClick = () => {
-        onLogout();
+    const handleLogoutClick = async () => {
+        await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+        setUser(null);
         navigate('/login');
     };
 

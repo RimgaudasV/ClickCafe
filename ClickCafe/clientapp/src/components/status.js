@@ -3,6 +3,7 @@
 const StatusPage = () => {
     const [orders, setOrders] = useState([]);
     const [error, setError] = useState(null);
+    const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
     const getStatusText = (status) => {
         switch (status) {
@@ -19,7 +20,10 @@ const StatusPage = () => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
             })
-            .then(data => setOrders(data))
+            .then(data => {
+                setOrders(data);
+                setUpdatingOrderId(null); // clear the lock after update
+            })
             .catch(err => setError(err.message));
     };
 
@@ -28,6 +32,7 @@ const StatusPage = () => {
     }, []);
 
     const updateStatus = (orderId, newStatus) => {
+        setUpdatingOrderId(orderId);
         fetch(`https://localhost:7281/api/orders/${orderId}/status`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -37,7 +42,10 @@ const StatusPage = () => {
                 if (!response.ok) throw new Error('Failed to update status');
                 fetchOrders();
             })
-            .catch(err => setError(err.message));
+            .catch(err => {
+                setError(err.message);
+                setUpdatingOrderId(null);
+            });
     };
 
     const handleCancel = (orderId) => {
@@ -48,6 +56,19 @@ const StatusPage = () => {
 
     const handleComplete = (orderId) => {
         updateStatus(orderId, 2);
+    };
+
+    const deleteOrder = (orderId) => {
+        if (window.confirm("Are you sure you want to permanently delete this order?")) {
+            fetch(`https://localhost:7281/api/orders/${orderId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to delete order');
+                    fetchOrders();
+                })
+                .catch(err => setError(err.message));
+        }
     };
 
     return (
@@ -79,37 +100,51 @@ const StatusPage = () => {
                                 <td>{new Date(order.pickupDateTime).toLocaleTimeString()}</td>
                                 <td>{order.totalAmount.toFixed(2)}</td>
                                 <td>
-                                    {order.status === 1 && (
-                                        <button
-                                            onClick={() => handleComplete(order.orderId)}
-                                            style={{
-                                                background: 'green',
-                                                color: 'white',
-                                                border: 'none',
-                                                padding: '5px 8px',
-                                                marginRight: '8px',
-                                                cursor: 'pointer',
-                                                borderRadius: '4px'
-                                            }}
-                                        >
-                                            ✅ Complete
-                                        </button>
+                                    {order.status === 1 && order.orderId !== updatingOrderId && (
+                                        <>
+                                            <button
+                                                onClick={() => handleComplete(order.orderId)}
+                                                style={{
+                                                    background: 'green',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    padding: '5px 8px',
+                                                    marginRight: '8px',
+                                                    cursor: 'pointer',
+                                                    borderRadius: '4px'
+                                                }}
+                                            >
+                                                ✅ Complete
+                                            </button>
+                                            <button
+                                                onClick={() => handleCancel(order.orderId)}
+                                                title="Cancel Order"
+                                                style={{
+                                                    background: 'none',
+                                                    border: 'none',
+                                                    color: 'red',
+                                                    fontSize: '18px',
+                                                    cursor: 'pointer',
+                                                    marginRight: '8px'
+                                                }}
+                                            >
+                                                ❌
+                                            </button>
+                                        </>
                                     )}
-                                    {order.status !== 3 && (
-                                        <button
-                                            onClick={() => handleCancel(order.orderId)}
-                                            title="Cancel Order"
-                                            style={{
-                                                background: 'none',
-                                                border: 'none',
-                                                color: 'red',
-                                                fontSize: '18px',
-                                                cursor: 'pointer'
-                                            }}
-                                        >
-                                            ❌
-                                        </button>
-                                    )}
+                                    <button
+                                        onClick={() => deleteOrder(order.orderId)}
+                                        title="Delete Order"
+                                        style={{
+                                            background: 'none',
+                                            border: 'none',
+                                            color: 'gray',
+                                            fontSize: '18px',
+                                            cursor: 'pointer'
+                                        }}
+                                    >
+                                        🗑️
+                                    </button>
                                 </td>
                             </tr>
                         ))}

@@ -37,6 +37,8 @@ builder.Services.AddCors(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.Name = "YourAppAuthCookie";
+    options.Cookie.SameSite = SameSiteMode.None;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.LoginPath = "/Account/Login";
     options.LogoutPath = "/Account/Logout";
     options.SlidingExpiration = true;

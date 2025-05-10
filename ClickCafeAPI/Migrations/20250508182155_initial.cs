@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClickCafeAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class cafeImage : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -61,8 +61,7 @@ namespace ClickCafeAPI.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    OperatingHours = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Image = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    OperatingHours = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -76,8 +75,7 @@ namespace ClickCafeAPI.Migrations
                     CustomizationId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Options = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ExtraCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Type = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -239,6 +237,26 @@ namespace ClickCafeAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CustomizationOptions",
+                columns: table => new
+                {
+                    CustomizationOptionId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ExtraCost = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    CustomizationId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CustomizationOptions", x => x.CustomizationOptionId);
+                    table.ForeignKey(
+                        name: "FK_CustomizationOptions_Customizations_CustomizationId",
+                        column: x => x.CustomizationId,
+                        principalTable: "Customizations",
+                        principalColumn: "CustomizationId");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Payments",
                 columns: table => new
                 {
@@ -376,6 +394,11 @@ namespace ClickCafeAPI.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CustomizationOptions_CustomizationId",
+                table: "CustomizationOptions",
+                column: "CustomizationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MenuItemCustomizations_MenuItemsMenuItemId",
                 table: "MenuItemCustomizations",
                 column: "MenuItemsMenuItemId");
@@ -429,6 +452,9 @@ namespace ClickCafeAPI.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "CustomizationOptions");
 
             migrationBuilder.DropTable(
                 name: "MenuItemCustomizations");

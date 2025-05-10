@@ -126,12 +126,15 @@ namespace ClickCafeAPI.Controllers
                 if (itemDto.CustomizationIds != null)
                 {
                     var customizations = await _db.Customizations
+                        .Include(c => c.Options)
                         .Where(c => itemDto.CustomizationIds.Contains(c.CustomizationId))
                         .ToListAsync();
 
                     orderItem.Customizations = customizations;
 
-                    decimal customizationCost = customizations.Sum(c => c.ExtraCost);
+                    decimal customizationCost = customizations
+                        .SelectMany(c => c.Options)
+                        .Sum(opt => opt.ExtraCost);
                     orderItem.Price += customizationCost; // Add customization cost to item price
                     orderItem.Customizations = customizations;
                 }

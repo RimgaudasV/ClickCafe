@@ -7,9 +7,9 @@ namespace ClickCafeAPI.Models
         public int CustomizationId { get; set; }
         [Required]
         public string Name { get; set; }
-        public ICollection<string> Options { get; set; }
-        public decimal ExtraCost { get; set; }
-        public ICollection<OrderItem> OrderItems { get; set; }
+        public CustomizationType Type { get; set; }
+        public ICollection<CustomizationOption> Options { get; set; }
+        public ICollection<OrderItem>? OrderItems { get; set; } = new List<OrderItem>();
         public ICollection<MenuItem> MenuItems { get; set; }
     }
 }

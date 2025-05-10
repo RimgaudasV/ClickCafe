@@ -34,9 +34,6 @@ namespace ClickCafeAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Image")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -62,6 +59,29 @@ namespace ClickCafeAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomizationId"));
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("int");
+
+                    b.HasKey("CustomizationId");
+
+                    b.ToTable("Customizations");
+                });
+
+            modelBuilder.Entity("ClickCafeAPI.Models.CustomizationOption", b =>
+                {
+                    b.Property<int>("CustomizationOptionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomizationOptionId"));
+
+                    b.Property<int?>("CustomizationId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("ExtraCost")
                         .HasColumnType("decimal(18,2)");
 
@@ -69,13 +89,11 @@ namespace ClickCafeAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.PrimitiveCollection<string>("Options")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.HasKey("CustomizationOptionId");
 
-                    b.HasKey("CustomizationId");
+                    b.HasIndex("CustomizationId");
 
-                    b.ToTable("Customizations");
+                    b.ToTable("CustomizationOptions");
                 });
 
             modelBuilder.Entity("ClickCafeAPI.Models.MenuItem", b =>
@@ -447,6 +465,13 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ClickCafeAPI.Models.CustomizationOption", b =>
+                {
+                    b.HasOne("ClickCafeAPI.Models.Customization", null)
+                        .WithMany("Options")
+                        .HasForeignKey("CustomizationId");
+                });
+
             modelBuilder.Entity("ClickCafeAPI.Models.MenuItem", b =>
                 {
                     b.HasOne("ClickCafeAPI.Models.Cafe", "Cafe")
@@ -579,6 +604,11 @@ namespace ClickCafeAPI.Migrations
             modelBuilder.Entity("ClickCafeAPI.Models.Cafe", b =>
                 {
                     b.Navigation("MenuItems");
+                });
+
+            modelBuilder.Entity("ClickCafeAPI.Models.Customization", b =>
+                {
+                    b.Navigation("Options");
                 });
 
             modelBuilder.Entity("ClickCafeAPI.Models.MenuItem", b =>

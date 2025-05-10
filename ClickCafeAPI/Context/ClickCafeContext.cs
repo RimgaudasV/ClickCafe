@@ -13,6 +13,7 @@ namespace ClickCafeAPI.Context
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
+        public DbSet<CustomizationOption> CustomizationOptions { get; set; }
         public DbSet<Customization> Customizations { get; set; }
         public DbSet<Cafe> Cafes { get; set; }
         public DbSet<Payment> Payments { get; set; }

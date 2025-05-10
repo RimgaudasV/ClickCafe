@@ -23,8 +23,8 @@ namespace ClickCafeAPI.Controllers
         {
             var menuItems = await _db.MenuItems
                 .Include(mi => mi.Cafe)
-                                 .Include(mi => mi.AvailableCustomizations)
-                                 .ToListAsync();
+                .Include(mi => mi.AvailableCustomizations)
+                .ToListAsync();
 
             var dtos = menuItems.Select(mi => new MenuItemDto
             {

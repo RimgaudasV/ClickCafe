@@ -232,5 +232,19 @@ namespace ClickCafeAPI.Controllers
 
             return NoContent();
         }
+
+        // PATCH: api/orders/{id}/status
+        [HttpPatch("orders/{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOrderDto dto)
+        {
+            var order = await _db.Orders.FindAsync(id);
+            if (order == null) return NotFound();
+
+            order.Status = dto.Status;
+            await _db.SaveChangesAsync();
+
+            return NoContent();
+        }
+
     }
 }

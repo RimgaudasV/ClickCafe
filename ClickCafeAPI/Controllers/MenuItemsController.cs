@@ -132,8 +132,6 @@ namespace ClickCafeAPI.Controllers
                     .ToListAsync();
                 menuItem.AvailableCustomizations = customizations;
             }
-
-         
             await _db.SaveChangesAsync();
             return NoContent();
         }

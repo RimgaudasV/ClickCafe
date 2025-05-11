@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ClickCafeAPI.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace ClickCafeAPI.ViewModels
 {
@@ -14,6 +15,8 @@ namespace ClickCafeAPI.ViewModels
         [StringLength(40, MinimumLength = 3)]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+        [Required(ErrorMessage = "Role is required.")]
+        public UserRole Role { get; set; }
 
     }
 }

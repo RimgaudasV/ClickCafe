@@ -9,7 +9,7 @@ function Checkout() {
         <div>
             {orderItems.map((item, index) => (
                 <li key={index} style={{ marginBottom: "0.75rem" }}>
-                    {item.quantity} × {item.name} — €{item.total.toFixed(2)}
+                    {item.quantity} × {item.name} — €{item.price.toFixed(2)}
                 </li>
             ))}
         </div>

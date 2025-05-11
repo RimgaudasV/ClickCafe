@@ -1,10 +1,13 @@
 ﻿import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useOrder } from '../context/OrderContext';
 
 function History() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const { addToOrder, clearOrder } = useOrder();
+    const navigate = useNavigate();
     const OrderStatus = {
         1: "Pending",
         2: "Completed",
@@ -28,6 +31,56 @@ function History() {
             });
     }, [])
 
+    const handleRepeatOrder = (orderItemIds, orderId) => {
+        clearOrder();
+
+        Promise.all(
+            orderItemIds.map(itemId =>
+                fetch(`/api/orders/${orderId}/items/${itemId}`, { credentials: "include" })
+                    .then(res => res.json())
+                    .catch(err => {
+                        console.error("Failed to fetch order item", err);
+                        return null;
+                    })
+            )
+        )
+
+        .then(orderItems => {
+            const itemFetchPromises = orderItems.map(item => {
+                if (item) {
+                    return fetch(`/api/MenuItems/${item.menuItemId}`, { credentials: "include" })
+                        .then(res => res.json())
+                        .then(menuItem => {
+                            const newItem = {
+                                menuItemId: item.menuItemId,
+                                name: menuItem.name,
+                                price: item.price,
+                                quantity: item.quantity,
+                                customizations: item.customizations
+                            };
+                            return newItem;
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            return null;
+                        });
+                }
+            });
+
+            Promise.all(itemFetchPromises)
+                .then(newItems => {
+                    const validItems = newItems.filter(item => item !== null);
+
+                    validItems.forEach(newItem => addToOrder(newItem));
+
+                    navigate("/checkout");
+                });
+        })
+        .catch(err => {
+            console.error("Error repeating the order", err);
+        });
+    };
+
     if (loading) return <p>Loading orders...</p>;
     if (error) return <p style={{ color: "red" }}>{error}</p>
 
@@ -43,6 +96,7 @@ function History() {
                         <th className="px-4 py-2 border">Order Price (€)</th>
                         <th className="px-4 py-2 border">Order Status</th>
                         <th className="px-4 py-2 border">View Order</th>
+                        <th className="px-4 py-2 border">Repeat Order</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,13 +104,18 @@ function History() {
                         <tr key={order.orderId} className="text-center border-t">
                             <td className="px-4 py-2 border">{new Date(order.orderDateTime).toLocaleString()}</td>
                             <td className="px-4 py-2 border">{new Date(order.pickupDateTime).toLocaleString()}</td>
-                            <td className="px-4 py-2 border">{order.orderItemIds.length}</td>
+                            <td className="px-4 py-2 border">{order.itemQuantity}</td>
                             <td className="px-4 py-2 border">{order.totalAmount.toFixed(2)}</td>
                             <td className="px-4 py-2 border">{OrderStatus[order.status]}</td>
                             <td className="px-4 py-2 border">
                                 <Link to={`/order/${order.orderId}`} className="ui button" state={{ totalAmount: order.totalAmount }}>
                                     View Order
                                 </Link>
+                            </td>
+                            <td className="px-4 py-2 border">
+                                <button className="ui button" onClick={() => handleRepeatOrder(order.orderItemIds, order.orderId)}>
+                                    Repeat Order
+                                </button>
                             </td>
                         </tr>
                     ))}

@@ -16,10 +16,12 @@ import PrivateRoute from './PrivateRoute';
 import OrderItems from './components/orderItems';
 import Checkout from './components/checkout'
 import OrderDetails from './components/orderDetails';
+import PaymentPage from './components/payment';
+import PaymentResultPage from './components/paymentResult';
+import OrderConfirmationPage from './components/orderConfirmation';
 import BaristaRoute from './BaristaRoute';
 import CustomerHomePage from './components/customerHomePage';
 import BaristaHomePage from './components/baristaHomePage';
-
 
 import { OrderProvider } from './context/OrderContext';
 import { Navigate } from 'react-router-dom';
@@ -126,6 +128,13 @@ function App() {
                 <Route path="/order/:orderId" element={
                     <PrivateRoute user={user}>
                         <OrderDetails />
+                    </PrivateRoute>
+                } />
+                <Route path="/payment/:orderId" element={<PaymentPage />} />
+                <Route path="/payment-result" element={<PaymentResultPage />} />
+                <Route path="/order/:orderId/confirmation" element={
+                    <PrivateRoute user={user}>
+                        <OrderConfirmationPage />
                     </PrivateRoute>
                 } />
             </Routes>

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ClickCafeAPI.Context;
 using ClickCafeAPI.Models;
 using ClickCafeAPI.DTOs;
@@ -95,80 +95,63 @@ namespace ClickCafeAPI.Controllers
 
         // POST: api/orders
         [HttpPost("orders")]
-        public async Task<ActionResult<OrderDto>> Create(CreateOrderDto createDto)
+        public async Task<ActionResult<OrderPaymentResponseDto>> CreateOrderWithPayment(CreateOrderWithPaymentDto createDto)
         {
             var order = new Order
             {
                 UserId = createDto.UserId.ToString(),
-                OrderDateTime = createDto.OrderDateTime,
-                Status = createDto.Status,
-                PaymentStatus = createDto.PaymentStatus,
+                OrderDateTime = DateTime.UtcNow,
+                Status = OrderStatus.Pending,
+                PaymentStatus = OrderPaymentStatus.Unpaid,
                 TotalAmount = createDto.TotalAmount,
                 ItemQuantity = createDto.ItemQuantity,
                 PickupDateTime = createDto.PickupDateTime,
                 Items = new List<OrderItem>()
             };
 
-            decimal totalAmount = 0;
-            int itemQuantity = 0;
-
             foreach (var itemDto in createDto.Items)
             {
                 var menuItem = await _db.MenuItems.FindAsync(itemDto.MenuItemId);
                 if (menuItem == null)
-                {
                     return BadRequest($"MenuItem with ID {itemDto.MenuItemId} not found.");
-                }
 
                 var orderItem = new OrderItem
                 {
                     MenuItemId = itemDto.MenuItemId,
                     Quantity = itemDto.Quantity,
                     Price = menuItem.BasePrice,
-                    Customizations = new List<Customization>()
-                };
-
-                if (itemDto.CustomizationIds != null)
-                {
-                    var customizations = await _db.Customizations
+                    Customizations = await _db.Customizations
                         .Include(c => c.Options)
-                        .Where(c => itemDto.CustomizationIds.Contains(c.CustomizationId))
-                        .ToListAsync();
-
-                    orderItem.Customizations = customizations;
-
-                    decimal customizationCost = customizations
-                        .SelectMany(c => c.Options)
-                        .Sum(opt => opt.ExtraCost);
-                    orderItem.Price += customizationCost; // Add customization cost to item price
-                    orderItem.Customizations = customizations;
-                }
-
+                        .Where(c => itemDto.CustomizationIds != null && itemDto.CustomizationIds.Contains(c.CustomizationId))
+                        .ToListAsync()
+                };
                 order.Items.Add(orderItem);
-                totalAmount += orderItem.Price * orderItem.Quantity;
-                itemQuantity += orderItem.Quantity;
+                order.TotalAmount += orderItem.Price * orderItem.Quantity + orderItem.Customizations.Sum(c => c.Options.Sum(o => o.ExtraCost)) * orderItem.Quantity;
+                order.ItemQuantity += orderItem.Quantity;
             }
-
-            order.TotalAmount = totalAmount;
-            order.ItemQuantity = itemQuantity;
 
             _db.Orders.Add(order);
             await _db.SaveChangesAsync();
 
-            var dto = new OrderDto
+            var payment = new Payment
             {
                 OrderId = order.OrderId,
-                UserId = order.UserId,
-                OrderDateTime = order.OrderDateTime,
-                Status = order.Status,
-                PaymentStatus = order.PaymentStatus,
-                TotalAmount = order.TotalAmount,
-                ItemQuantity = order.ItemQuantity,
-                PickupDateTime = order.PickupDateTime,
-                OrderItemIds = order.Items.Select(i => i.OrderItemId)
+                Amount = order.TotalAmount,
+                PaymentMethod = Enum.Parse<PaymentMethod>(createDto.PaymentMethod, true),
+                PaymentStatus = PaymentStatus.Pending,
+                PaymentDateTime = DateTime.UtcNow
             };
 
-            return CreatedAtAction(nameof(GetById), new { id = dto.OrderId }, dto);
+            _db.Payments.Add(payment);
+            await _db.SaveChangesAsync();
+
+            var responseDto = new OrderPaymentResponseDto
+            {
+                OrderId = order.OrderId,
+                PaymentId = payment.PaymentId
+            };
+
+            return CreatedAtAction(nameof(GetById), new { id = order.OrderId }, responseDto);
         }
 
         // PUT: api/orders/{id}
@@ -190,7 +173,7 @@ namespace ClickCafeAPI.Controllers
             if (updateDto.OrderDateTime != default) order.OrderDateTime = updateDto.OrderDateTime;
 
             if (updateDto.ItemsToAdd != null)
-            {
+            { 
                 foreach (var itemDto in updateDto.ItemsToAdd)
                 {
                     var menuItem = await _db.MenuItems.FindAsync(itemDto.MenuItemId);
@@ -230,7 +213,7 @@ namespace ClickCafeAPI.Controllers
         }
 
         // DELETE: api/orders/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete("orders/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var order = await _db.Orders
@@ -243,6 +226,36 @@ namespace ClickCafeAPI.Controllers
             await _db.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // PATCH: api/orders/{id}/status
+        [HttpPatch("orders/{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateOrderDto dto)
+        {
+            var order = await _db.Orders.FindAsync(id);
+            if (order == null) return NotFound();
+
+            order.Status = dto.Status;
+            await _db.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPost("orders/{orderId}/pay-cash")]
+        public async Task<IActionResult> PayOrderCash(int orderId)
+        {
+            var order = await _db.Orders.FindAsync(orderId);
+            if (order == null) return NotFound();
+
+            order.PaymentStatus = OrderPaymentStatus.Paid;
+            var payment = await _db.Payments.FirstOrDefaultAsync(p => p.OrderId == orderId);
+            if (payment != null)
+            {
+                payment.PaymentStatus = PaymentStatus.Completed;
+                await _db.SaveChangesAsync();
+                return Ok(new { message = "Cash payment confirmed." });
+            }
+            return NotFound("Payment record not found for this order.");
         }
     }
 }

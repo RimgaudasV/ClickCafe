@@ -16,8 +16,15 @@ import PrivateRoute from './PrivateRoute';
 import OrderItems from './components/orderItems';
 import Checkout from './components/checkout'
 import OrderDetails from './components/orderDetails';
+import PaymentPage from './components/payment';
+import PaymentResultPage from './components/paymentResult';
+import OrderConfirmationPage from './components/orderConfirmation';
+import BaristaRoute from './BaristaRoute';
+import CustomerHomePage from './components/customerHomePage';
+import BaristaHomePage from './components/baristaHomePage';
 
 import { OrderProvider } from './context/OrderContext';
+import { Navigate } from 'react-router-dom';
 
 
 
@@ -53,8 +60,18 @@ function App() {
                 <Route path="/register" element={<RegisterPage />} />
 
                 <Route path="/" element={
+                    user?.role === "Barista"
+                        ? <Navigate to="/barista" />
+                        : <Navigate to="/home" />
+                } />
+                <Route path="/barista" element={
+                    <BaristaRoute user={user}>
+                        <BaristaHomePage user={user} />
+                    </BaristaRoute>
+                } />
+                <Route path="/home" element={
                     <PrivateRoute user={user}>
-                        <MainPage user={user} />
+                        <CustomerHomePage />
                     </PrivateRoute>
                 } />
                 <Route path="/newOrder" element={
@@ -84,9 +101,9 @@ function App() {
                     </PrivateRoute>
                 } />
                 <Route path="/status" element={
-                    <PrivateRoute user={user}>
+                    <BaristaRoute user={user}>
                         <Status />
-                    </PrivateRoute>
+                    </BaristaRoute>
                 } />
                 <Route path="/rewards" element={
                     <PrivateRoute user={user}>
@@ -113,6 +130,13 @@ function App() {
                 <Route path="/order/:orderId" element={
                     <PrivateRoute user={user}>
                         <OrderDetails />
+                    </PrivateRoute>
+                } />
+                <Route path="/payment/:orderId" element={<PaymentPage />} />
+                <Route path="/payment-result" element={<PaymentResultPage />} />
+                <Route path="/order/:orderId/confirmation" element={
+                    <PrivateRoute user={user}>
+                        <OrderConfirmationPage />
                     </PrivateRoute>
                 } />
             </Routes>

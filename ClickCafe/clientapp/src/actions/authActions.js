@@ -16,7 +16,11 @@
 
         if (response.ok) {
             const data = await response.json();
+
             setUser(data);
+            localStorage.setItem("role", data.role);
+            localStorage.setItem("username", data.username);
+
             console.log("Login successful!");
         } else {
             setError("Invalid username or password. Please try again.");
@@ -28,7 +32,8 @@
 };
 
 
-export const register = async (username, email, password, setError) => {
+
+export const register = async (username, email, password, role, setError) => {
     try {
         if (!username || !email || !password) {
             setError("All fields are required.");
@@ -45,6 +50,7 @@ export const register = async (username, email, password, setError) => {
                 username,
                 email,
                 password,
+                role
             }),
         });
 
@@ -60,3 +66,4 @@ export const register = async (username, email, password, setError) => {
         setError("An error occurred during registration.");
     }
 };
+

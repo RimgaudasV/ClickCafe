@@ -32,7 +32,14 @@ namespace ClickCafeAPI.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
 
-                return Ok(user);
+                return Ok(new
+                {
+                    id = user.Id,
+                    username = user.UserName,
+                    email = user.Email,
+                    role = user.Role.ToString()
+                });
+
             }
 
             return BadRequest("Invalid login attempt");
@@ -43,7 +50,7 @@ namespace ClickCafeAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
-            var user = new User { UserName = model.Email, Email = model.Email, DisplayName = model.UserName};
+            var user = new User { UserName = model.Email, Email = model.Email, DisplayName = model.UserName, Role = model.Role};
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -72,7 +79,8 @@ namespace ClickCafeAPI.Controllers
             {
                 id = user.Id,
                 email = user.Email,
-                name = user.UserName
+                name = user.UserName,
+                role = user.Role.ToString()
             });
         }
     }

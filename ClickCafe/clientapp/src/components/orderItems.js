@@ -25,57 +25,22 @@ function OrderItems() {
                 console.error(err);
                 setError("Could not load item");
             });
-    }, [itemId]);
 
-    useEffect(() => {
-        if (!item?.availableCustomizationIds?.length) return;
-
-        Promise.all(
-            item.availableCustomizationIds.map(id =>
-                fetch(`https://localhost:7281/api/Customizations/${id}`, { credentials: "include" })
-                    .then(r => {
-                        if (!r.ok) throw new Error(`Customization ${id} not found`);
-                        return r.json();
-                    })
-            )
-        )
-            .then(async customizations => {
-                const withOptions = await Promise.all(
-                    customizations.map(async c => {
-                        const optionDetails = await Promise.all(
-                            c.optionIds.map(optId =>
-                                fetch(`https://localhost:7281/api/CustomizationOption/${optId}`, {
-                                    credentials: "include",
-                                }).then(r => {
-                                    if (!r.ok) throw new Error(`Option ${optId} not found`);
-                                    return r.json();
-                                })
-                            )
-                        );
-                        return {
-                            ...c,
-                            customizationOptions: optionDetails,
-                        };
-                    })
-                );
-                setCustomizations(withOptions);
-                const defaultRadioSelections = withOptions
-                    .filter(c => c.type === 1 && c.customizationOptions.length > 0)
-                    .map(c => c.customizationOptions[0].customizationOptionId);
-
-                setSelectedIds(prev =>
-                    Array.from(new Set([...prev, ...defaultRadioSelections]))
-                );
+        fetch(`https://localhost:7281/api/Customizations/menuItem/${itemId}`, { credentials: "include" })
+            .then(r => {
+                if (!r.ok) throw new Error("Failed to fetch customizations");
+                return r.json();
             })
+            .then(setCustomizations)
             .catch(err => {
                 console.error(err);
-                setError("Failed to load customizations");
+                setCustomizations([]);
             });
-    }, [item]);
+    }, [itemId]);
 
     const handleChange = (customization, optionId) => {
         if (customization.type === 1) {
-            const otherOptionIds = customization.customizationOptions.map(o => o.customizationOptionId);
+            const otherOptionIds = customization.options.map(o => o.customizationOptionId);
             setSelectedIds([
                 ...selectedIds.filter(id => !otherOptionIds.includes(id)),
                 optionId,
@@ -92,7 +57,7 @@ function OrderItems() {
     const calculateExtraCost = () => {
         let total = 0;
         for (const c of customizations) {
-            for (const opt of c.customizationOptions) {
+            for (const opt of c.options) {
                 if (selectedIds.includes(opt.customizationOptionId)) {
                     total += opt.extraCost || 0;
                 }
@@ -103,7 +68,7 @@ function OrderItems() {
 
     const handleAddToOrder = () => {
         const selectedOptions = customizations
-            .flatMap(c => c.customizationOptions)
+            .flatMap(c => c.options) 
             .filter(opt => selectedIds.includes(opt.customizationOptionId));
 
         const newItem = {
@@ -136,7 +101,7 @@ function OrderItems() {
                     <li key={c.customizationId}>
                         <p>{c.name}</p>
                         <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "10px" }}>
-                            {c.customizationOptions?.map(opt => {
+                            {c.options?.map(opt => {
                                 const inputType = c.type === 1 ? "radio" : "checkbox";
                                 const inputName = `customization-${c.customizationId}`;
                                 const isChecked = selectedIds.includes(opt.customizationOptionId);
@@ -185,8 +150,6 @@ function OrderItems() {
                     Add to order — €{totalPrice.toFixed(2)}
                 </button>
             </div>
-
-
         </div>
     );
 }

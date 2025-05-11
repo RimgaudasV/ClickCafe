@@ -22,7 +22,7 @@ const StatusPage = () => {
             })
             .then(data => {
                 setOrders(data);
-                setUpdatingOrderId(null); // clear the lock after update
+                setUpdatingOrderId(null);
             })
             .catch(err => setError(err.message));
     };

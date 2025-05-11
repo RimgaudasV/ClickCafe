@@ -1,6 +1,6 @@
 ﻿import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react'
-import { login } from '../../actions/authActions'
+import { useState, useEffect } from 'react';
+import { login } from '../../actions/authActions';
 
 function LoginPage({ setUser, user }) {
     const [email, setEmail] = useState("");
@@ -8,6 +8,7 @@ function LoginPage({ setUser, user }) {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
+    // Redirect after login — App.js will use user.role to handle route
     useEffect(() => {
         if (user) {
             navigate("/", { replace: true });
@@ -16,13 +17,18 @@ function LoginPage({ setUser, user }) {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        await login(email, password, setUser, setError);
-        navigate("/");
+
+        const data = await login(email, password, setUser, setError);
+
+        if (data) {
+            setUser(data); // this triggers the App.js redirect
+        }
     };
 
     return (
         <div style={{ maxWidth: 400, margin: "0 auto", padding: "2rem" }}>
             <h2>Login</h2>
+            {error && <p style={{ color: "red" }}>{error}</p>}
             <form onSubmit={handleLogin}>
                 <div>
                     <label>Email:</label><br />
@@ -43,8 +49,8 @@ function LoginPage({ setUser, user }) {
                     />
                 </div>
                 <button type="submit">Log In</button>
-                </form>
-                <p>Don't have an account? <a href="/register">Register here</a></p>
+            </form>
+            <p>Don't have an account? <a href="/register">Register here</a></p>
         </div>
     );
 }

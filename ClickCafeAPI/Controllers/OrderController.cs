@@ -204,7 +204,7 @@ namespace ClickCafeAPI.Controllers
         }
 
         // DELETE: api/orders/{id}
-        [HttpDelete("{id}")]
+        [HttpDelete("orders/{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var order = await _db.Orders

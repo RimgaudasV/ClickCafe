@@ -9,6 +9,7 @@ function RegisterPage() {
     const [repeatPassword, setRepeatPassword] = useState("");
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [role, setRole] = useState(1);
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -18,7 +19,7 @@ function RegisterPage() {
             return;
         }
 
-        const success = await register(username, email, password, setError);
+        const success = await register(username, email, password, role, setError);
 
         if (success) {
             navigate("/login");
@@ -64,6 +65,30 @@ function RegisterPage() {
                     required
                 />
                 <button type="submit">Register</button>
+
+                <div style={{ marginTop: "1rem" }}>
+                    <label>
+                        <input
+                            type="radio"
+                            name="role"
+                            value={1}
+                            checked={role === 1}
+                            onChange={() => setRole(1)}
+                        />
+                        Customer
+                    </label>
+                    <label style={{ marginLeft: "1rem" }}>
+                        <input
+                            type="radio"
+                            name="role"
+                            value={2}
+                            checked={role === 2}
+                            onChange={() => setRole(2)}
+                        />
+                        Barista
+                    </label>
+                </div>
+
             </form>
         </div>
     );

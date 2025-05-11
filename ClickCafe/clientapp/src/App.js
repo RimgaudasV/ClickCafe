@@ -16,6 +16,9 @@ import PrivateRoute from './PrivateRoute';
 import OrderItems from './components/orderItems';
 import Checkout from './components/checkout'
 import OrderDetails from './components/orderDetails';
+import PaymentPage from './components/payment';
+import PaymentResultPage from './components/paymentResult';
+import OrderConfirmationPage from './components/orderConfirmation';
 
 import { OrderProvider } from './context/OrderContext';
 
@@ -111,6 +114,13 @@ function App() {
                 <Route path="/order/:orderId" element={
                     <PrivateRoute user={user}>
                         <OrderDetails />
+                    </PrivateRoute>
+                } />
+                <Route path="/payment/:orderId" element={<PaymentPage />} />
+                <Route path="/payment-result" element={<PaymentResultPage />} />
+                <Route path="/order/:orderId/confirmation" element={
+                    <PrivateRoute user={user}>
+                        <OrderConfirmationPage />
                     </PrivateRoute>
                 } />
             </Routes>

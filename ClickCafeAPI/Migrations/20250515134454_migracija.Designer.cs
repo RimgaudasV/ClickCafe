@@ -4,6 +4,7 @@ using ClickCafeAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClickCafeAPI.Migrations
 {
     [DbContext(typeof(ClickCafeContext))]
-    partial class ClickCafeContextModelSnapshot : ModelSnapshot
+    [Migration("20250515134454_migracija")]
+    partial class migracija
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -545,8 +548,7 @@ namespace ClickCafeAPI.Migrations
                 {
                     b.HasOne("ClickCafeAPI.Models.Cafe", "Cafe")
                         .WithMany()
-                        .HasForeignKey("CafeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("CafeId");
 
                     b.Navigation("Cafe");
                 });

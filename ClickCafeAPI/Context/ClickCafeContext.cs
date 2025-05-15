@@ -79,6 +79,12 @@ namespace ClickCafeAPI.Context
             modelBuilder.Entity<MenuItem>()
                 .Property(mi => mi.Category)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Cafe)
+                .WithMany()
+                .HasForeignKey(u => u.CafeId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

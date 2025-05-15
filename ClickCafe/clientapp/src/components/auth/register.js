@@ -1,15 +1,27 @@
-﻿import { useState } from "react";
+﻿import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { register } from '../../actions/authActions'
+import { register } from '../../actions/authActions';
 
 function RegisterPage() {
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [repeatPassword, setRepeatPassword] = useState("");
-    const [error, setError] = useState("");
-    const navigate = useNavigate();
     const [role, setRole] = useState(1);
+    const [cafes, setCafes] = useState([]);
+    const [cafeId, setCafeId] = useState("");
+    const [error, setError] = useState("");
+
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (role === 2) {
+            fetch("https://localhost:7281/api/cafes")
+                .then(res => res.json())
+                .then(data => setCafes(data))
+                .catch(err => console.error("Failed to fetch cafes", err));
+        }
+    }, [role]);
 
     const handleRegister = async (e) => {
         e.preventDefault();
@@ -19,12 +31,11 @@ function RegisterPage() {
             return;
         }
 
-        const success = await register(username, email, password, role, setError);
+        const success = await register(username, email, password, role, parseInt(cafeId), setError);
 
         if (success) {
             navigate("/login");
         }
-
     };
 
     return (
@@ -40,7 +51,7 @@ function RegisterPage() {
                     onChange={(e) => setUsername(e.target.value)}
                     required
                 />
-                <br/>
+                <br />
                 <input
                     type="email"
                     placeholder="Email"
@@ -64,7 +75,7 @@ function RegisterPage() {
                     onChange={(e) => setRepeatPassword(e.target.value)}
                     required
                 />
-                <button type="submit">Register</button>
+                <br />
 
                 <div style={{ marginTop: "1rem" }}>
                     <label>
@@ -89,6 +100,27 @@ function RegisterPage() {
                     </label>
                 </div>
 
+                {role === 2 && (
+                    <div style={{ marginTop: "1rem" }}>
+                        <label>Select Café:</label>
+                        <br />
+                        <select
+                            value={cafeId}
+                            onChange={(e) => setCafeId(e.target.value)}
+                            required
+                        >
+                            <option value="">-- Select a Café --</option>
+                            {cafes.map(cafe => (
+                                <option key={cafe.id} value={cafe.id}>
+                                    {cafe.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                )}
+
+                <br />
+                <button type="submit">Register</button>
             </form>
         </div>
     );

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using ClickCafeAPI.Context;
 
 namespace ClickCafeAPI.Controllers
 {
@@ -17,10 +18,12 @@ namespace ClickCafeAPI.Controllers
 
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager)
+        private readonly ClickCafeContext _db;
+        public AuthController(UserManager<User> userManager, SignInManager<User> signInManager, ClickCafeContext db)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _db = db;
         }
 
 
@@ -50,7 +53,22 @@ namespace ClickCafeAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
-            var user = new User { UserName = model.Email, Email = model.Email, DisplayName = model.UserName, Role = model.Role};
+            if (model.Role == UserRole.Barista && model.CafeId.HasValue)
+            {
+                var cafe = await _db.Cafes.FindAsync(model.CafeId.Value);
+                if (cafe == null)
+                    return BadRequest("Invalid Cafe selected.");
+            }
+
+            var user = new User
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                DisplayName = model.UserName,
+                Role = model.Role,
+                CafeId = model.Role == UserRole.Barista ? model.CafeId : null
+            };
+
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -60,6 +78,9 @@ namespace ClickCafeAPI.Controllers
 
             return BadRequest(result.Errors);
         }
+
+
+
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()

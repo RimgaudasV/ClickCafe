@@ -90,7 +90,7 @@ function MenuItem() {
         const newItem = {
             menuItemId: item.menuItemId,
             name: item.name,
-            price: totalPrice,
+            total: totalPrice,
             quantity,
             customizations: selectedOptions
         };

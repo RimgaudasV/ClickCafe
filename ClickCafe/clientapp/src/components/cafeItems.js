@@ -8,10 +8,18 @@ function CafeItems() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const [sortOrder, setSortOrder] = useState("name");
+    const [category, setCategory] = useState("");
 
 
 
     useEffect(() => {
+        const params = new URLSearchParams({
+            cafeId,
+            sort: sortOrder,
+        });
+        if (category) params.append("category", category);
+
         fetch(`https://localhost:7281/api/Cafes/${cafeId}`, { credentials: "include" })
             .then(r => {
                 if (!r.ok) throw new Error("Café not found");
@@ -23,20 +31,18 @@ function CafeItems() {
                 setError("Could not load café");
             });
 
-        fetch("https://localhost:7281/api/MenuItems", { credentials: "include" })
+        fetch(`https://localhost:7281/api/MenuItems?${params}`, { credentials: "include" })
             .then(r => {
                 if (!r.ok) throw new Error("Failed to load menu items");
                 return r.json();
             })
-            .then(data => {
-                setItems(data.filter(i => i.cafeId === +cafeId));
-            })
+            .then(setItems)
             .catch(err => {
                 console.error(err);
                 setError("Could not load menu");
             })
             .finally(() => setLoading(false));
-    }, [cafeId]);
+    }, [cafeId, sortOrder, category]);
 
     if (loading) return <p>Loading…</p>;
     if (error) return <p style={{ color: "red" }}>{error}</p>;
@@ -48,6 +54,26 @@ function CafeItems() {
             <button onClick={() => navigate("/newOrder")}>
                 &larr; Back to cafés
             </button>
+            <div style={{margin: "10px"}}>
+                <label>
+                    Category:
+                    <select onChange={(e) => setCategory(e.target.value)} value={category}>
+                        <option value="">All</option>
+                        <option value="1">Coffee</option>
+                        <option value="2">Tea</option>
+                        <option value="2">Smoothie</option>
+                    </select>
+                </label>
+
+                <label>
+                    Sort by:
+                    <select onChange={(e) => setSortOrder(e.target.value)} value={sortOrder}>
+                        <option value="name">Name (A–Z)</option>
+                        <option value="price_asc">Price ↑</option>
+                        <option value="price_desc">Price ↓</option>
+                    </select>
+                </label>
+            </div>
             {cafe.image && (
                 <img src={cafe.image}                  
                     alt={`${cafe.name} logo`}

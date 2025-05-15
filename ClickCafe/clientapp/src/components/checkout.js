@@ -11,7 +11,7 @@ function Checkout() {
     const [userId, setUserId] = useState(null);
     const [loadingUser, setLoadingUser] = useState(true);
 
-    const totalAmount = orderItems.reduce((sum, item) => sum + item.price, 0);
+    const totalAmount = orderItems.reduce((sum, item) => sum + (item.total ?? 0), 0);
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -121,7 +121,7 @@ function Checkout() {
                 <ul>
                     {orderItems.map((item, index) => (
                         <li key={index} style={{ marginBottom: "0.75rem" }}>
-                            {item.quantity} × {item.name} — €{item.price.toFixed(2)}
+                            {item.quantity} × {item.name} — €{(item.total ?? 0).toFixed(2)}
                         </li>
                     ))}
                 </ul>

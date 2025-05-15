@@ -1,8 +1,10 @@
 ﻿import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useOrder } from "../context/OrderContext";
+import { useLocation } from "react-router-dom";
 
-function OrderItems() {
+
+function MenuItem() {
     const { itemId } = useParams();
     const [item, setItem] = useState(null);
     const [customizations, setCustomizations] = useState([]);
@@ -10,9 +12,23 @@ function OrderItems() {
     const [quantity, setQuantity] = useState(1);
     const [selectedIds, setSelectedIds] = useState([]);
 
-    const { addToOrder } = useOrder();
+    const { orderItems, addToOrder, removeFromOrder } = useOrder();
     const navigate = useNavigate();
 
+
+    const location = useLocation();
+    const orderItemIndex = location.state?.orderItemIndex;
+
+    useEffect(() => {
+        if (orderItemIndex != null) {
+            const item = orderItems[orderItemIndex];
+            if (item) {
+                setQuantity(item.quantity);
+                setSelectedIds(item.customizations.map(opt => opt.customizationOptionId));
+            }
+
+        }
+    }, [orderItemIndex]);
 
     useEffect(() => {
         fetch(`https://localhost:7281/api/MenuItems/${itemId}`, { credentials: "include" })
@@ -79,9 +95,11 @@ function OrderItems() {
             customizations: selectedOptions,
             total: totalPrice
         };
-
+        if (orderItemIndex != null) {
+            removeFromOrder(orderItemIndex)
+        }
         addToOrder(newItem);
-        navigate(`/newOrder/${item.cafeId}`);
+        navigate(`/menu/${item.cafeId}`);
     };
 
     const totalPrice = item ? (item.basePrice + calculateExtraCost()) * quantity : 0;
@@ -154,4 +172,4 @@ function OrderItems() {
     );
 }
 
-export default OrderItems;
+export default MenuItem;

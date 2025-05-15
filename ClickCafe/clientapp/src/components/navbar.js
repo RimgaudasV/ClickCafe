@@ -25,7 +25,7 @@ function Navbar({ user, setUser }) {
                 ) : (
                     <>
                         <Link to="/home"><button className="ui button">Home</button></Link>
-                        <Link to="/newOrder"><button className="ui button">New Order</button></Link>
+                        <Link to="/cafes"><button className="ui button">New Order</button></Link>
                         <Link to="/rewards"><button className="ui button">Rewards</button></Link>
                         <Link to="/history"><button className="ui button">History</button></Link>
                     </>

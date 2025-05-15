@@ -11,8 +11,12 @@ export const OrderProvider = ({ children }) => {
 
     const clearOrder = () => setOrderItems([]);
 
+    const removeFromOrder = (indexToRemove) => {
+        setOrderItems(prev => prev.filter((_, index) => index !== indexToRemove));
+    };
+
     return (
-        <OrderContext.Provider value={{ orderItems, addToOrder, clearOrder }}>
+        <OrderContext.Provider value={{ orderItems, addToOrder, clearOrder, removeFromOrder }}>
             {children}
         </OrderContext.Provider>
     );

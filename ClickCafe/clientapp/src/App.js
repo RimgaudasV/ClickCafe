@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import LoginPage from './components/auth/login';
 import RegisterPage from './components/auth/register';
 import MainPage from './components/main';
-import NewOrder from './components/newOrder';
-import CafeItems from './components/cafeItems'
+import Cafes from './components/cafes';
+import Menu from './components/menu'
 
 import Status from './components/status';
 import Rewards from './components/rewards';
@@ -13,7 +13,7 @@ import Account from './components/account';
 import Settings from './components/settings';
 import Navbar from './components/navbar';
 import PrivateRoute from './PrivateRoute';
-import OrderItems from './components/orderItems';
+import MenuItem from './components/menuItem';
 import Checkout from './components/checkout'
 import OrderDetails from './components/orderDetails';
 import PaymentPage from './components/payment';
@@ -74,22 +74,22 @@ function App() {
                         <CustomerHomePage />
                     </PrivateRoute>
                 } />
-                <Route path="/newOrder" element={
+                <Route path="/cafes" element={
                     <PrivateRoute user={user}>
-                        <NewOrder />
+                        <Cafes />
                     </PrivateRoute>
                 } />
-                <Route path="/newOrder/:cafeId" element={
+                <Route path="/menu/:cafeId" element={
                     <PrivateRoute user={user}>
                         <OrderProvider>
-                            <CafeItems />
+                            <Menu />
                         </OrderProvider>
                     </PrivateRoute>
                 } />
-                <Route path="/orderItem/:itemId" element={
+                <Route path="/menuItem/:itemId" element={
                     <PrivateRoute user={user}>
                         <OrderProvider>
-                            <OrderItems />
+                            <MenuItem />
                         </OrderProvider>
                     </PrivateRoute>
                 } />

@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 
 function OrderReview() {
-    const { orderItems } = useOrder();
+    const { orderItems, removeFromOrder } = useOrder();
     const navigate = useNavigate();
 
     if (orderItems.length === 0) return null;
@@ -24,7 +24,10 @@ function OrderReview() {
             <h3>Your Order</h3>
             <ul>
                 {orderItems.map((item, index) => (
-                    <li key={index} style={{ marginBottom: "0.75rem" }}>
+                    <li key={index}
+                        style={{ marginBottom: "0.75rem", cursor: "pointer" }}
+                        onClick={() => navigate(`/menuItem/${item.menuItemId}`, { state: { orderItemIndex: index } })}
+                    >
                         {item.quantity} × {item.name} — €{item.total.toFixed(2)}
                     </li>
                 ))}
@@ -35,7 +38,7 @@ function OrderReview() {
                 </label>
                 <button
                     onClick={() => navigate('/checkout')}
-                    style={{ marginLeft: '5px' }}
+                    style={{ marginLeft: '5px'}}
                 >
                     Checkout
                 </button>

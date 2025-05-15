@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import OrderReview from './orderReview';
-function CafeItems() {
+function Menu() {
     const { cafeId } = useParams();
     const [cafe, setCafe] = useState(null);
     const [items, setItems] = useState([]);
@@ -51,7 +51,7 @@ function CafeItems() {
     return (
         <div>
             <OrderReview/>
-            <button onClick={() => navigate("/newOrder")}>
+            <button onClick={() => navigate("/cafes")}>
                 &larr; Back to cafés
             </button>
             <div style={{margin: "10px"}}>
@@ -96,7 +96,7 @@ function CafeItems() {
                         {items.map(item => (
                             <li key={item.menuItemId}
                                 style={{ cursor: "pointer", margin: "0.5rem 0" }}
-                                onClick={() => navigate(`/orderItem/${item.menuItemId}`)}
+                                onClick={() => navigate(`/menuItem/${item.menuItemId}`)}
                             >
                                 {item.name} — €{item.basePrice.toFixed(2)}
                             </li>
@@ -107,4 +107,4 @@ function CafeItems() {
     );
 }
 
-export default CafeItems;
+export default Menu;

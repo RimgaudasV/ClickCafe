@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using ClickCafeAPI.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClickCafeAPI.Controllers
 {
@@ -14,7 +15,6 @@ namespace ClickCafeAPI.Controllers
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {
-
 
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -53,11 +53,17 @@ namespace ClickCafeAPI.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
+            Console.WriteLine("==> Register called");
+            Console.WriteLine($"CafeId: {model.CafeId}, Role: {model.Role}");
+
             if (model.Role == UserRole.Barista && model.CafeId.HasValue)
             {
                 var cafe = await _db.Cafes.FindAsync(model.CafeId.Value);
                 if (cafe == null)
-                    return BadRequest("Invalid Cafe selected.");
+                {
+                    Console.WriteLine("❌ Invalid cafe selected");
+                    return BadRequest("Invalid cafe.");
+                }
             }
 
             var user = new User
@@ -70,15 +76,29 @@ namespace ClickCafeAPI.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
-
-            if (result.Succeeded)
+            if (!result.Succeeded)
             {
-                return Ok(new { message = "Registration successful" });
+                foreach (var err in result.Errors)
+                    Console.WriteLine($"❌ {err.Description}");
+                return BadRequest(result.Errors);
             }
 
-            return BadRequest(result.Errors);
-        }
+            var trackedUser = await _db.Users.FirstOrDefaultAsync(u => u.Email == model.Email);
+            if (trackedUser != null && model.CafeId.HasValue && model.Role == UserRole.Barista)
+            {
+                trackedUser.CafeId = model.CafeId.Value;
+                _db.Entry(trackedUser).Property(u => u.CafeId).IsModified = true;
+                await _db.SaveChangesAsync();
 
+                Console.WriteLine($"✅ CafeId saved: {trackedUser.CafeId}");
+            }
+            else
+            {
+                Console.WriteLine("⚠️ User not found after creation or CafeId not set");
+            }
+
+            return Ok(new { message = "Registration successful" });
+        }
 
 
 

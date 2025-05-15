@@ -107,7 +107,8 @@ namespace ClickCafeAPI.Migrations
                         name: "FK_AspNetUsers_Cafes_CafeId",
                         column: x => x.CafeId,
                         principalTable: "Cafes",
-                        principalColumn: "CafeId");
+                        principalColumn: "CafeId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(

@@ -1,13 +1,15 @@
 ﻿using ClickCafeAPI.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ClickCafeAPI.Context
 {
-    public class ClickCafeContext : IdentityDbContext<User>
+    public class ClickCafeContext : IdentityDbContext<User, IdentityRole, string>
     {
         public ClickCafeContext(DbContextOptions<ClickCafeContext> options) :
-            base(options){ }
+            base(options)
+        { }
 
         public DbSet<User> Users { get; set; }
         public DbSet<Order> Orders { get; set; }
@@ -75,6 +77,10 @@ namespace ClickCafeAPI.Context
             modelBuilder.Entity<User>()
                 .Property(u => u.Role)
                 .HasConversion<string>();
+
+            modelBuilder.Entity<User>()
+                .Property(u => u.CafeId)
+                .IsRequired(false);
 
             modelBuilder.Entity<MenuItem>()
                 .Property(mi => mi.Category)

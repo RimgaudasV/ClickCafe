@@ -45,6 +45,7 @@ function Checkout() {
     };
 
     const handleConfirmCheckout = async () => {
+        console.log("Order Items before processing:", orderItems);
         if (!pickupTime) {
             setError("Please select a pickup time.");
             return;
@@ -68,10 +69,11 @@ function Checkout() {
                 items: orderItems.map(item => ({
                     menuItemId: item.menuItemId ?? item.MenuItemId,
                     quantity: item.quantity ?? item.Quantity,
-                    price: item.BasePrice ?? item.price / item.quantity ?? 0,
-                    customizationIds: Array.isArray(item.availableCustomizationIds)
-                        ? item.availableCustomizationIds.map(c => c.customizationId).filter(id => id != null)
+                    price: item.total ?? item.price / item.quantity ?? 0,
+                    customizationIds: Array.isArray(item.customizations)
+                        ? item.customizations.map(c => c.customizationOptionId).filter(id => id != null)
                         : []
+
                 })),
                 paymentMethod: paymentOption,
             };

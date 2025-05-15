@@ -16,6 +16,8 @@ namespace ClickCafeAPI.Models
         [Required]
         public decimal TotalAmount { get; set; }
         [Required]
+        public int ItemQuantity { get; set; }
+        [Required]
         public DateTime PickupDateTime { get; set; }
         public ICollection<OrderItem> Items { get; set; }
         public User User { get; set; }

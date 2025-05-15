@@ -11,7 +11,7 @@ function Checkout() {
     const [userId, setUserId] = useState(null);
     const [loadingUser, setLoadingUser] = useState(true);
 
-    const totalAmount = orderItems.reduce((sum, item) => sum + item.total, 0);
+    const totalAmount = orderItems.reduce((sum, item) => sum + item.price, 0);
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -68,7 +68,7 @@ function Checkout() {
                 items: orderItems.map(item => ({
                     menuItemId: item.menuItemId ?? item.MenuItemId,
                     quantity: item.quantity ?? item.Quantity,
-                    price: item.BasePrice ?? item.total / item.quantity ?? 0,
+                    price: item.BasePrice ?? item.price / item.quantity ?? 0,
                     customizationIds: Array.isArray(item.availableCustomizationIds)
                         ? item.availableCustomizationIds.map(c => c.customizationId).filter(id => id != null)
                         : []
@@ -121,7 +121,7 @@ function Checkout() {
                 <ul>
                     {orderItems.map((item, index) => (
                         <li key={index} style={{ marginBottom: "0.75rem" }}>
-                            {item.quantity} × {item.name} — €{item.total.toFixed(2)}
+                            {item.quantity} × {item.name} — €{item.price.toFixed(2)}
                         </li>
                     ))}
                 </ul>

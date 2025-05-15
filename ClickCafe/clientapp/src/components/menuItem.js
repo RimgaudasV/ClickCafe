@@ -90,10 +90,9 @@ function MenuItem() {
         const newItem = {
             menuItemId: item.menuItemId,
             name: item.name,
-            basePrice: item.basePrice,
+            price: totalPrice,
             quantity,
-            customizations: selectedOptions,
-            total: totalPrice
+            customizations: selectedOptions
         };
         if (orderItemIndex != null) {
             removeFromOrder(orderItemIndex)

@@ -1,7 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function NewOrder() {
+function Cafes() {
     const [cafes, setCafes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -35,7 +35,7 @@ function NewOrder() {
                     <li
                         key={cafe.cafeId}
                         style={{ cursor: "pointer", margin: "0.5rem 0" }}
-                        onClick={() => navigate(`/newOrder/${cafe.cafeId}`)}
+                        onClick={() => navigate(`/menu/${cafe.cafeId}`)}
                     >
                         {cafe.image && (
                             <img src={cafe.image}
@@ -58,4 +58,4 @@ function NewOrder() {
     );
 }
 
-export default NewOrder;
+export default Cafes;

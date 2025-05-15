@@ -11,7 +11,7 @@ function Checkout() {
     const [userId, setUserId] = useState(null);
     const [loadingUser, setLoadingUser] = useState(true);
 
-    const totalAmount = orderItems.reduce((sum, item) => sum + item.price, 0);
+    const totalAmount = orderItems.reduce((sum, item) => sum + (item.total ?? 0), 0);
 
     useEffect(() => {
         const fetchCurrentUser = async () => {
@@ -45,6 +45,7 @@ function Checkout() {
     };
 
     const handleConfirmCheckout = async () => {
+        console.log("Order Items before processing:", orderItems);
         if (!pickupTime) {
             setError("Please select a pickup time.");
             return;
@@ -68,10 +69,11 @@ function Checkout() {
                 items: orderItems.map(item => ({
                     menuItemId: item.menuItemId ?? item.MenuItemId,
                     quantity: item.quantity ?? item.Quantity,
-                    price: item.BasePrice ?? item.price / item.quantity ?? 0,
-                    customizationIds: Array.isArray(item.availableCustomizationIds)
-                        ? item.availableCustomizationIds.map(c => c.customizationId).filter(id => id != null)
+                    price: item.total ?? item.price / item.quantity ?? 0,
+                    customizationIds: Array.isArray(item.customizations)
+                        ? item.customizations.map(c => c.customizationOptionId).filter(id => id != null)
                         : []
+
                 })),
                 paymentMethod: paymentOption,
             };
@@ -121,7 +123,7 @@ function Checkout() {
                 <ul>
                     {orderItems.map((item, index) => (
                         <li key={index} style={{ marginBottom: "0.75rem" }}>
-                            {item.quantity} × {item.name} — €{item.price.toFixed(2)}
+                            {item.quantity} × {item.name} — €{(item.total ?? 0).toFixed(2)}
                         </li>
                     ))}
                 </ul>

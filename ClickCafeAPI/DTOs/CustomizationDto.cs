@@ -7,7 +7,7 @@ namespace ClickCafeAPI.DTOs
         public int CustomizationId { get; set; }
         public string Name { get; set; } = null!;
         public CustomizationType Type { get; set; }
-        public IEnumerable<int> OptionIds { get; set; } = new List<int>();
+        public IEnumerable<CustomizationOptionDto> Options { get; set; } = new List<CustomizationOptionDto>();
         public IEnumerable<int> MenuItemIds { get; set; } = new List<int>();
         public IEnumerable<int> OrderItemIds { get; set; } = new List<int>();
     }

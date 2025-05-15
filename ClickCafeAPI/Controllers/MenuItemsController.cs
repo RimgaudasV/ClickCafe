@@ -19,12 +19,31 @@ namespace ClickCafeAPI.Controllers
 
         // GET: api/MenuItems
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MenuItemDto>>> GetAll()
+        public async Task<ActionResult<IEnumerable<MenuItemDto>>> GetAll(
+        [FromQuery] int? cafeId,
+        [FromQuery] MenuItemCategory? category,
+        [FromQuery] string sort = "name")
         {
-            var menuItems = await _db.MenuItems
+            var query = _db.MenuItems
                 .Include(mi => mi.Cafe)
                 .Include(mi => mi.AvailableCustomizations)
-                .ToListAsync();
+                .AsQueryable();
+
+            if (cafeId.HasValue)
+                query = query.Where(mi => mi.CafeId == cafeId.Value);
+
+            if (category.HasValue)
+                query = query.Where(mi => mi.Category == category.Value);
+
+            query = sort switch
+            {
+                "price_asc" => query.OrderBy(mi => mi.BasePrice),
+                "price_desc" => query.OrderByDescending(mi => mi.BasePrice),
+                "name" => query.OrderBy(mi => mi.Name),
+                _ => query.OrderBy(mi => mi.Name)
+            };
+
+            var menuItems = await query.ToListAsync();
 
             var dtos = menuItems.Select(mi => new MenuItemDto
             {

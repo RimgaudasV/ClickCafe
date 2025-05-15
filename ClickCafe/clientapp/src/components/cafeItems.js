@@ -96,13 +96,13 @@ function CafeItems() {
                     <ul>
                         {orderItems.map((item, index) => (
                             <li key={index} style={{ marginBottom: "0.75rem" }}>
-                                {item.quantity} × {item.name} — €{item.total.toFixed(2)}
+                                {item.quantity} × {item.name} — €{item.price.toFixed(2)}
                             </li>
                         ))}
                     </ul>
                     <div>
                         <label>
-                            Total price: {orderItems.reduce((sum, item) => sum + item.total, 0).toFixed(2)} €
+                            Total price: {orderItems.reduce((sum, item) => sum + item.price, 0).toFixed(2)} €
                         </label>
                         <button
                             onClick={() => navigate('/checkout')}

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using ClickCafeAPI.Context;
 using ClickCafeAPI.Models;
 using ClickCafeAPI.DTOs;
@@ -30,6 +30,7 @@ namespace ClickCafeAPI.Controllers
                 Status = o.Status,
                 PaymentStatus = o.PaymentStatus,
                 TotalAmount = o.TotalAmount,
+                ItemQuantity = o.ItemQuantity,
                 PickupDateTime = o.PickupDateTime,
                 OrderItemIds = o.Items.Select(i => i.OrderItemId)
             });
@@ -55,6 +56,7 @@ namespace ClickCafeAPI.Controllers
                 Status = order.Status,
                 PaymentStatus = order.PaymentStatus,
                 TotalAmount = order.TotalAmount,
+                ItemQuantity = order.ItemQuantity,
                 PickupDateTime = order.PickupDateTime,
                 OrderItemIds = order.Items.Select(i => i.OrderItemId)
             };
@@ -82,6 +84,7 @@ namespace ClickCafeAPI.Controllers
                 Status = o.Status,
                 PaymentStatus = o.PaymentStatus,
                 TotalAmount = o.TotalAmount,
+                ItemQuantity = o.ItemQuantity,
                 PickupDateTime = o.PickupDateTime,
                 OrderItemIds = o.Items.Select(i => i.OrderItemId)
             });
@@ -101,6 +104,7 @@ namespace ClickCafeAPI.Controllers
                 Status = OrderStatus.Pending,
                 PaymentStatus = OrderPaymentStatus.Unpaid,
                 TotalAmount = createDto.TotalAmount,
+                ItemQuantity = createDto.ItemQuantity,
                 PickupDateTime = createDto.PickupDateTime,
                 Items = new List<OrderItem>()
             };
@@ -123,6 +127,7 @@ namespace ClickCafeAPI.Controllers
                 };
                 order.Items.Add(orderItem);
                 order.TotalAmount += orderItem.Price * orderItem.Quantity + orderItem.Customizations.Sum(c => c.Options.Sum(o => o.ExtraCost)) * orderItem.Quantity;
+                order.ItemQuantity += orderItem.Quantity;
             }
 
             _db.Orders.Add(order);
@@ -163,6 +168,7 @@ namespace ClickCafeAPI.Controllers
             if (order.Status != default) order.Status = updateDto.Status;
             if (order.PaymentStatus != default) order.PaymentStatus = updateDto.PaymentStatus;
             if (updateDto.TotalAmount != default) order.TotalAmount = updateDto.TotalAmount;
+            if (updateDto.ItemQuantity != default) order.ItemQuantity = updateDto.ItemQuantity;
             if (updateDto.PickupDateTime != default) order.PickupDateTime = updateDto.PickupDateTime;
             if (updateDto.OrderDateTime != default) order.OrderDateTime = updateDto.OrderDateTime;
 
@@ -193,11 +199,14 @@ namespace ClickCafeAPI.Controllers
             }
 
             decimal totalAmount = 0;
+            int itemQuantity = 0;
             foreach (var item in order.Items)
             {
                 totalAmount += item.Price * item.Quantity;
+                itemQuantity += item.Quantity;
             }
             order.TotalAmount = totalAmount;
+            order.ItemQuantity = itemQuantity;
 
             await _db.SaveChangesAsync();
             return NoContent();

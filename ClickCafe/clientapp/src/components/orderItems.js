@@ -109,10 +109,9 @@ function OrderItems() {
         const newItem = {
             menuItemId: item.menuItemId,
             name: item.name,
-            basePrice: item.basePrice,
+            price: totalPrice,
             quantity,
-            customizations: selectedOptions,
-            total: totalPrice
+            customizations: selectedOptions
         };
 
         addToOrder(newItem);

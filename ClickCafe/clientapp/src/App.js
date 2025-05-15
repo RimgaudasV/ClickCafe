@@ -112,7 +112,9 @@ function App() {
                 } />
                 <Route path="/history" element={
                     <PrivateRoute user={user}>
-                        <History />
+                        <OrderProvider>
+                            <History />
+                        </OrderProvider>
                     </PrivateRoute>
                 } />
                 <Route path="/account" element={

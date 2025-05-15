@@ -24,11 +24,30 @@ function OrderReview() {
             <h3>Your Order</h3>
             <ul>
                 {orderItems.map((item, index) => (
-                    <li key={index}
-                        style={{ marginBottom: "0.75rem", cursor: "pointer" }}
-                        onClick={() => navigate(`/menuItem/${item.menuItemId}`, { state: { orderItemIndex: index } })}
-                    >
-                        {item.quantity} × {item.name} — €{item.total.toFixed(2)}
+                    <li key={index} style={{ marginBottom: "0.75rem" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span
+                                style={{ cursor: "pointer", flexGrow: 1 }}
+                                onClick={() => navigate(`/menuItem/${item.menuItemId}`, { state: { orderItemIndex: index } })}
+                            >
+                                {item.quantity} × {item.name} — €{item.total.toFixed(2)}
+                            </span>
+                            <button
+                                onClick={() => removeFromOrder(index)}
+                                style={{
+                                    background: "transparent",
+                                    border: "none",
+                                    color: "#d00",
+                                    fontWeight: "bold",
+                                    fontSize: "1rem",
+                                    marginLeft: "8px",
+                                    cursor: "pointer"
+                                }}
+                                aria-label="Remove item"
+                            >
+                                ✖
+                            </button>
+                        </div>
                     </li>
                 ))}
             </ul>

@@ -37,26 +37,27 @@ namespace ClickCafeAPI.Controllers
             return Ok(items);
         }
 
-        //// GET: api/orders/{orderId}/items/{itemId}
-        //[HttpGet("{itemId}")]
-        //public async Task<ActionResult<OrderItemDto>> GetById(int itemId)
-        //{
-        //    var item = await _db.OrderItems
-        //        .Include(i => i.Customizations)
-        //        .FirstOrDefaultAsync(i => i.OrderItemId == itemId);
+        // GET: api/orders/{orderId}/items/{itemId}
+        [HttpGet("{itemId}")]
+        public async Task<ActionResult<OrderItemDto>> GetById(int itemId)
+        {
+            var item = await _db.OrderItems
+                .Include(i => i.MenuItem)
+                .Include(i => i.Customizations)
+                .FirstOrDefaultAsync(i => i.OrderItemId == itemId);
 
-        //    if (item == null) return NotFound();
+            if (item == null) return NotFound();
 
-        //    var orderDto = new OrderItemDto
-        //    {
-        //        OrderItemId = item.OrderItemId,
-        //        MenuItemId = item.MenuItemId,
-        //        Quantity = item.Quantity,
-        //        Price = item.Price,
-        //        CustomizationIds = item.Customizations.Select(c => c.CustomizationId)
-        //    };
+            var orderItemDto = new OrderItemDto
+            {
+                OrderItemId = item.OrderItemId,
+                MenuItemId = item.MenuItemId,
+                Quantity = item.Quantity,
+                Price = item.Price,
+                CustomizationIds = item.Customizations.Select(c => c.CustomizationId)
+            };
 
-        //    return Ok(orderDto);
-        //}
+            return Ok(orderItemDto);
+        }
     }
 }

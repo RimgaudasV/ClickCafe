@@ -30,7 +30,12 @@ namespace ClickCafeAPI.Controllers
                 CustomizationId = c.CustomizationId,
                 Name = c.Name,
                 Type = c.Type,
-                OptionIds = c.Options.Select(o => o.CustomizationOptionId),
+                Options = c.Options.Select(o => new CustomizationOptionDto
+                {
+                    CustomizationOptionId = o.CustomizationOptionId,
+                    Name = o.Name,
+                    ExtraCost = o.ExtraCost
+                }),
                 MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId),
                 OrderItemIds = c.OrderItems.Select(oi => oi.OrderItemId)
             }); ;
@@ -56,7 +61,12 @@ namespace ClickCafeAPI.Controllers
                 CustomizationId = customization.CustomizationId,
                 Name = customization.Name,
                 Type = customization.Type,
-                OptionIds = customization.Options.Select(o => o.CustomizationOptionId),
+                Options = customization.Options.Select(o => new CustomizationOptionDto
+                {
+                    CustomizationOptionId = o.CustomizationOptionId,
+                    Name = o.Name,
+                    ExtraCost = o.ExtraCost
+                }),
                 MenuItemIds = customization.MenuItems.Select(mi => mi.MenuItemId),
                 OrderItemIds = customization.OrderItems.Select(oi => oi.OrderItemId)
             };
@@ -74,11 +84,11 @@ namespace ClickCafeAPI.Controllers
                     .ToListAsync()
                 : new List<MenuItem>();
 
-            var optionItems = createDto.OptionIds != null
-                ? await _db.CustomizationOptions
-                    .Where(opt => createDto.OptionIds.Contains(opt.CustomizationOptionId))
-                    .ToListAsync()
-                : new List<CustomizationOption>();
+            var optionItems = createDto.Options?.Select(o => new CustomizationOption
+            {
+                Name = o.Name,
+                ExtraCost = o.ExtraCost
+            }).ToList() ?? new List<CustomizationOption>();
 
             var customization = new Customization
             {
@@ -96,12 +106,46 @@ namespace ClickCafeAPI.Controllers
                 CustomizationId = customization.CustomizationId,
                 Name = customization.Name,
                 Type = customization.Type,
-                OptionIds = customization.Options.Select(o => o.CustomizationOptionId),
+                Options = customization.Options.Select(o => new CustomizationOptionDto
+                {
+                    CustomizationOptionId = o.CustomizationOptionId,
+                    Name = o.Name,
+                    ExtraCost = o.ExtraCost
+                }),
                 MenuItemIds = customization.MenuItems.Select(mi => mi.MenuItemId),
                 OrderItemIds = customization.OrderItems.Select(oi => oi.OrderItemId)
             };
 
             return CreatedAtAction(nameof(GetById), new { id = customization.CustomizationId }, customizationDto);
+        }
+
+        // GET: api/Customizations/menuItem/{menuItemId}
+        [HttpGet("menuItem/{menuItemId}")]
+        public async Task<ActionResult<IEnumerable<CustomizationDto>>> GetByMenuItem(int menuItemId)
+        {
+            var customizations = await _db.Customizations
+                .Where(c => c.MenuItems.Any(mi => mi.MenuItemId == menuItemId))
+                .Include(c => c.Options)
+                .Include(c => c.MenuItems)
+                .Include(c => c.OrderItems)
+                .ToListAsync();
+
+            var dtos = customizations.Select(c => new CustomizationDto
+            {
+                CustomizationId = c.CustomizationId,
+                Name = c.Name,
+                Type = c.Type,
+                Options = c.Options.Select(o => new CustomizationOptionDto
+                {
+                    CustomizationOptionId = o.CustomizationOptionId,
+                    Name = o.Name,
+                    ExtraCost = o.ExtraCost
+                }),
+                MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId),
+                OrderItemIds = c.OrderItems.Select(oi => oi.OrderItemId)
+            });
+
+            return Ok(dtos);
         }
 
         // PUT: api/Customizations/{id}
@@ -118,13 +162,15 @@ namespace ClickCafeAPI.Controllers
             if (!string.IsNullOrEmpty(updateDto.Name)) customization.Name = updateDto.Name;
             if (updateDto.Type != default) customization.Type = updateDto.Type;
 
-            if (updateDto.OptionIds != null)
+            if (updateDto.Options != null)
             {
-                var optionEntities = await _db.CustomizationOptions
-                    .Where(o => updateDto.OptionIds.Contains(o.CustomizationOptionId))
-                    .ToListAsync();
+                _db.CustomizationOptions.RemoveRange(customization.Options);
 
-                customization.Options = optionEntities;
+                customization.Options = updateDto.Options.Select(o => new CustomizationOption
+                {
+                    Name = o.Name,
+                    ExtraCost = o.ExtraCost
+                }).ToList();
             }
 
             if (updateDto.MenuItemIds != null)
@@ -147,6 +193,7 @@ namespace ClickCafeAPI.Controllers
             var customization = await _db.Customizations
                 .Include(c => c.MenuItems)
                 .Include(c => c.OrderItems)
+                .Include(c => c.Options)
                 .FirstOrDefaultAsync(c => c.CustomizationId == id);
 
             if (customization == null) return NotFound();

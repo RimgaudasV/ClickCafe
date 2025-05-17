@@ -111,8 +111,8 @@ function RegisterPage() {
                         >
                             <option value="">-- Select a Café --</option>
                             {cafes.map(cafe => (
-                                <option key={cafe.id} value={cafe.id}>
-                                    {cafe.name}
+                                <option key={cafe.cafeId} value={cafe.cafeId}>
+                                    {cafe.name} ({cafe.address})
                                 </option>
                             ))}
                         </select>

@@ -15,7 +15,9 @@ const StatusPage = () => {
     };
 
     const fetchOrders = () => {
-        fetch('https://localhost:7281/api/orders')
+        fetch('https://localhost:7281/api/orders', {
+            credentials: 'include'
+        })
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
@@ -35,6 +37,7 @@ const StatusPage = () => {
         setUpdatingOrderId(orderId);
         fetch(`https://localhost:7281/api/orders/${orderId}/status`, {
             method: 'PATCH',
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: newStatus })
         })
@@ -61,7 +64,8 @@ const StatusPage = () => {
     const deleteOrder = (orderId) => {
         if (window.confirm("Are you sure you want to permanently delete this order?")) {
             fetch(`https://localhost:7281/api/orders/${orderId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                credentials: 'include'
             })
                 .then(response => {
                     if (!response.ok) throw new Error('Failed to delete order');

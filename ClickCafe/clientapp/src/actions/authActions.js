@@ -33,7 +33,7 @@
 
 
 
-export const register = async (username, email, password, role, setError) => {
+export const register = async (username, email, password, role, cafeId, setError) => {
     try {
         if (!username || !email || !password) {
             setError("All fields are required.");
@@ -47,10 +47,11 @@ export const register = async (username, email, password, role, setError) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                username,
+                userName: username,
                 email,
                 password,
-                role
+                role,
+                cafeId: role === 2 ? cafeId : null
             }),
         });
 

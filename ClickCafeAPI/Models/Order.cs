@@ -21,5 +21,8 @@ namespace ClickCafeAPI.Models
         public DateTime PickupDateTime { get; set; }
         public ICollection<OrderItem> Items { get; set; }
         public User User { get; set; }
+        public int CafeId { get; set; }
+        public Cafe Cafe { get; set; }
+
     }
 }

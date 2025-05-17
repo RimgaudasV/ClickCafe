@@ -5,6 +5,7 @@ using ClickCafeAPI.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace ClickCafeAPI.Controllers
 {
@@ -13,14 +14,32 @@ namespace ClickCafeAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly ClickCafeContext _db;
-        public OrderController(ClickCafeContext db)
-           => _db = db;
+
+        private readonly UserManager<User> _userManager;
+        public OrderController(ClickCafeContext db, UserManager<User> userManager)
+        {
+            _db = db;
+            _userManager = userManager;
+        }
 
         // GET: api/orders
         [HttpGet("orders")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetAll()
         {
-            var orders = await _db.Orders.Include(o => o.Items).ToListAsync();
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            var user = await _db.Users.FindAsync(userId);
+            if (user == null) return Unauthorized();
+
+            IQueryable<Order> query = _db.Orders.Include(o => o.Items);
+
+            if (user.Role == UserRole.Barista && user.CafeId.HasValue)
+            {
+                query = query.Where(o => o.CafeId == user.CafeId);
+            }
+
+            var orders = await query.ToListAsync();
 
             var dto = orders.Select(o => new OrderDto
             {
@@ -37,6 +56,7 @@ namespace ClickCafeAPI.Controllers
 
             return Ok(dto);
         }
+
 
         // GET: api/orders/{id}
         [HttpGet("orders/{id}")]
@@ -100,9 +120,12 @@ namespace ClickCafeAPI.Controllers
             var order = new Order
             {
                 UserId = createDto.UserId.ToString(),
-                OrderDateTime = DateTime.UtcNow,
-                Status = OrderStatus.Pending,
-                PaymentStatus = OrderPaymentStatus.Unpaid,
+
+                CafeId = createDto.CafeId,
+                OrderDateTime = createDto.OrderDateTime,
+                Status = createDto.Status,
+                PaymentStatus = createDto.PaymentStatus,
+
                 TotalAmount = createDto.TotalAmount,
                 ItemQuantity = createDto.ItemQuantity,
                 PickupDateTime = createDto.PickupDateTime,

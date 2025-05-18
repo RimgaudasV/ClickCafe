@@ -13,6 +13,11 @@ function History() {
         2: "Completed",
         3: "Canceled"
     };
+    const PaymentStatus = {
+        1: "Pending",
+        2: "Completed",
+        3: "Failed"
+    };
 
     useEffect(() => {
         fetch("/api/userOrders", { credentials: "include" })
@@ -54,9 +59,9 @@ function History() {
                             const newItem = {
                                 menuItemId: item.menuItemId,
                                 name: menuItem.name,
-                                price: item.price,
+                                total: item.price * item.quantity,
                                 quantity: item.quantity,
-                                customizations: item.customizations
+                                selectedOptionIds: item.selectedOptionIds
                             };
                             return newItem;
                         })
@@ -95,6 +100,7 @@ function History() {
                         <th className="px-4 py-2 border">Item Quantity</th>
                         <th className="px-4 py-2 border">Order Price (€)</th>
                         <th className="px-4 py-2 border">Order Status</th>
+                        <th className="px-4 py-2 border">Payment Status</th>
                         <th className="px-4 py-2 border">View Order</th>
                         <th className="px-4 py-2 border">Repeat Order</th>
                     </tr>
@@ -107,6 +113,7 @@ function History() {
                             <td className="px-4 py-2 border">{order.itemQuantity}</td>
                             <td className="px-4 py-2 border">{order.totalAmount.toFixed(2)}</td>
                             <td className="px-4 py-2 border">{OrderStatus[order.status]}</td>
+                            <td className="px-4 py-2 border">{PaymentStatus[order.paymentStatus]}</td>
                             <td className="px-4 py-2 border">
                                 <Link to={`/order/${order.orderId}`} className="ui button" state={{ totalAmount: order.totalAmount }}>
                                     View Order

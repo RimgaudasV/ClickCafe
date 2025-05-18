@@ -20,7 +20,7 @@ namespace ClickCafeAPI.Controllers
         {
             var order = await _db.Orders
                 .Include(o => o.Items)
-                .ThenInclude(i => i.Customizations)
+                .ThenInclude(i => i.SelectedOptions)
                 .FirstOrDefaultAsync(o => o.OrderId == orderId);
 
             if (order == null) return NotFound();
@@ -31,7 +31,7 @@ namespace ClickCafeAPI.Controllers
                 MenuItemId = i.MenuItemId,
                 Quantity = i.Quantity,
                 Price = i.Price,
-                CustomizationIds = i.Customizations.Select(c => c.CustomizationId)
+                SelectedOptionIds = i.SelectedOptions.Select(c => c.CustomizationOptionId)
             });
 
             return Ok(items);
@@ -43,7 +43,7 @@ namespace ClickCafeAPI.Controllers
         {
             var item = await _db.OrderItems
                 .Include(i => i.MenuItem)
-                .Include(i => i.Customizations)
+                .Include(i => i.SelectedOptions)
                 .FirstOrDefaultAsync(i => i.OrderItemId == itemId);
 
             if (item == null) return NotFound();
@@ -54,7 +54,7 @@ namespace ClickCafeAPI.Controllers
                 MenuItemId = item.MenuItemId,
                 Quantity = item.Quantity,
                 Price = item.Price,
-                CustomizationIds = item.Customizations.Select(c => c.CustomizationId)
+                SelectedOptionIds = item.SelectedOptions.Select(c => c.CustomizationOptionId)
             };
 
             return Ok(orderItemDto);

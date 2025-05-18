@@ -70,10 +70,7 @@ function Checkout() {
                     menuItemId: item.menuItemId ?? item.MenuItemId,
                     quantity: item.quantity ?? item.Quantity,
                     price: item.total ?? item.price / item.quantity ?? 0,
-                    customizationIds: Array.isArray(item.customizations)
-                        ? item.customizations.map(c => c.customizationOptionId).filter(id => id != null)
-                        : []
-
+                    selectedOptionIds: item.selectedOptionIds ?? []
                 })),
                 paymentMethod: paymentOption,
             };

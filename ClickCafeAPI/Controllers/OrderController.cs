@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 namespace ClickCafeAPI.Controllers
 {
     [ApiController]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Route("api/")]
     public class OrderController : ControllerBase
     {
@@ -113,18 +114,16 @@ namespace ClickCafeAPI.Controllers
         }
 
 
+        // POST: api/orders
         [HttpPost("orders")]
         public async Task<ActionResult<OrderPaymentResponseDto>> CreateOrderWithPayment(CreateOrderWithPaymentDto createDto)
         {
             var order = new Order
             {
                 UserId = createDto.UserId.ToString(),
-
-                CafeId = createDto.CafeId,
-                OrderDateTime = createDto.OrderDateTime,
-                Status = createDto.Status,
-                PaymentStatus = createDto.PaymentStatus,
-
+                OrderDateTime = DateTime.UtcNow,
+                Status = OrderStatus.Pending,
+                PaymentStatus = OrderPaymentStatus.Unpaid,
                 TotalAmount = createDto.TotalAmount,
                 ItemQuantity = createDto.ItemQuantity,
                 PickupDateTime = createDto.PickupDateTime,

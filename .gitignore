@@ -363,3 +363,5 @@ MigrationBackup/
 FodyWeavers.xsd
 ClickCafeAPI/Context/ClickCafeContextFactory.cs
 ClickCafeAPI/appsettings.json
+ClickCafeAPI/appsettings.json
+ClickCafeAPI/Context/ClickCafeContextFactory.cs

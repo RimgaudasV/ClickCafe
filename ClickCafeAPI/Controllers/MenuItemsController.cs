@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ClickCafeAPI.Controllers
 {
     [ApiController]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Route("api/[controller]")]
     public class MenuItemsController : ControllerBase
     {

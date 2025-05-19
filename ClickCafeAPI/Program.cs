@@ -3,8 +3,19 @@ using ClickCafeAPI.Identity;
 using ClickCafeAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+});
+
+builder.Services.AddScoped<LoggingActionFilter>();
 
 builder.Services.AddDbContext<ClickCafeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -68,5 +79,4 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-app.MapControllers();
 app.Run();

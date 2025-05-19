@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ClickCafeAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class change : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -333,24 +333,18 @@ namespace ClickCafeAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "OrderItemCustomizations",
+                name: "OrderItemCustomizationOptions",
                 columns: table => new
                 {
-                    CustomizationsCustomizationId = table.Column<int>(type: "int", nullable: false),
-                    OrderItemsOrderItemId = table.Column<int>(type: "int", nullable: false)
+                    OrderItemId = table.Column<int>(type: "int", nullable: false),
+                    CustomizationOptionId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderItemCustomizations", x => new { x.CustomizationsCustomizationId, x.OrderItemsOrderItemId });
+                    table.PrimaryKey("PK_OrderItemCustomizationOptions", x => new { x.OrderItemId, x.CustomizationOptionId });
                     table.ForeignKey(
-                        name: "FK_OrderItemCustomizations_Customizations_CustomizationsCustomizationId",
-                        column: x => x.CustomizationsCustomizationId,
-                        principalTable: "Customizations",
-                        principalColumn: "CustomizationId",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_OrderItemCustomizations_OrderItems_OrderItemsOrderItemId",
-                        column: x => x.OrderItemsOrderItemId,
+                        name: "FK_OrderItemCustomizationOptions_OrderItems_OrderItemId",
+                        column: x => x.OrderItemId,
                         principalTable: "OrderItems",
                         principalColumn: "OrderItemId",
                         onDelete: ReferentialAction.Cascade);
@@ -411,11 +405,6 @@ namespace ClickCafeAPI.Migrations
                 column: "CafeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItemCustomizations_OrderItemsOrderItemId",
-                table: "OrderItemCustomizations",
-                column: "OrderItemsOrderItemId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_MenuItemId",
                 table: "OrderItems",
                 column: "MenuItemId");
@@ -462,7 +451,7 @@ namespace ClickCafeAPI.Migrations
                 name: "MenuItemCustomizations");
 
             migrationBuilder.DropTable(
-                name: "OrderItemCustomizations");
+                name: "OrderItemCustomizationOptions");
 
             migrationBuilder.DropTable(
                 name: "Payments");

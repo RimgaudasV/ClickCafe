@@ -19,6 +19,7 @@ namespace ClickCafeAPI.Context
         public DbSet<Customization> Customizations { get; set; }
         public DbSet<Cafe> Cafes { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<OrderItemCustomizationOption> OrderItemCustomizationOptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,10 +31,8 @@ namespace ClickCafeAPI.Context
                 .HasForeignKey(oi => oi.MenuItemId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<OrderItem>()
-                .HasMany(oi => oi.Customizations)
-                .WithMany(c => c.OrderItems)
-                .UsingEntity(j => j.ToTable("OrderItemCustomizations"));
+            modelBuilder.Entity<OrderItemCustomizationOption>()
+                .HasKey(x => new { x.OrderItemId, x.CustomizationOptionId });
 
             modelBuilder.Entity<Order>()
                 .HasOne(o => o.User)

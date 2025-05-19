@@ -113,7 +113,6 @@ namespace ClickCafeAPI.Controllers
         }
 
 
-        // POST: api/orders
         [HttpPost("orders")]
         public async Task<ActionResult<OrderPaymentResponseDto>> CreateOrderWithPayment(CreateOrderWithPaymentDto createDto)
         {
@@ -132,28 +131,52 @@ namespace ClickCafeAPI.Controllers
                 Items = new List<OrderItem>()
             };
 
+            var customizationMap = new Dictionary<int, List<int>>();
+
             foreach (var itemDto in createDto.Items)
             {
                 var menuItem = await _db.MenuItems.FindAsync(itemDto.MenuItemId);
                 if (menuItem == null)
                     return BadRequest($"MenuItem with ID {itemDto.MenuItemId} not found.");
 
+                var selectedOptionIds = itemDto.SelectedOptionIds ?? new List<int>();
+
+                var selectedOptions = await _db.CustomizationOptions
+                    .Where(opt => selectedOptionIds.Contains(opt.CustomizationOptionId))
+                    .ToListAsync();
+
+                var extraCostPerUnit = selectedOptions.Sum(opt => opt.ExtraCost);
+
                 var orderItem = new OrderItem
                 {
                     MenuItemId = itemDto.MenuItemId,
                     Quantity = itemDto.Quantity,
-                    Price = menuItem.BasePrice,
-                    Customizations = await _db.Customizations
-                        .Include(c => c.Options)
-                        .Where(c => itemDto.CustomizationIds != null && itemDto.CustomizationIds.Contains(c.CustomizationId))
-                        .ToListAsync()
+                    Price = menuItem.BasePrice + extraCostPerUnit
                 };
+
                 order.Items.Add(orderItem);
-                order.TotalAmount += orderItem.Price * orderItem.Quantity + orderItem.Customizations.Sum(c => c.Options.Sum(o => o.ExtraCost)) * orderItem.Quantity;
+                customizationMap[orderItem.GetHashCode()] = (List<int>)selectedOptionIds;
+
                 order.ItemQuantity += orderItem.Quantity;
             }
 
             _db.Orders.Add(order);
+            await _db.SaveChangesAsync();
+
+            foreach (var orderItem in order.Items)
+            {
+                var optionIds = customizationMap[orderItem.GetHashCode()];
+
+                foreach (var optionId in optionIds)
+                {
+                    _db.OrderItemCustomizationOptions.Add(new OrderItemCustomizationOption
+                    {
+                        OrderItemId = orderItem.OrderItemId,
+                        CustomizationOptionId = optionId
+                    });
+                }
+            }
+
             await _db.SaveChangesAsync();
 
             var payment = new Payment
@@ -183,7 +206,7 @@ namespace ClickCafeAPI.Controllers
         {
             var order = await _db.Orders
                 .Include(o => o.Items)
-                .ThenInclude(oi => oi.Customizations)
+                .ThenInclude(oi => oi.SelectedOptions)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null) return NotFound();
@@ -207,15 +230,15 @@ namespace ClickCafeAPI.Controllers
                         MenuItemId = itemDto.MenuItemId,
                         Quantity = itemDto.Quantity,
                         Price = menuItem.BasePrice,
-                        Customizations = new List<Customization>()
+                        SelectedOptions = new List<OrderItemCustomizationOption>()
                     };
 
-                    if (itemDto.CustomizationIds != null)
+                    if (itemDto.SelectedOptionIds != null)
                     {
-                        var customizations = await _db.Customizations
-                            .Where(c => itemDto.CustomizationIds.Contains(c.CustomizationId))
+                        var selectedOptions = await _db.OrderItemCustomizationOptions
+                            .Where(c => itemDto.SelectedOptionIds.Contains(c.CustomizationOptionId))
                             .ToListAsync();
-                        orderItem.Customizations = customizations;
+                        orderItem.SelectedOptions= selectedOptions;
                     }
                     order.Items.Add(orderItem);
                 }

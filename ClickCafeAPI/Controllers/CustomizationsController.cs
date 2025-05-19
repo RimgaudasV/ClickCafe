@@ -21,7 +21,6 @@ namespace ClickCafeAPI.Controllers
         {
             var customizations = await _db.Customizations
                 .Include(c => c.MenuItems)
-                .Include(c => c.OrderItems)
                 .Include(c => c.Options)
                 .ToListAsync();
 
@@ -36,8 +35,7 @@ namespace ClickCafeAPI.Controllers
                     Name = o.Name,
                     ExtraCost = o.ExtraCost
                 }),
-                MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId),
-                OrderItemIds = c.OrderItems.Select(oi => oi.OrderItemId)
+                MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId)
             }); ;
 
             return Ok(dtos);
@@ -50,7 +48,6 @@ namespace ClickCafeAPI.Controllers
         {
             var customization = await _db.Customizations
                 .Include(c => c.MenuItems)
-                .Include(c => c.OrderItems)
                 .Include(c => c.Options)
                 .FirstOrDefaultAsync(c => c.CustomizationId == id);
 
@@ -67,8 +64,7 @@ namespace ClickCafeAPI.Controllers
                     Name = o.Name,
                     ExtraCost = o.ExtraCost
                 }),
-                MenuItemIds = customization.MenuItems.Select(mi => mi.MenuItemId),
-                OrderItemIds = customization.OrderItems.Select(oi => oi.OrderItemId)
+                MenuItemIds = customization.MenuItems.Select(mi => mi.MenuItemId)
             };
 
             return Ok(dto);
@@ -112,8 +108,7 @@ namespace ClickCafeAPI.Controllers
                     Name = o.Name,
                     ExtraCost = o.ExtraCost
                 }),
-                MenuItemIds = customization.MenuItems.Select(mi => mi.MenuItemId),
-                OrderItemIds = customization.OrderItems.Select(oi => oi.OrderItemId)
+                MenuItemIds = customization.MenuItems.Select(mi => mi.MenuItemId)
             };
 
             return CreatedAtAction(nameof(GetById), new { id = customization.CustomizationId }, customizationDto);
@@ -127,7 +122,6 @@ namespace ClickCafeAPI.Controllers
                 .Where(c => c.MenuItems.Any(mi => mi.MenuItemId == menuItemId))
                 .Include(c => c.Options)
                 .Include(c => c.MenuItems)
-                .Include(c => c.OrderItems)
                 .ToListAsync();
 
             var dtos = customizations.Select(c => new CustomizationDto
@@ -141,8 +135,7 @@ namespace ClickCafeAPI.Controllers
                     Name = o.Name,
                     ExtraCost = o.ExtraCost
                 }),
-                MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId),
-                OrderItemIds = c.OrderItems.Select(oi => oi.OrderItemId)
+                MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId)
             });
 
             return Ok(dtos);
@@ -192,7 +185,6 @@ namespace ClickCafeAPI.Controllers
         {
             var customization = await _db.Customizations
                 .Include(c => c.MenuItems)
-                .Include(c => c.OrderItems)
                 .Include(c => c.Options)
                 .FirstOrDefaultAsync(c => c.CustomizationId == id);
 

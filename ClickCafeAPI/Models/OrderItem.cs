@@ -9,9 +9,9 @@ namespace ClickCafeAPI.Models
         public int MenuItemId { get; set; }
         [Required]
         public int Quantity { get; set; }
-        public ICollection<Customization> Customizations { get; set; }
         [Required]
         public decimal Price { get; set; }
         public MenuItem MenuItem { get; set; }
+        public ICollection<OrderItemCustomizationOption> SelectedOptions { get; set; } = new List<OrderItemCustomizationOption>();
     }
 }

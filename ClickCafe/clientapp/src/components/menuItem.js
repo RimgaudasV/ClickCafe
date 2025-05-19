@@ -10,7 +10,7 @@ function MenuItem() {
     const [customizations, setCustomizations] = useState([]);
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [selectedIds, setSelectedIds] = useState([]);
+    const [selectedOptionIds, setSelectedOptionIds] = useState([]);
 
     const { orderItems, addToOrder, removeFromOrder } = useOrder();
     const navigate = useNavigate();
@@ -24,7 +24,7 @@ function MenuItem() {
             const item = orderItems[orderItemIndex];
             if (item) {
                 setQuantity(item.quantity);
-                setSelectedIds(item.customizations.map(opt => opt.customizationOptionId));
+                setSelectedOptionIds(item.selectedOptionIds || []);
             }
 
         }
@@ -57,15 +57,15 @@ function MenuItem() {
     const handleChange = (customization, optionId) => {
         if (customization.type === 1) {
             const otherOptionIds = customization.options.map(o => o.customizationOptionId);
-            setSelectedIds([
-                ...selectedIds.filter(id => !otherOptionIds.includes(id)),
+            setSelectedOptionIds([
+                ...selectedOptionIds.filter(id => !otherOptionIds.includes(id)),
                 optionId,
             ]);
         } else {
-            if (selectedIds.includes(optionId)) {
-                setSelectedIds(selectedIds.filter(id => id !== optionId));
+            if (selectedOptionIds.includes(optionId)) {
+                setSelectedOptionIds(selectedOptionIds.filter(id => id !== optionId));
             } else {
-                setSelectedIds([...selectedIds, optionId]);
+                setSelectedOptionIds([...selectedOptionIds, optionId]);
             }
         }
     };
@@ -74,7 +74,7 @@ function MenuItem() {
         let total = 0;
         for (const c of customizations) {
             for (const opt of c.options) {
-                if (selectedIds.includes(opt.customizationOptionId)) {
+                if (selectedOptionIds.includes(opt.customizationOptionId)) {
                     total += opt.extraCost || 0;
                 }
             }
@@ -83,16 +83,17 @@ function MenuItem() {
     };
 
     const handleAddToOrder = () => {
-        const selectedOptions = customizations
-            .flatMap(c => c.options) 
-            .filter(opt => selectedIds.includes(opt.customizationOptionId));
+        //const selectedOptions = customizations
+        //    .flatMap(c => c.options) 
+        //    .filter(opt => selectedOptionIds.includes(opt.customizationOptionId));
 
         const newItem = {
             menuItemId: item.menuItemId,
             name: item.name,
             total: totalPrice,
             quantity,
-            customizations: selectedOptions
+            selectedOptionIds
+            //selectedOptions
         };
         if (orderItemIndex != null) {
             removeFromOrder(orderItemIndex)
@@ -121,7 +122,7 @@ function MenuItem() {
                             {c.options?.map(opt => {
                                 const inputType = c.type === 1 ? "radio" : "checkbox";
                                 const inputName = `customization-${c.customizationId}`;
-                                const isChecked = selectedIds.includes(opt.customizationOptionId);
+                                const isChecked = selectedOptionIds.includes(opt.customizationOptionId);
 
                                 return (
                                     <label

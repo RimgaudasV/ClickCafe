@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClickCafeAPI.Migrations
 {
     [DbContext(typeof(ClickCafeContext))]
-    [Migration("20250515172517_migracija")]
+    [Migration("20250519180902_migracija")]
     partial class migracija
     {
         /// <inheritdoc />
@@ -146,6 +146,9 @@ namespace ClickCafeAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
                     b.Property<int>("CafeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ItemQuantity")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("OrderDateTime")

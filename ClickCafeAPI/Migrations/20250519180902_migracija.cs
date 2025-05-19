@@ -251,6 +251,7 @@ namespace ClickCafeAPI.Migrations
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ItemQuantity = table.Column<int>(type: "int", nullable: false),
                     PickupDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CafeId = table.Column<int>(type: "int", nullable: false)
                 },

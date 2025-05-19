@@ -17,6 +17,8 @@ namespace ClickCafeAPI.ViewModels
         public string Password { get; set; }
         [Required(ErrorMessage = "Role is required.")]
         public UserRole Role { get; set; }
+        public int? CafeId { get; set; }
+
 
     }
 }

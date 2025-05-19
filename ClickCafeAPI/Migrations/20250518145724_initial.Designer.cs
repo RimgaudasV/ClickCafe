@@ -4,6 +4,7 @@ using ClickCafeAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClickCafeAPI.Migrations
 {
     [DbContext(typeof(ClickCafeContext))]
-    partial class ClickCafeContextModelSnapshot : ModelSnapshot
+    [Migration("20250518145724_initial")]
+    partial class initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -142,11 +145,7 @@ namespace ClickCafeAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-
-                    b.Property<int>("CafeId")
-
                     b.Property<int>("ItemQuantity")
-
                         .HasColumnType("int");
 
                     b.Property<DateTime>("OrderDateTime")
@@ -171,8 +170,6 @@ namespace ClickCafeAPI.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("OrderId");
-
-                    b.HasIndex("CafeId");
 
                     b.HasIndex("UserId");
 
@@ -262,9 +259,6 @@ namespace ClickCafeAPI.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CafeId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -318,8 +312,6 @@ namespace ClickCafeAPI.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CafeId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -500,19 +492,11 @@ namespace ClickCafeAPI.Migrations
 
             modelBuilder.Entity("ClickCafeAPI.Models.Order", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.Cafe", "Cafe")
-                        .WithMany()
-                        .HasForeignKey("CafeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ClickCafeAPI.Models.User", "User")
                         .WithMany("OrderHistory")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Cafe");
 
                     b.Navigation("User");
                 });
@@ -550,16 +534,6 @@ namespace ClickCafeAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("ClickCafeAPI.Models.User", b =>
-                {
-                    b.HasOne("ClickCafeAPI.Models.Cafe", "Cafe")
-                        .WithMany()
-                        .HasForeignKey("CafeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Cafe");
                 });
 
             modelBuilder.Entity("CustomizationMenuItem", b =>

@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ClickCafeAPI.Controllers
 {
     [ApiController]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Route("api/auth")]
     public class AuthController : ControllerBase
     {

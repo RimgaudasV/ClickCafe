@@ -7,9 +7,9 @@ const StatusPage = () => {
 
     const getStatusText = (status) => {
         switch (status) {
-            case 1: return "Accepted";
+            case 1: return "Pending";
             case 2: return "Completed";
-            case 3: return "Cancelled";
+            case 3: return "Canceled";
             default: return "Unknown";
         }
     };

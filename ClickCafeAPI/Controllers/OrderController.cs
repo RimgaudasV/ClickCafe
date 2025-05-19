@@ -5,7 +5,6 @@ using ClickCafeAPI.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 
 namespace ClickCafeAPI.Controllers
 {
@@ -14,32 +13,14 @@ namespace ClickCafeAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly ClickCafeContext _db;
-
-        private readonly UserManager<User> _userManager;
-        public OrderController(ClickCafeContext db, UserManager<User> userManager)
-        {
-            _db = db;
-            _userManager = userManager;
-        }
+        public OrderController(ClickCafeContext db)
+           => _db = db;
 
         // GET: api/orders
         [HttpGet("orders")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetAll()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Unauthorized();
-
-            var user = await _db.Users.FindAsync(userId);
-            if (user == null) return Unauthorized();
-
-            IQueryable<Order> query = _db.Orders.Include(o => o.Items);
-
-            if (user.Role == UserRole.Barista && user.CafeId.HasValue)
-            {
-                query = query.Where(o => o.CafeId == user.CafeId);
-            }
-
-            var orders = await query.ToListAsync();
+            var orders = await _db.Orders.Include(o => o.Items).ToListAsync();
 
             var dto = orders.Select(o => new OrderDto
             {
@@ -56,7 +37,6 @@ namespace ClickCafeAPI.Controllers
 
             return Ok(dto);
         }
-
 
         // GET: api/orders/{id}
         [HttpGet("orders/{id}")]
@@ -116,15 +96,17 @@ namespace ClickCafeAPI.Controllers
         [HttpPost("orders")]
         public async Task<ActionResult<OrderPaymentResponseDto>> CreateOrderWithPayment(CreateOrderWithPaymentDto createDto)
         {
+            var firstMenuItem = await _db.MenuItems.FindAsync(createDto.Items.First().MenuItemId);
+            if (firstMenuItem == null)
+                return BadRequest("MenuItem not found.");
+
             var order = new Order
             {
                 UserId = createDto.UserId.ToString(),
-
-                CafeId = createDto.CafeId,
-                OrderDateTime = createDto.OrderDateTime,
-                Status = createDto.Status,
-                PaymentStatus = createDto.PaymentStatus,
-
+                CafeId = firstMenuItem.CafeId,
+                OrderDateTime = DateTime.UtcNow,
+                Status = OrderStatus.Pending,
+                PaymentStatus = OrderPaymentStatus.Unpaid,
                 TotalAmount = createDto.TotalAmount,
                 ItemQuantity = createDto.ItemQuantity,
                 PickupDateTime = createDto.PickupDateTime,
@@ -219,7 +201,7 @@ namespace ClickCafeAPI.Controllers
             if (updateDto.OrderDateTime != default) order.OrderDateTime = updateDto.OrderDateTime;
 
             if (updateDto.ItemsToAdd != null)
-            { 
+            {
                 foreach (var itemDto in updateDto.ItemsToAdd)
                 {
                     var menuItem = await _db.MenuItems.FindAsync(itemDto.MenuItemId);
@@ -238,7 +220,7 @@ namespace ClickCafeAPI.Controllers
                         var selectedOptions = await _db.OrderItemCustomizationOptions
                             .Where(c => itemDto.SelectedOptionIds.Contains(c.CustomizationOptionId))
                             .ToListAsync();
-                        orderItem.SelectedOptions= selectedOptions;
+                        orderItem.SelectedOptions = selectedOptions;
                     }
                     order.Items.Add(orderItem);
                 }

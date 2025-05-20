@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClickCafeAPI.Migrations
 {
     [DbContext(typeof(ClickCafeContext))]
-    [Migration("20250520140412_migracija")]
+    [Migration("20250520173427_migracija")]
     partial class migracija
     {
         /// <inheritdoc />

@@ -68,5 +68,10 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-app.MapControllers();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await DbInitializer.SeedAdminAsync(services);
+}
+
 app.Run();

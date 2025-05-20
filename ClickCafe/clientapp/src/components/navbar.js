@@ -17,7 +17,11 @@ function Navbar({ user, setUser }) {
                 </button>
             </div>
             <div className="ui left floated header">
-                {user?.role === "Barista" ? (
+                {user?.role === "Admin" ? (
+                    <>
+                        <Link to="/admin"><button className="ui button">Admin Panel</button></Link>
+                    </>
+                ) : user?.role === "Barista" ? (
                     <>
                         <Link to="/barista"><button className="ui button">Main</button></Link>
                         <Link to="/status"><button className="ui button">Orders</button></Link>

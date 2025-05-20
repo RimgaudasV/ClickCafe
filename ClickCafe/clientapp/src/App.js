@@ -22,6 +22,8 @@ import OrderConfirmationPage from './components/orderConfirmation';
 import BaristaRoute from './BaristaRoute';
 import CustomerHomePage from './components/customerHomePage';
 import BaristaHomePage from './components/baristaHomePage';
+import AdminRoute from './AdminRoute';
+import AdminPanel from './components/adminPanel';
 
 import { OrderProvider } from './context/OrderContext';
 import { Navigate } from 'react-router-dom';
@@ -60,9 +62,11 @@ function App() {
                 <Route path="/register" element={<RegisterPage />} />
 
                 <Route path="/" element={
-                    user?.role === "Barista"
-                        ? <Navigate to="/barista" />
-                        : <Navigate to="/home" />
+                    user?.role === "Admin"
+                        ? <Navigate to="/admin" />
+                        : user?.role === "Barista"
+                            ? <Navigate to="/barista" />
+                            : <Navigate to="/home" />
                 } />
                 <Route path="/barista" element={
                     <BaristaRoute user={user}>
@@ -138,6 +142,11 @@ function App() {
                     <PrivateRoute user={user}>
                         <OrderConfirmationPage />
                     </PrivateRoute>
+                } />
+                <Route path="/admin" element={
+                    <AdminRoute user={user}>
+                        <AdminPanel />
+                    </AdminRoute>
                 } />
             </Routes>
         </Router>

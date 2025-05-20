@@ -80,6 +80,7 @@ namespace ClickCafeAPI.Controllers
             {
                 OrderId = o.OrderId,
                 UserId = o.UserId,
+                CafeId = o.CafeId,
                 OrderDateTime = o.OrderDateTime,
                 Status = o.Status,
                 PaymentStatus = o.PaymentStatus,

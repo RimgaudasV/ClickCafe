@@ -1,4 +1,5 @@
 ﻿import { Link, useNavigate } from 'react-router-dom';
+import Bell from './bell';
 
 function Navbar({ user, setUser }) {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ function Navbar({ user, setUser }) {
     return (
         <nav className="ui raised very padded segment">
             <div className="ui right floated header">
+                <Bell />
                 <button className="ui red button" onClick={handleLogoutClick}>
                     Logout
                 </button>

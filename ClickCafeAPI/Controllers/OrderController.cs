@@ -9,6 +9,7 @@ using System.Security.Claims;
 namespace ClickCafeAPI.Controllers
 {
     [ApiController]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Route("api/")]
     public class OrderController : ControllerBase
     {

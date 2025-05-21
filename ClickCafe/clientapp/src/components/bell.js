@@ -2,6 +2,7 @@
 
 export default function Bell() {
     const [notifications, setNotifications] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
 
     useEffect(() => {
         const fetchAlerts = () =>
@@ -12,22 +13,34 @@ export default function Bell() {
                 })
                 .catch(() => { });
 
-        fetchAlerts();                         
-        const timer = setInterval(fetchAlerts, 10000); 
+        fetchAlerts();
+        const timer = setInterval(fetchAlerts, 10000);
         return () => clearInterval(timer);
     }, []);
 
+    const toggleOpen = () => setIsOpen(open => !open);
+
     return (
         <div style={{ position: 'relative' }}>
-            <button>🔔 {notifications.length}</button>
-            {notifications.length > 0 && (
+            <button onClick={toggleOpen}>
+                🔔 {notifications.length}
+            </button>
+
+            {isOpen && notifications.length > 0 && (
                 <ul style={{
-                    position: 'absolute', top: '100%', right: 0,
-                    background: '#fff', border: '1px solid #ccc',
-                    padding: '0.5rem', margin: 0, listStyle: 'none'
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    background: 'white',
+                    border: '1px solid #ccc',
+                    padding: '0.5rem',
+                    listStyle: 'none',
+                    margin: 0
                 }}>
                     {notifications.map((msg, i) => (
-                        <li key={i} style={{ padding: '0.25rem 0' }}>{msg}</li>
+                        <li key={i} style={{ padding: '0.25rem 0' }}>
+                            {msg}
+                        </li>
                     ))}
                 </ul>
             )}

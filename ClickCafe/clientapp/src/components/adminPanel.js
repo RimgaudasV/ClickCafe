@@ -33,25 +33,24 @@ function AdminPanel() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const formData = new FormData();
+        formData.append("name", form.name);
+        formData.append("address", form.address);
+        formData.append("phoneNumber", form.phone);
+        formData.append("operatingHours", form.hours);
+        formData.append("image", form.image);
+
         const res = await fetch("https://localhost:7281/api/cafes", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
             credentials: "include",
-            body: JSON.stringify({
-                name: form.name,
-                address: form.address,
-                phoneNumber: form.phone,
-                operatingHours: form.hours,
-                image: form.image
-            })
+            body: formData
         });
 
         if (res.ok) {
             alert("Cafe created!");
-            setForm({ name: '', address: '', phone: '', hours: '', image: '' });
+            setForm({ name: '', address: '', phone: '', hours: '', image: null });
             setShowForm(false);
+
             const cafesRes = await fetch("https://localhost:7281/api/cafes", { credentials: "include" });
             setCafes(await cafesRes.json());
 
@@ -61,6 +60,7 @@ function AdminPanel() {
             alert("Error creating cafe");
         }
     };
+
 
     const handleDeleteCafe = async (e) => {
         e.preventDefault();
@@ -114,7 +114,13 @@ function AdminPanel() {
                     <input type="text" name="address" placeholder="Address" value={form.address} onChange={handleInput} required />
                     <input type="text" name="phone" placeholder="Phone Number" value={form.phone} onChange={handleInput} required />
                     <input type="text" name="hours" placeholder="Operating Hours" value={form.hours} onChange={handleInput} required />
-                    <input type="text" name="image" placeholder="Image URL or path" value={form.image} onChange={handleInput} required />
+                    <input
+                        type="file"
+                        name="image"
+                        accept="image/*"
+                        onChange={(e) => setForm(f => ({ ...f, image: e.target.files[0] }))}
+                        required
+                    />
                     <button className="ui primary button" type="submit">Add Cafe</button>
                 </form>
             )}

@@ -71,23 +71,34 @@ namespace ClickCafeAPI.Controllers
 
         // POST: api/Cafes
         [HttpPost]
-        public async Task<ActionResult<CafeDto>> Create(CreateCafeDto createDto)
+        public async Task<ActionResult<CafeDto>> Create([FromForm] string name, [FromForm] string address, [FromForm] string phoneNumber, [FromForm] string operatingHours, [FromForm] IFormFile image)
         {
-            // CreateCafeDto > Cafe entity
+            if (image == null || image.Length == 0)
+                return BadRequest("Image file is required.");
+
+            var imagesDir = Path.Combine(_env.WebRootPath, "cafeImages");
+            if (!Directory.Exists(imagesDir))
+                Directory.CreateDirectory(imagesDir);
+
+            var ext = Path.GetExtension(image.FileName);
+            var fileName = $"{Guid.NewGuid()}{ext}";
+            var filePath = Path.Combine(imagesDir, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await image.CopyToAsync(stream);
+
             var cafe = new Cafe
             {
-                Name = createDto.Name,
-                Address = createDto.Address,
-                PhoneNumber = createDto.PhoneNumber,
-                OperatingHours = createDto.OperatingHours,
-                Image = createDto.Image
+                Name = name,
+                Address = address,
+                PhoneNumber = phoneNumber,
+                OperatingHours = operatingHours,
+                Image = $"/cafeImages/{fileName}"
             };
 
-            // Persist
             _db.Cafes.Add(cafe);
             await _db.SaveChangesAsync();
 
-            // entity > CafeDto
             var dto = new CafeDto
             {
                 CafeId = cafe.CafeId,
@@ -96,12 +107,12 @@ namespace ClickCafeAPI.Controllers
                 PhoneNumber = cafe.PhoneNumber,
                 OperatingHours = cafe.OperatingHours,
                 Image = cafe.Image,
-                MenuItemIds = new List<int>()  
+                MenuItemIds = new List<int>()
             };
 
-            
             return CreatedAtAction(nameof(GetById), new { id = dto.CafeId }, dto);
         }
+
 
         // POST: api/Cafes/{id}/image
         [HttpPost("{id}/image")]

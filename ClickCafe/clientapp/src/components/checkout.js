@@ -4,10 +4,22 @@ import { useOrder } from "../context/OrderContext";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+const getRoundedTime = () => {
+    const now = new Date();
+    now.setSeconds(0);
+    now.setMilliseconds(0);
+
+    const minutes = now.getMinutes();
+    const remainder = 15 - (minutes % 15);
+    now.setMinutes(minutes + remainder);
+
+    return now;
+};
+
 function Checkout() {
     const { orderItems } = useOrder();
     const navigate = useNavigate();
-    const [pickupTime, setPickupTime] = useState("");
+    const [pickupTime, setPickupTime] = useState(getRoundedTime());
     const [paymentOption, setPaymentOption] = useState(null);
     const [error, setError] = useState("");
     const [userId, setUserId] = useState(null);
@@ -148,20 +160,8 @@ function Checkout() {
                     Select Pickup Time:
                 </label>
 
-                <button
-                    type="button"
-                    onClick={() => {
-                        const nowPlus15 = new Date(Date.now() + 15 * 60 * 1000);
-                        const localISO = nowPlus15.toISOString().slice(0, 16);
-                        setPickupTime(localISO);
-                    }}
-                    className="mb-2 bg-blue-500 text-white px-3 py-1 rounded text-sm"
-                >
-                    In 15 Minutes
-                </button>
-
                 <ReactDatePicker
-                    selected={pickupTime ? new Date(pickupTime) : null}
+                    selected={pickupTime}
                     onChange={(date) => setPickupTime(date)}
                     showTimeSelect
                     timeIntervals={15}

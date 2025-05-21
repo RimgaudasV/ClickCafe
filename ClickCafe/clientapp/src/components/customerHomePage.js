@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 const CustomerHomePage = () => {
@@ -51,23 +51,39 @@ const CustomerHomePage = () => {
     };
 
     return (
-        <div style={{ padding: "2rem" }}>
-            <h2>Welcome to ClickCafe!</h2>
-            <p>Start a new order or check your rewards and history.</p>
+        <div style={{ padding: "2rem", textAlign: "center" }}>
+            <h2 style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>
+                Welcome to <span style={{ color: "#2185d0" }}>ClickCafe</span>!
+            </h2>
+            <p style={{ fontSize: "1.1rem", color: "#555", marginBottom: "2rem" }}>
+                Start a new order, view your past orders, or check your rewards.
+            </p>
 
-            <ul>
-                <li><Link to="/newOrder">☕ Start New Order</Link></li>
-                <li><Link to="/history">📜 Order History</Link></li>
-            </ul>
+            <div style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "2rem",
+                flexWrap: "wrap"
+            }}>
+                <Link to="/cafes" style={cardStyle}>
+                    <div style={iconStyle}>☕</div>
+                    <h3>Start New Order</h3>
+                    <p>Create a fresh order from your favorite café.</p>
+                </Link>
 
-            <h3 style={{ marginTop: "2rem" }}>Active Orders</h3>
+                <Link to="/history" style={cardStyle}>
+                    <div style={iconStyle}>📜</div>
+                    <h3>Order History</h3>
+                    <p>Look back at your past orders.</p>
+                </Link>
+            </div>
+
+            <h3 style={{ marginTop: "3rem" }}>Active Orders</h3>
 
             {error && <p style={{ color: "red" }}>{error}</p>}
 
             {loading ? (
                 <p>Loading orders...</p>
-            ) : error ? (
-                <p style={{ color: "red" }}>{error}</p>
             ) : orders.length === 0 ? (
                 <p>No active orders yet.</p>
             ) : (
@@ -100,6 +116,25 @@ const CustomerHomePage = () => {
             )}
         </div>
     );
+};
+
+const cardStyle = {
+    display: "block",
+    width: "220px",
+    padding: "1.5rem",
+    borderRadius: "10px",
+    textDecoration: "none",
+    color: "#333",
+    backgroundColor: "#fff",
+    border: "1px solid #ddd",
+    boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
+    transition: "transform 0.2s, box-shadow 0.2s",
+    textAlign: "center"
+};
+
+const iconStyle = {
+    fontSize: "2.5rem",
+    marginBottom: "0.5rem"
 };
 
 export default CustomerHomePage;

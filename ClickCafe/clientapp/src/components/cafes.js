@@ -38,32 +38,54 @@ function Cafes() {
     if (error) return <p style={{ color: "red" }}>{error}</p>;
 
     return (
-        <div>
-            <h2>Select a Café</h2>
-            <ul>
+        <div style={{ padding: '1rem' }}>
+            <h2 style={{ textAlign: 'center', marginBottom: '1rem' }}>Available Cafés</h2>
+            <div style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: '1.5rem',
+                justifyContent: 'center'
+            }}>
                 {cafes.map(cafe => (
-                    <li
+                    <div
                         key={cafe.cafeId}
-                        style={{ cursor: "pointer", margin: "0.5rem 0" }}
                         onClick={() => navigate(`/menu/${cafe.cafeId}`)}
+                        style={{
+                            cursor: "pointer",
+                            width: '220px',
+                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
+                            transition: 'transform 0.2s, box-shadow 0.2s',
+                            backgroundColor: '#fff',
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = 'scale(1.03)';
+                            e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = 'scale(1)';
+                            e.currentTarget.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+                        }}
                     >
-                        {cafe.image && (
-                            <img src={cafe.image}
-                                alt={cafe.name}
-                                style={{
-                                    width: 100,
-                                    height: 100,
-                                    objectFit: 'cover',
-                                    marginRight: 8,
-                                }}
-                            />
-                        )}
-
-                        <strong>{cafe.name}</strong><br />
-                        {cafe.address}
-                    </li>
+                        <img
+                            src={cafe.image}
+                            alt={cafe.name}
+                            style={{
+                                width: '100%',
+                                height: '140px',
+                                objectFit: 'cover',
+                                borderTopLeftRadius: '8px',
+                                borderTopRightRadius: '8px'
+                            }}
+                        />
+                        <div style={{ padding: '0.75rem' }}>
+                            <h3 style={{ margin: '0 0 0.5rem' }}>{cafe.name}</h3>
+                            <p style={{ fontSize: '0.9rem', color: '#555' }}>{cafe.address}</p>
+                        </div>
+                    </div>
                 ))}
-            </ul>
+            </div>
         </div>
     );
 }

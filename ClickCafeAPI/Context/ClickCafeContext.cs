@@ -14,6 +14,7 @@ namespace ClickCafeAPI.Context
         public DbSet<User> Users { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<OrderAlert> OrderAlerts { get; set; }
         public DbSet<MenuItem> MenuItems { get; set; }
         public DbSet<CustomizationOption> CustomizationOptions { get; set; }
         public DbSet<Customization> Customizations { get; set; }

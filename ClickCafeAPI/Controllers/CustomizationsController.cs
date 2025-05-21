@@ -141,6 +141,22 @@ namespace ClickCafeAPI.Controllers
             return Ok(dtos);
         }
 
+        [HttpGet("orderItem/{orderItemId}/options")]
+        public async Task<ActionResult<IEnumerable<CustomizationOption>>> GetCustomizationOptions(int orderItemId)
+        {
+            var optionIds = await _db.OrderItemCustomizationOptions
+                .Where(o => o.OrderItemId == orderItemId)
+                .Select(o => o.CustomizationOptionId)
+                .ToListAsync();
+
+            var options = await _db.CustomizationOptions
+                .Where(opt => optionIds.Contains(opt.CustomizationOptionId))
+                .ToListAsync();
+
+            return Ok(options);
+        }
+
+
         // PUT: api/Customizations/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateCustomizationDto updateDto)

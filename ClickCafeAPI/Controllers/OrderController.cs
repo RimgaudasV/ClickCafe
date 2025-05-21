@@ -81,6 +81,7 @@ namespace ClickCafeAPI.Controllers
             {
                 OrderId = o.OrderId,
                 UserId = o.UserId,
+                CafeId = o.CafeId,
                 OrderDateTime = o.OrderDateTime,
                 Status = o.Status,
                 PaymentStatus = o.PaymentStatus,
@@ -266,6 +267,25 @@ namespace ClickCafeAPI.Controllers
 
             order.Status = dto.Status;
             await _db.SaveChangesAsync();
+
+            // Alert info
+            string? text = dto.Status switch
+            {
+                OrderStatus.Ready => $"Order {order.OrderId} is ready for pickup",
+                OrderStatus.Canceled => $"Order {order.OrderId} was canceled",
+                _ => null
+            };
+
+            if (text is not null)
+            {
+                _db.OrderAlerts.Add(new OrderAlert
+                {
+                    UserId = order.UserId,
+                    OrderId = order.OrderId,
+                    Text = text
+                });
+                await _db.SaveChangesAsync();
+            }
 
             return NoContent();
         }

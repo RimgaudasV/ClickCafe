@@ -1,4 +1,5 @@
 ﻿import { Link, useNavigate } from 'react-router-dom';
+import Bell from './bell';
 
 function Navbar({ user, setUser }) {
     const navigate = useNavigate();
@@ -48,6 +49,8 @@ function Navbar({ user, setUser }) {
             </div>
 
             <div className="right menu">
+
+                <Bell />
                 <button className="ui red button" onClick={handleLogoutClick}>
                     Logout
                 </button>

@@ -1,12 +1,14 @@
 ﻿import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOrder } from "../context/OrderContext";
+import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 function Checkout() {
     const { orderItems } = useOrder();
     const navigate = useNavigate();
     const [pickupTime, setPickupTime] = useState("");
-    const [paymentOption, setPaymentOption] = useState(null); // Initialize as null
+    const [paymentOption, setPaymentOption] = useState(null);
     const [error, setError] = useState("");
     const [userId, setUserId] = useState(null);
     const [loadingUser, setLoadingUser] = useState(true);
@@ -107,6 +109,18 @@ function Checkout() {
         }
     };
 
+    const getMinTime = () => {
+        const now = new Date();
+        const rounded = new Date(Math.ceil(now.getTime() / (15 * 60 * 1000)) * (15 * 60 * 1000));
+        return rounded;
+    };
+
+    const getMaxTime = () => {
+        const endOfDay = new Date();
+        endOfDay.setHours(23, 45, 0, 0); // last slot at 23:45
+        return endOfDay;
+    };
+
     if (loadingUser) {
         return <div>Loading user information...</div>;
     }
@@ -114,7 +128,6 @@ function Checkout() {
         <div className="p-6">
             <h2 className="text-2xl font-semibold mb-4">Checkout</h2>
 
-            {/* Order Items Summary */}
             <h3 className="text-lg font-semibold mb-2">Your Order:</h3>
             {orderItems.length > 0 ? (
                 <ul>
@@ -130,21 +143,37 @@ function Checkout() {
 
             <p className="mb-4">Total: <strong>€{totalAmount.toFixed(2)}</strong></p>
 
-            {/* Pickup Time Selection */}
             <div className="mb-4">
                 <label htmlFor="pickupTime" className="block text-gray-700 text-sm font-bold mb-2">
                     Select Pickup Time:
                 </label>
-                <input
-                    type="datetime-local"
-                    id="pickupTime"
-                    value={pickupTime}
-                    onChange={(e) => setPickupTime(e.target.value)}
+
+                <button
+                    type="button"
+                    onClick={() => {
+                        const nowPlus15 = new Date(Date.now() + 15 * 60 * 1000);
+                        const localISO = nowPlus15.toISOString().slice(0, 16);
+                        setPickupTime(localISO);
+                    }}
+                    className="mb-2 bg-blue-500 text-white px-3 py-1 rounded text-sm"
+                >
+                    In 15 Minutes
+                </button>
+
+                <ReactDatePicker
+                    selected={pickupTime ? new Date(pickupTime) : null}
+                    onChange={(date) => setPickupTime(date)}
+                    showTimeSelect
+                    timeIntervals={15}
+                    minDate={new Date()}
+                    minTime={getMinTime()}
+                    maxTime={getMaxTime()}
+                    dateFormat="Pp"
                     className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                    placeholderText="Select pickup time"
                 />
             </div>
 
-            {/* Payment Option Selection */}
             <div className="mb-4">
                 <label className="block text-gray-700 text-sm font-bold mb-2">
                     Select Payment Option:

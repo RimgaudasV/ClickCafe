@@ -9,6 +9,7 @@ using ClickCafeAPI.DTOs;
 namespace ClickCafeAPI.Controllers
 {
     [ApiController]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Route("api/payments")]
     public class PaymentProcessingController : ControllerBase
     {

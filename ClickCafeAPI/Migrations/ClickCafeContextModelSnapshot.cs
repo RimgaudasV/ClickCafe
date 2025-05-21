@@ -143,7 +143,7 @@ namespace ClickCafeAPI.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
 
-                    b.Property<int>("CafeId")
+                    b.Property<int>("CafeId");
 
                     b.Property<int>("ItemQuantity")
 

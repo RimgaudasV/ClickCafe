@@ -22,8 +22,8 @@ import OrderConfirmationPage from './components/orderConfirmation';
 import BaristaRoute from './BaristaRoute';
 import CustomerHomePage from './components/customerHomePage';
 import BaristaHomePage from './components/baristaHomePage';
+import OrderMenu from './components/orderMenu';
 
-import { OrderProvider } from './context/OrderContext';
 import { Navigate } from 'react-router-dom';
 
 
@@ -55,6 +55,7 @@ function App() {
     return (
         <Router>
             {user && <Navbar user={user} setUser={setUser} />}
+            <OrderMenu/>
             <Routes>
                 <Route path="/login" element={<LoginPage setUser={setUser} user={user} />} />
                 <Route path="/register" element={<RegisterPage />} />
@@ -81,23 +82,17 @@ function App() {
                 } />
                 <Route path="/menu/:cafeId" element={
                     <PrivateRoute user={user}>
-                        <OrderProvider>
                             <Menu />
-                        </OrderProvider>
                     </PrivateRoute>
                 } />
                 <Route path="/menuItem/:itemId" element={
                     <PrivateRoute user={user}>
-                        <OrderProvider>
                             <MenuItem />
-                        </OrderProvider>
                     </PrivateRoute>
                 } />
                 <Route path="/checkout" element={
                     <PrivateRoute user={user}>
-                        <OrderProvider>
                             <Checkout />
-                        </OrderProvider>
                     </PrivateRoute>
                 } />
                 <Route path="/status" element={
@@ -112,9 +107,7 @@ function App() {
                 } />
                 <Route path="/history" element={
                     <PrivateRoute user={user}>
-                        <OrderProvider>
                             <History />
-                        </OrderProvider>
                     </PrivateRoute>
                 } />
                 <Route path="/account" element={

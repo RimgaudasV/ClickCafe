@@ -1,11 +1,21 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useOrder } from "../context/OrderContext";
 
 function Cafes() {
     const [cafes, setCafes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const navigate = useNavigate();
+    const { orderItems, orderCafeId } = useOrder();
+
+    useEffect(() => {
+        console.log(orderItems);
+        console.log(orderCafeId)
+        if (orderItems.length > 0 && orderCafeId) {
+            navigate(`/menu/${orderCafeId}`);
+        }
+    }, [orderItems, orderCafeId, navigate]);
 
     useEffect(() => {
         fetch("https://localhost:7281/api/Cafes", { credentials: "include" })

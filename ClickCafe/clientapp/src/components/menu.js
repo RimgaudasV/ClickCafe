@@ -1,6 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import OrderReview from './orderReview';
 function Menu() {
     const { cafeId } = useParams();
     const [cafe, setCafe] = useState(null);
@@ -50,7 +49,6 @@ function Menu() {
 
     return (
         <div>
-            <OrderReview/>
             <button onClick={() => navigate("/cafes")}>
                 &larr; Back to cafés
             </button>
@@ -61,7 +59,7 @@ function Menu() {
                         <option value="">All</option>
                         <option value="1">Coffee</option>
                         <option value="2">Tea</option>
-                        <option value="2">Smoothie</option>
+                        <option value="3">Smoothie</option>
                     </select>
                 </label>
 

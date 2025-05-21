@@ -1,7 +1,7 @@
 ﻿import { useOrder } from "../context/OrderContext";
 import { useNavigate } from 'react-router-dom';
 
-function OrderReview() {
+function OrderMenu() {
     const { orderItems, removeFromOrder } = useOrder();
     const navigate = useNavigate();
 
@@ -66,4 +66,4 @@ function OrderReview() {
     );
 }
 
-export default OrderReview;
+export default OrderMenu;

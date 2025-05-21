@@ -3,9 +3,13 @@
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
+    const [orderCafeId, setOrderCafeId] = useState([]);
     const [orderItems, setOrderItems] = useState([]);
 
-    const addToOrder = (item) => {
+    const addToOrder = (item, cafeId) => {
+        if (orderItems.length === 0) {
+            setOrderCafeId(cafeId);
+        }
         setOrderItems(prev => [...prev, item]);
     };
 
@@ -16,7 +20,7 @@ export const OrderProvider = ({ children }) => {
     };
 
     return (
-        <OrderContext.Provider value={{ orderItems, addToOrder, clearOrder, removeFromOrder }}>
+        <OrderContext.Provider value={{ orderItems, addToOrder, clearOrder, removeFromOrder, orderCafeId, setOrderCafeId }}>
             {children}
         </OrderContext.Provider>
     );

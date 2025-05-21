@@ -11,7 +11,8 @@ function History() {
     const OrderStatus = {
         1: "Pending",
         2: "Completed",
-        3: "Canceled"
+        3: "Canceled",
+        4: "Ready"
     };
     const PaymentStatus = {
         1: "Pending",

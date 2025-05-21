@@ -10,6 +10,7 @@ const StatusPage = () => {
             case 1: return "Pending";
             case 2: return "Completed";
             case 3: return "Canceled";
+            case 4: return "Ready";
             default: return "Unknown";
         }
     };
@@ -55,6 +56,10 @@ const StatusPage = () => {
         if (window.confirm("Are you sure you want to cancel this order?")) {
             updateStatus(orderId, 3);
         }
+    };
+
+    const handleReady = (orderId) => {
+        updateStatus(orderId, 4);
     };
 
     const handleComplete = (orderId) => {
@@ -107,9 +112,9 @@ const StatusPage = () => {
                                     {order.status === 1 && order.orderId !== updatingOrderId && (
                                         <>
                                             <button
-                                                onClick={() => handleComplete(order.orderId)}
+                                                onClick={() => handleReady(order.orderId)} // Set to "Ready"
                                                 style={{
-                                                    background: 'green',
+                                                    background: 'orange',
                                                     color: 'white',
                                                     border: 'none',
                                                     padding: '5px 8px',
@@ -118,7 +123,7 @@ const StatusPage = () => {
                                                     borderRadius: '4px'
                                                 }}
                                             >
-                                                ✅ Complete
+                                                🕑 Set Ready
                                             </button>
                                             <button
                                                 onClick={() => handleCancel(order.orderId)}
@@ -135,6 +140,22 @@ const StatusPage = () => {
                                                 ❌
                                             </button>
                                         </>
+                                    )}
+                                    {order.status === 4 && order.orderId !== updatingOrderId && (
+                                        <button
+                                            onClick={() => handleComplete(order.orderId)}
+                                            style={{
+                                                background: 'green',
+                                                color: 'white',
+                                                border: 'none',
+                                                padding: '5px 8px',
+                                                marginRight: '8px',
+                                                cursor: 'pointer',
+                                                borderRadius: '4px'
+                                            }}
+                                        >
+                                            ✅ Complete
+                                        </button>
                                     )}
                                     <button
                                         onClick={() => deleteOrder(order.orderId)}

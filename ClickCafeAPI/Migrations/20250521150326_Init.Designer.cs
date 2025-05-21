@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ClickCafeAPI.Migrations
 {
     [DbContext(typeof(ClickCafeContext))]
-    [Migration("20250515172517_migracija")]
-    partial class migracija
+    [Migration("20250521150326_Init")]
+    partial class Init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -148,6 +148,9 @@ namespace ClickCafeAPI.Migrations
                     b.Property<int>("CafeId")
                         .HasColumnType("int");
 
+                    b.Property<int>("ItemQuantity")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("OrderDateTime")
                         .HasColumnType("datetime2");
 
@@ -205,6 +208,19 @@ namespace ClickCafeAPI.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderItemCustomizationOption", b =>
+                {
+                    b.Property<int>("OrderItemId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CustomizationOptionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("OrderItemId", "CustomizationOptionId");
+
+                    b.ToTable("OrderItemCustomizationOptions");
                 });
 
             modelBuilder.Entity("ClickCafeAPI.Models.Payment", b =>
@@ -331,21 +347,6 @@ namespace ClickCafeAPI.Migrations
                     b.HasIndex("MenuItemsMenuItemId");
 
                     b.ToTable("MenuItemCustomizations", (string)null);
-                });
-
-            modelBuilder.Entity("CustomizationOrderItem", b =>
-                {
-                    b.Property<int>("CustomizationsCustomizationId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderItemsOrderItemId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CustomizationsCustomizationId", "OrderItemsOrderItemId");
-
-                    b.HasIndex("OrderItemsOrderItemId");
-
-                    b.ToTable("OrderItemCustomizations", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -533,6 +534,15 @@ namespace ClickCafeAPI.Migrations
                     b.Navigation("MenuItem");
                 });
 
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderItemCustomizationOption", b =>
+                {
+                    b.HasOne("ClickCafeAPI.Models.OrderItem", null)
+                        .WithMany("SelectedOptions")
+                        .HasForeignKey("OrderItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("ClickCafeAPI.Models.Payment", b =>
                 {
                     b.HasOne("ClickCafeAPI.Models.Order", "Order")
@@ -565,21 +575,6 @@ namespace ClickCafeAPI.Migrations
                     b.HasOne("ClickCafeAPI.Models.MenuItem", null)
                         .WithMany()
                         .HasForeignKey("MenuItemsMenuItemId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("CustomizationOrderItem", b =>
-                {
-                    b.HasOne("ClickCafeAPI.Models.Customization", null)
-                        .WithMany()
-                        .HasForeignKey("CustomizationsCustomizationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ClickCafeAPI.Models.OrderItem", null)
-                        .WithMany()
-                        .HasForeignKey("OrderItemsOrderItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -653,6 +648,11 @@ namespace ClickCafeAPI.Migrations
             modelBuilder.Entity("ClickCafeAPI.Models.Order", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderItem", b =>
+                {
+                    b.Navigation("SelectedOptions");
                 });
 
             modelBuilder.Entity("ClickCafeAPI.Models.User", b =>

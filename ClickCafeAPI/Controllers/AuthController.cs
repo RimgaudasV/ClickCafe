@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using ClickCafeAPI.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace ClickCafeAPI.Controllers
 {
@@ -31,23 +32,34 @@ namespace ClickCafeAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: true, lockoutOnFailure: false);
-            if (result.Succeeded)
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-
-                return Ok(new
-                {
-                    id = user.Id,
-                    username = user.UserName,
-                    email = user.Email,
-                    role = user.Role.ToString()
-                });
-
+                return Unauthorized("Invalid login attempt");
             }
 
-            return BadRequest("Invalid login attempt");
+            var claims = new List<Claim>
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id),
+        new Claim(ClaimTypes.Name, user.UserName ?? ""),
+        new Claim(ClaimTypes.Email, user.Email ?? ""),
+        new Claim(ClaimTypes.Role, user.Role.ToString())
+    };
+
+            var claimsIdentity = new ClaimsIdentity(claims, IdentityConstants.ApplicationScheme);
+            var principal = new ClaimsPrincipal(claimsIdentity);
+
+            await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, principal);
+
+            return Ok(new
+            {
+                id = user.Id,
+                username = user.UserName,
+                email = user.Email,
+                role = user.Role.ToString()
+            });
         }
+
 
 
 

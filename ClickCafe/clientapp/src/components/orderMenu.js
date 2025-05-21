@@ -10,16 +10,16 @@ function OrderMenu() {
     return (
         <div style={{
             position: "fixed",
-            top: "0",
-            right: "0",
-            height: "100%",
+            top: "80px",
+            right: 0,
+            height: "calc(100% - 60px)",
             width: "300px",
             padding: "1rem",
             backgroundColor: "#f9f9f9",
             borderLeft: "1px solid #ccc",
             overflowY: "auto",
             boxShadow: "-2px 0 6px rgba(0,0,0,0.1)",
-            zIndex: 1000
+            zIndex: 900
         }}>
             <h3>Your Order</h3>
             <ul>

@@ -1,5 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useOrder } from "../context/OrderContext";
+import ConfirmModal from './confirmModal';
 function Menu() {
     const { cafeId } = useParams();
     const [cafe, setCafe] = useState(null);
@@ -9,6 +11,8 @@ function Menu() {
     const navigate = useNavigate();
     const [sortOrder, setSortOrder] = useState("name");
     const [category, setCategory] = useState("");
+    const [showConfirm, setShowConfirm] = useState(false);
+    const { clearOrder, orderItems } = useOrder();
 
 
 
@@ -47,11 +51,35 @@ function Menu() {
     if (error) return <p style={{ color: "red" }}>{error}</p>;
     if (!cafe) return <p>Café not found.</p>;
 
+    const confirmNavigation = () => {
+        setShowConfirm(false);
+        clearOrder()
+        navigate("/cafes");
+    };
+
+    const confirmationModal = () => setShowConfirm(true)
+
+    const handleBackButton = () => {
+        if (orderItems.length > 0) {
+            setShowConfirm(true);
+        } else {
+            confirmNavigation();
+        }
+    };
+
     return (
         <div>
-            <button onClick={() => navigate("/cafes")}>
+            <button onClick={handleBackButton}>
                 &larr; Back to cafés
             </button>
+            <ConfirmModal
+                show={showConfirm}
+                onCancel={() => setShowConfirm(false)}
+                onConfirm={confirmNavigation}
+                title="Are you sure?"
+                message="Do you want to go back to the cafes page? Your current order will be lost."
+            />
+
             <div style={{margin: "10px"}}>
                 <label>
                     Category:

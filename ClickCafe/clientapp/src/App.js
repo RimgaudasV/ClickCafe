@@ -55,84 +55,86 @@ function App() {
     return (
         <Router>
             {user && <Navbar user={user} setUser={setUser} />}
-            <OrderMenu/>
-            <Routes>
-                <Route path="/login" element={<LoginPage setUser={setUser} user={user} />} />
-                <Route path="/register" element={<RegisterPage />} />
+            <OrderMenu />
+            <div style={{ paddingTop: "90px" }}>
+                <Routes >
+                    <Route path="/login" element={<LoginPage setUser={setUser} user={user} />} />
+                    <Route path="/register" element={<RegisterPage />} />
 
-                <Route path="/" element={
-                    user?.role === "Barista"
-                        ? <Navigate to="/barista" />
-                        : <Navigate to="/home" />
-                } />
-                <Route path="/barista" element={
-                    <BaristaRoute user={user}>
-                        <BaristaHomePage user={user} />
-                    </BaristaRoute>
-                } />
-                <Route path="/home" element={
-                    <PrivateRoute user={user}>
-                        <CustomerHomePage />
-                    </PrivateRoute>
-                } />
-                <Route path="/cafes" element={
-                    <PrivateRoute user={user}>
-                        <Cafes />
-                    </PrivateRoute>
-                } />
-                <Route path="/menu/:cafeId" element={
-                    <PrivateRoute user={user}>
+                    <Route path="/" element={
+                        user?.role === "Barista"
+                            ? <Navigate to="/barista" />
+                            : <Navigate to="/home" />
+                    } />
+                    <Route path="/barista" element={
+                        <BaristaRoute user={user}>
+                            <BaristaHomePage user={user} />
+                        </BaristaRoute>
+                    } />
+                    <Route path="/home" element={
+                        <PrivateRoute user={user}>
+                            <CustomerHomePage />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/cafes" element={
+                        <PrivateRoute user={user}>
+                            <Cafes />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/menu/:cafeId" element={
+                        <PrivateRoute user={user}>
                             <Menu />
-                    </PrivateRoute>
-                } />
-                <Route path="/menuItem/:itemId" element={
-                    <PrivateRoute user={user}>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/menuItem/:itemId" element={
+                        <PrivateRoute user={user}>
                             <MenuItem />
-                    </PrivateRoute>
-                } />
-                <Route path="/checkout" element={
-                    <PrivateRoute user={user}>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/checkout" element={
+                        <PrivateRoute user={user}>
                             <Checkout />
-                    </PrivateRoute>
-                } />
-                <Route path="/status" element={
-                    <BaristaRoute user={user}>
-                        <Status />
-                    </BaristaRoute>
-                } />
-                <Route path="/rewards" element={
-                    <PrivateRoute user={user}>
-                        <Rewards />
-                    </PrivateRoute>
-                } />
-                <Route path="/history" element={
-                    <PrivateRoute user={user}>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/status" element={
+                        <BaristaRoute user={user}>
+                            <Status />
+                        </BaristaRoute>
+                    } />
+                    <Route path="/rewards" element={
+                        <PrivateRoute user={user}>
+                            <Rewards />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/history" element={
+                        <PrivateRoute user={user}>
                             <History />
-                    </PrivateRoute>
-                } />
-                <Route path="/account" element={
-                    <PrivateRoute user={user}>
-                        <Account />
-                    </PrivateRoute>
-                } />
-                <Route path="/settings" element={
-                    <PrivateRoute user={user}>
-                        <Settings />
-                    </PrivateRoute>
-                } />
-                <Route path="/order/:orderId" element={
-                    <PrivateRoute user={user}>
-                        <OrderDetails />
-                    </PrivateRoute>
-                } />
-                <Route path="/payment/:orderId" element={<PaymentPage />} />
-                <Route path="/payment-result" element={<PaymentResultPage />} />
-                <Route path="/order/:orderId/confirmation" element={
-                    <PrivateRoute user={user}>
-                        <OrderConfirmationPage />
-                    </PrivateRoute>
-                } />
-            </Routes>
+                        </PrivateRoute>
+                    } />
+                    <Route path="/account" element={
+                        <PrivateRoute user={user}>
+                            <Account />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/settings" element={
+                        <PrivateRoute user={user}>
+                            <Settings />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/order/:orderId" element={
+                        <PrivateRoute user={user}>
+                            <OrderDetails />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/payment/:orderId" element={<PaymentPage />} />
+                    <Route path="/payment-result" element={<PaymentResultPage />} />
+                    <Route path="/order/:orderId/confirmation" element={
+                        <PrivateRoute user={user}>
+                            <OrderConfirmationPage />
+                        </PrivateRoute>
+                    } />
+                </Routes>
+            </div>
         </Router>
     );
 }

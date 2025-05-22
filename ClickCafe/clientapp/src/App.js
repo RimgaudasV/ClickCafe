@@ -60,7 +60,7 @@ function App() {
                 >
                     <Navbar user={user} setUser={setUser} />
                 </div>}
-                <OrderMenu />
+                {user && <OrderMenu />}
                 {/* Push page content down below navbar */}
                 <div style={{ paddingTop: "100px" }}>
                     <Routes>

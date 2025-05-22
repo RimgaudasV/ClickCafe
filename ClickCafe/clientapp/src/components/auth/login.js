@@ -8,7 +8,6 @@ function LoginPage({ setUser, user }) {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    // Redirect after login — App.js will use user.role to handle route
     useEffect(() => {
         if (user) {
             navigate("/", { replace: true });
@@ -21,7 +20,7 @@ function LoginPage({ setUser, user }) {
         const data = await login(email, password, setUser, setError);
 
         if (data) {
-            setUser(data); // this triggers the App.js redirect
+            setUser(data);
         }
     };
 

@@ -1,30 +1,35 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Bell from './bell';
+import { useOrder } from "../context/OrderContext";
 
 function Navbar({ user, setUser }) {
     const navigate = useNavigate();
+    const { clearOrder } = useOrder();
 
     const handleLogoutClick = async () => {
         await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+        clearOrder();
         setUser(null);
         navigate('/login');
     };
 
     return (
-        <nav
+        <div
+            className="ui menu"
             style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: '1.2rem 2.5rem',
-                fontSize: '1.05rem',
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                backdropFilter: 'blur(10px)',
-                boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
-                borderBottom: '1px solid #ddd',
-                position: 'relative',
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "80px",
+                zIndex: 1000,
+                display: "flex",
+                alignItems: "center",
+                padding: 30
             }}
         >
+
+
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                 {user?.role === "Admin" ? (
                     <Link to="/admin" style={linkStyle}>Admin Panel</Link>
@@ -45,7 +50,8 @@ function Navbar({ user, setUser }) {
                 <Link to="/settings" style={linkStyle}>Settings</Link>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div className="right menu">
+
                 <Bell />
                 <button
                     onClick={handleLogoutClick}
@@ -65,7 +71,8 @@ function Navbar({ user, setUser }) {
                     Logout
                 </button>
             </div>
-        </nav>
+        </div>
+
     );
 }
 

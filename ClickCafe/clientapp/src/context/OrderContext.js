@@ -3,6 +3,7 @@
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
+
     const [orderItems, setOrderItems] = useState(() => {
         const stored = localStorage.getItem("orderItems");
         return stored ? JSON.parse(stored) : [];
@@ -12,7 +13,14 @@ export const OrderProvider = ({ children }) => {
         localStorage.setItem("orderItems", JSON.stringify(orderItems));
     }, [orderItems]);
 
-    const addToOrder = (item) => {
+    const [orderCafeId, setOrderCafeId] = useState([]);
+    const [orderItems, setOrderItems] = useState([]);
+
+
+    const addToOrder = (item, cafeId) => {
+        if (orderItems.length === 0) {
+            setOrderCafeId(cafeId);
+        }
         setOrderItems(prev => [...prev, item]);
     };
 
@@ -23,7 +31,7 @@ export const OrderProvider = ({ children }) => {
     };
 
     return (
-        <OrderContext.Provider value={{ orderItems, addToOrder, clearOrder, removeFromOrder }}>
+        <OrderContext.Provider value={{ orderItems, addToOrder, clearOrder, removeFromOrder, orderCafeId, setOrderCafeId }}>
             {children}
         </OrderContext.Provider>
     );

@@ -12,9 +12,8 @@ function MenuItem() {
     const [quantity, setQuantity] = useState(1);
     const [selectedOptionIds, setSelectedOptionIds] = useState([]);
 
-    const { orderItems, addToOrder, removeFromOrder } = useOrder();
+    const { orderItems, orderCafeId, setOrderCafeId, addToOrder, removeFromOrder } = useOrder();
     const navigate = useNavigate();
-
 
     const location = useLocation();
     const orderItemIndex = location.state?.orderItemIndex;
@@ -84,7 +83,7 @@ function MenuItem() {
 
     const handleAddToOrder = () => {
         //const selectedOptions = customizations
-        //    .flatMap(c => c.options) 
+        //    .flatMap(c => c.options)
         //    .filter(opt => selectedOptionIds.includes(opt.customizationOptionId));
 
         const newItem = {
@@ -98,7 +97,7 @@ function MenuItem() {
         if (orderItemIndex != null) {
             removeFromOrder(orderItemIndex)
         }
-        addToOrder(newItem);
+        addToOrder(newItem, item.cafeId);
         navigate(`/menu/${item.cafeId}`);
     };
 

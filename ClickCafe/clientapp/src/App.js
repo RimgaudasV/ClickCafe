@@ -22,9 +22,10 @@ import OrderConfirmationPage from './components/orderConfirmation';
 import BaristaRoute from './BaristaRoute';
 import CustomerHomePage from './components/customerHomePage';
 import BaristaHomePage from './components/baristaHomePage';
+import OrderMenu from './components/orderMenu';
+
 import AdminRoute from './AdminRoute';
 import AdminPanel from './components/adminPanel';
-import { OrderProvider } from './context/OrderContext';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -46,8 +47,7 @@ function App() {
     return (
         <Router>
             <>
-                {/* Always-visible fixed navbar */}
-                <div
+                {user && <div
                     style={{
                         position: 'fixed',
                         top: 0,
@@ -59,8 +59,8 @@ function App() {
                     }}
                 >
                     <Navbar user={user} setUser={setUser} />
-                </div>
-
+                </div>}
+                <OrderMenu />
                 {/* Push page content down below navbar */}
                 <div style={{ paddingTop: "100px" }}>
                     <Routes>
@@ -91,23 +91,17 @@ function App() {
                         } />
                         <Route path="/menu/:cafeId" element={
                             <PrivateRoute user={user}>
-                                <OrderProvider>
-                                    <Menu />
-                                </OrderProvider>
+                                <Menu />
                             </PrivateRoute>
                         } />
                         <Route path="/menuItem/:itemId" element={
                             <PrivateRoute user={user}>
-                                <OrderProvider>
-                                    <MenuItem />
-                                </OrderProvider>
+                                <MenuItem />
                             </PrivateRoute>
                         } />
                         <Route path="/checkout" element={
                             <PrivateRoute user={user}>
-                                <OrderProvider>
-                                    <Checkout />
-                                </OrderProvider>
+                                <Checkout />
                             </PrivateRoute>
                         } />
                         <Route path="/status" element={
@@ -122,9 +116,7 @@ function App() {
                         } />
                         <Route path="/history" element={
                             <PrivateRoute user={user}>
-                                <OrderProvider>
-                                    <History />
-                                </OrderProvider>
+                                <History />
                             </PrivateRoute>
                         } />
                         <Route path="/account" element={

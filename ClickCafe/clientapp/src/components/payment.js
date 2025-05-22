@@ -2,6 +2,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { useOrder } from "../context/OrderContext";
 
 const stripePromise = loadStripe('pk_test_51RNGQL7m4RMaRF2E54EWWpBPU4F83zkiqyX1XRwAgNpHNEhARGsNgGhb0FumOhU1nzs7tBYDuabqOz3O27uIR70E00oXFQR1Fj');
 
@@ -10,6 +11,7 @@ function CheckoutForm({ paymentId, onSuccess }) {
     const elements = useElements();
     const [paymentStatus, setPaymentStatus] = useState('idle');
     const [errorMessage, setErrorMessage] = useState('');
+    const { clearOrder } = useOrder();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -69,6 +71,7 @@ function PaymentPage() {
     const { orderId, totalAmount, selectedPaymentOption, paymentId } = location.state || {};
     const [errorMessage, setErrorMessage] = useState('');
     const [processingCash, setProcessingCash] = useState(false);
+    const { clearOrder } = useOrder();
 
     useEffect(() => {
         if (!orderId || totalAmount === undefined || !selectedPaymentOption || !paymentId) {
@@ -77,6 +80,7 @@ function PaymentPage() {
     }, [orderId, totalAmount, selectedPaymentOption, paymentId]);
 
     const handlePaymentSuccess = () => {
+        clearOrder();
         navigate(`/order/${orderId}/confirmation`);
     };
 
@@ -85,6 +89,7 @@ function PaymentPage() {
         try {
             const res = await fetch(`/api/orders/${orderId}/pay-cash`, { method: 'POST' });
             if (res.ok) {
+                clearOrder();
                 navigate(`/order/${orderId}/confirmation`);
             } else {
                 const errorData = await res.json();

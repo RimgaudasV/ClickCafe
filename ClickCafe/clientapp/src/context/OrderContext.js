@@ -1,10 +1,21 @@
-﻿import React, { createContext, useContext, useState } from "react";
+﻿import React, { createContext, useContext, useState, useEffect } from "react";
 
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
+
+    const [orderItems, setOrderItems] = useState(() => {
+        const stored = localStorage.getItem("orderItems");
+        return stored ? JSON.parse(stored) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem("orderItems", JSON.stringify(orderItems));
+    }, [orderItems]);
+
     const [orderCafeId, setOrderCafeId] = useState([]);
     const [orderItems, setOrderItems] = useState([]);
+
 
     const addToOrder = (item, cafeId) => {
         if (orderItems.length === 0) {

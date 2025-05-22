@@ -40,13 +40,9 @@ function CheckoutForm({ paymentId, onSuccess }) {
                 setPaymentStatus('failed');
                 setErrorMessage(result.error.message || 'Payment failed.');
             } else if (result.paymentIntent?.status === 'succeeded') {
-                setPaymentStatus('succeeded');
-                onSuccess(); // redirect handled in parent
-            }
-            if (result.paymentIntent?.status === 'succeeded') {
                 await fetch(`/api/payments/${paymentId}/mark-paid`, { method: 'POST' });
                 setPaymentStatus('succeeded');
-                onSuccess();
+                onSuccess(); // redirect handled in parent
             }
         } catch (err) {
             console.error(err);

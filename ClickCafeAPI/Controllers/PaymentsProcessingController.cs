@@ -70,6 +70,22 @@ namespace ClickCafeAPI.Controllers
 
             return Ok(new { clientSecret = intent.ClientSecret });
         }
+        [HttpPost("{paymentId}/mark-paid")]
+        public async Task<IActionResult> MarkAsPaid(int paymentId)
+        {
+            var payment = await _db.Payments.Include(p => p.Order)
+                .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
+
+            if (payment == null) return NotFound();
+
+            payment.PaymentStatus = PaymentStatus.Completed;
+            payment.Order.PaymentStatus = OrderPaymentStatus.Paid;
+            payment.PaymentDateTime = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+
+            return Ok();
+        }
 
         [HttpPost("{paymentId}/process-card")]
         public async Task<IActionResult> ProcessCardPayment(int paymentId, [FromBody] ProcessCardPaymentDto processDto)

@@ -43,6 +43,11 @@ function CheckoutForm({ paymentId, onSuccess }) {
                 setPaymentStatus('succeeded');
                 onSuccess(); // redirect handled in parent
             }
+            if (result.paymentIntent?.status === 'succeeded') {
+                await fetch(`/api/payments/${paymentId}/mark-paid`, { method: 'POST' });
+                setPaymentStatus('succeeded');
+                onSuccess();
+            }
         } catch (err) {
             console.error(err);
             setPaymentStatus('failed');

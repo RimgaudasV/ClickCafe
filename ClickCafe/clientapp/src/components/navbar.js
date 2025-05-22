@@ -49,28 +49,29 @@ function Navbar({ user, setUser }) {
                 <Link to="/account" style={linkStyle}>Account</Link>
                 <Link to="/settings" style={linkStyle}>Settings</Link>
             </div>
-
             <div className="right menu">
-
-                <Bell />
-                <button
-                    onClick={handleLogoutClick}
-                    style={{
-                        backgroundColor: '#db2828',
-                        color: '#fff',
-                        border: 'none',
-                        padding: '0.5rem 1rem',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        fontWeight: 'bold',
-                        transition: 'background-color 0.2s ease',
-                    }}
-                    onMouseEnter={e => e.target.style.backgroundColor = '#b91d1d'}
-                    onMouseLeave={e => e.target.style.backgroundColor = '#db2828'}
-                >
-                    Logout
-                </button>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <Bell />
+                    <button
+                        onClick={handleLogoutClick}
+                        style={{
+                            backgroundColor: '#db2828',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            transition: 'background-color 0.2s ease',
+                        }}
+                        onMouseEnter={e => e.target.style.backgroundColor = '#b91d1d'}
+                        onMouseLeave={e => e.target.style.backgroundColor = '#db2828'}
+                    >
+                        Logout
+                    </button>
+                </div>
             </div>
+
         </div>
 
     );

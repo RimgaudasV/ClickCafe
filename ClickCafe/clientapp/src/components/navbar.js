@@ -48,6 +48,8 @@ function Navbar({ user, setUser }) {
                 )}
                 <Link to="/account" style={linkStyle}>Account</Link>
                 <Link to="/settings" style={linkStyle}>Settings</Link>
+                <Link to="/about" style={linkStyle}>About</Link>
+
             </div>
             <div className="right menu">
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>

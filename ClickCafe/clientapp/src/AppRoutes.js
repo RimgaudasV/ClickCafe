@@ -24,6 +24,7 @@ import BaristaHomePage from './components/baristaHomePage';
 import OrderMenu from './components/orderMenu';
 import AdminRoute from './AdminRoute';
 import AdminPanel from './components/adminPanel';
+import About from './components/about';
 
 function AppRoutes({ user, setUser }) {
     const location = useLocation();
@@ -115,6 +116,11 @@ function AppRoutes({ user, setUser }) {
                     <Route path="/settings" element={
                         <PrivateRoute user={user}>
                             <Settings />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/about" element={
+                        <PrivateRoute user={user}>
+                            <About />
                         </PrivateRoute>
                     } />
                     <Route path="/order/:orderId" element={

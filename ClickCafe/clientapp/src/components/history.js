@@ -96,6 +96,7 @@ function History() {
             <table className="min-w-full border border-gray-300">
                 <thead>
                     <tr className="bg-gray-100">
+                        <th className="px-4 py-2 border">Id</th>
                         <th className="px-4 py-2 border">Order Date & Time</th>
                         <th className="px-4 py-2 border">Pickup Date & Time</th>
                         <th className="px-4 py-2 border">Item Quantity</th>
@@ -109,6 +110,7 @@ function History() {
                 <tbody>
                     {orders.map((order) => (
                         <tr key={order.orderId} className="text-center border-t">
+                            <td className="px-4 py-2 border">{order.orderId}</td>
                             <td className="px-4 py-2 border">{new Date(order.orderDateTime).toLocaleString()}</td>
                             <td className="px-4 py-2 border">{new Date(order.pickupDateTime).toLocaleString()}</td>
                             <td className="px-4 py-2 border">{order.itemQuantity}</td>

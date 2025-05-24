@@ -105,6 +105,7 @@ const CustomerHomePage = () => {
                                     <p>Status: <strong>{getStatusLabel(order.status)}</strong></p>
                                     <p>Pickup time: {new Date(order.pickupDateTime).toLocaleString()}</p>
                                     <p>Total: €{order.totalAmount.toFixed(2)}</p>
+                                    <p>Id: {order.orderId}</p>
                                     <Link to={`/order/${order.orderId}`} className="ui button" state={{ totalAmount: order.totalAmount }}>
                                         View Order
                                     </Link>

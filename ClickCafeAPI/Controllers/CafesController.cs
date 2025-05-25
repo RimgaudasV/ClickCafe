@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using ClickCafeAPI.Context;
-using ClickCafeAPI.DTOs;
-using ClickCafeAPI.Models;
+using ClickCafeAPI.Models.CafeModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Hosting;
+using ClickCafeAPI.DTOs.CafeDTOs;
 
 namespace ClickCafeAPI.Controllers
 {

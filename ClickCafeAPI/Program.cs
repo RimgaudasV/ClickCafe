@@ -1,6 +1,5 @@
 using ClickCafeAPI.Context;
-using ClickCafeAPI.Identity;
-using ClickCafeAPI.Models;
+using ClickCafeAPI.Models.UserModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;

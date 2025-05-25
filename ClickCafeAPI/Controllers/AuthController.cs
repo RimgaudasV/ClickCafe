@@ -1,5 +1,4 @@
-﻿using ClickCafeAPI.Models;
-using ClickCafeAPI.ViewModels;
+﻿using ClickCafeAPI.ViewModels;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using ClickCafeAPI.Context;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
+using ClickCafeAPI.Models.UserModels;
 
 namespace ClickCafeAPI.Controllers
 {

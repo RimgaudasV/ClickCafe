@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ClickCafeAPI.Context;
-using ClickCafeAPI.Models;
 using Stripe;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using ClickCafeAPI.DTOs;
+using ClickCafeAPI.DTOs.PaymentDTOs;
+using ClickCafeAPI.Models.OrderModels;
+using ClickCafeAPI.Models.PaymentModels;
 
 namespace ClickCafeAPI.Controllers
 {

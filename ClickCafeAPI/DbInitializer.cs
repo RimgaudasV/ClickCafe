@@ -1,4 +1,4 @@
-﻿using ClickCafeAPI.Models;
+﻿using ClickCafeAPI.Models.UserModels;
 using Microsoft.AspNetCore.Identity;
 
 public static class DbInitializer

@@ -1,6 +1,7 @@
 ﻿using ClickCafeAPI.Context;
-using ClickCafeAPI.DTOs;
-using ClickCafeAPI.Models;
+using ClickCafeAPI.DTOs.MenuDTOs.CustomizationDTOs;
+using ClickCafeAPI.Models.MenuModels;
+using ClickCafeAPI.Models.MenuModels.CustomizationModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

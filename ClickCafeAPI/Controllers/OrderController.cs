@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using ClickCafeAPI.Context;
-using ClickCafeAPI.Models;
-using ClickCafeAPI.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using ClickCafeAPI.DTOs.OrderDTOs;
+using ClickCafeAPI.DTOs.PaymentDTOs;
+using ClickCafeAPI.Models.OrderModels.OrderItemModels;
+using ClickCafeAPI.Models.OrderModels;
+using ClickCafeAPI.Models.PaymentModels;
 
 namespace ClickCafeAPI.Controllers
 {

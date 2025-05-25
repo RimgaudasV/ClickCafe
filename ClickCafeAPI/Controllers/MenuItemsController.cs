@@ -2,8 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using ClickCafeAPI.Context;
-using ClickCafeAPI.DTOs;
-using ClickCafeAPI.Models;
+using ClickCafeAPI.DTOs.MenuDTOs;
+using ClickCafeAPI.Models.MenuModels;
+using ClickCafeAPI.Models.MenuModels.CustomizationModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

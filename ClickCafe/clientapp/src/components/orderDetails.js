@@ -62,6 +62,9 @@ function OrderDetails() {
         fetchOrderDetails();
     }, [orderId]);
 
+    const fullTotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const isDiscounted = totalAmount < fullTotal;
+
     if (loading) return <p>Loading order details...</p>;
     if (error) return <p style={{ color: "red" }}>{error}</p>;
 
@@ -83,6 +86,9 @@ function OrderDetails() {
                     </li>
                 ))}
             </ul>
+            {isDiscounted && (
+                <h3>Discount: €{(fullTotal - totalAmount).toFixed(2)}</h3>
+            )}
             <h3>Total price: €{totalAmount.toFixed(2)}</h3>
         </div>
     );

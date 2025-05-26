@@ -72,7 +72,10 @@ function PaymentPage() {
     const { orderId, totalAmount, selectedPaymentOption, paymentId } = location.state || {};
     const [errorMessage, setErrorMessage] = useState('');
     const [processingCash, setProcessingCash] = useState(false);
-    const { clearOrder } = useOrder();
+    const { clearOrder, orderItems } = useOrder();
+
+
+
 
     useEffect(() => {
         if (!orderId || totalAmount === undefined || !selectedPaymentOption || !paymentId) {
@@ -107,10 +110,30 @@ function PaymentPage() {
         return <div className="p-6 text-red-500">{errorMessage}</div>;
     }
 
+    const fullPrice = orderItems.reduce((sum, item) => sum + Number(item.total || 0), 0);
+
+
+    const isDiscounted = totalAmount < fullPrice;
+    console.log("orderItems:", orderItems);
+    console.log(fullPrice);
+    console.log(totalAmount)
+
     return (
         <div className="p-6 max-w-md mx-auto">
             <h2 className="text-2xl font-semibold mb-4">Payment</h2>
-            <p className="mb-2">Total amount: <strong>€{totalAmount?.toFixed(2)}</strong></p>
+            <p className="mb-2 text-lg">
+                Total amount:{" "}
+                {isDiscounted ? (
+                    <>
+                        <span style={{ textDecoration: 'line-through', color: 'grey', marginRight: '0.5rem' }}>
+                            €{fullPrice.toFixed(2)}
+                        </span>
+                        <strong style={{ color: 'green' }}>€{totalAmount.toFixed(2)}</strong>
+                    </>
+                ) : (
+                    <strong>€{totalAmount.toFixed(2)}</strong>
+                )}
+            </p>
             <p className="mb-4">Payment Option: <strong>{selectedPaymentOption}</strong></p>
 
             {selectedPaymentOption === 'card' && (

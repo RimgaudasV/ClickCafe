@@ -7,6 +7,7 @@ function AdminPanel() {
     const [showMenuItemForm, setShowMenuItemForm] = useState(false);
     const [showCustomizationForm, setShowCustomizationForm] = useState(false);
     const [showDeleteMenuItemForm, setShowDeleteMenuItemForm] = useState(false);
+    const [showDeleteCustomizationForm, setShowDeleteCustomizationForm] = useState(false);
 
     const [form, setForm] = useState({ name: '', address: '', phone: '', hours: '', image: '' });
     const [menuForm, setMenuForm] = useState({
@@ -21,6 +22,7 @@ function AdminPanel() {
     const [menuItems, setMenuItems] = useState([]);
     const [selectedCafeId, setSelectedCafeId] = useState(null);
     const [selectedMenuItemId, setSelectedMenuItemId] = useState('');
+    const [selectedCustomizationId, setSelectedCustomizationId] = useState('');
 
     useEffect(() => {
         fetch("https://localhost:7281/api/admin/overview", { credentials: "include" })
@@ -98,6 +100,22 @@ function AdminPanel() {
             setMenuItems(prev => prev.filter(mi => mi.menuItemId !== parseInt(selectedMenuItemId)));
             setData(await (await fetch("https://localhost:7281/api/admin/overview", { credentials: "include" })).json());
         } else alert("Failed to delete menu item.");
+    };
+
+    const handleDeleteCustomization = async (e) => {
+        e.preventDefault();
+        if (!selectedCustomizationId) return;
+        if (!window.confirm("Are you sure you want to delete this customization?")) return;
+
+        const res = await fetch(`https://localhost:7281/api/customizations/${selectedCustomizationId}`, {
+            method: "DELETE", credentials: "include"
+        });
+        if (res.ok) {
+            alert("Customization deleted.");
+            setSelectedCustomizationId('');
+            setCustomizations(prev => prev.filter(c => c.customizationId !== parseInt(selectedCustomizationId)));
+            setData(await (await fetch("https://localhost:7281/api/admin/overview", { credentials: "include" })).json());
+        } else alert("Failed to delete customization.");
     };
 
     const getCafeNameById = (id) => {
@@ -190,6 +208,9 @@ function AdminPanel() {
                 </button>
                 <button className="ui orange button" onClick={() => setShowCustomizationForm(!showCustomizationForm)}>
                     {showCustomizationForm ? "Cancel" : "Add a Customization"}
+                </button>
+                <button className="ui red button" onClick={() => setShowDeleteCustomizationForm(!showDeleteCustomizationForm)}>
+                    {showDeleteCustomizationForm ? "Cancel" : "Remove a Customization"}
                 </button>
             </div>
 
@@ -295,6 +316,25 @@ function AdminPanel() {
                         </button>
                     </form>
                 </div>
+            )}
+            {showDeleteCustomizationForm && (
+                <form onSubmit={handleDeleteCustomization} className="ui form" style={{ marginTop: '1rem' }}>
+                    <select
+                        className="ui dropdown"
+                        style={{ width: '300px' }}
+                        value={selectedCustomizationId || ''}
+                        onChange={(e) => setSelectedCustomizationId(e.target.value)}
+                        required
+                    >
+                        <option value="" disabled>Select a customization to remove</option>
+                        {customizations.map(c => (
+                            <option key={c.customizationId} value={c.customizationId}>{c.name}</option>
+                        ))}
+                    </select>
+                    <button type="submit" className="ui red button" style={{ marginTop: '0.5rem' }}>
+                        Confirm Remove Customization
+                    </button>
+                </form>
             )}
         </div>
     );

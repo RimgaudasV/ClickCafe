@@ -110,7 +110,7 @@ function Checkout() {
                 state: {
                     orderId: responseData.orderId,
                     paymentId: responseData.paymentId,
-                    totalAmount,
+                    totalAmount: responseData.totalAmount,
                     selectedPaymentOption: paymentOption === "CreditCard" ? "card" : "cash",
                 }
             });

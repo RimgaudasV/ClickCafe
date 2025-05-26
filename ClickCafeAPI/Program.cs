@@ -1,5 +1,7 @@
 using ClickCafeAPI.Context;
 using ClickCafeAPI.Models.UserModels;
+using ClickCafeAPI.Services.Discount.Interfaces;
+using ClickCafeAPI.Services.Discount;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -53,6 +55,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 });
+
+builder.Services.AddScoped<NoDiscountStrategy>();
+builder.Services.AddScoped<FirstOrderDiscountStrategy>();
+
+builder.Services.AddScoped<IDiscountStrategy, FirstOrderDiscountStrategy>();
+builder.Services.AddScoped<IDiscountService, DiscountService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

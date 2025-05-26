@@ -36,6 +36,7 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="Services\IServices\Discount\" />
     <Folder Include="wwwroot\cafeImages\" />
   </ItemGroup>
 

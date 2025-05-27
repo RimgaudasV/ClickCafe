@@ -3,8 +3,20 @@ using ClickCafeAPI.Identity;
 using ClickCafeAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext();
+});
+
+builder.Services.AddScoped<LoggingActionFilter>();
 
 builder.Services.AddDbContext<ClickCafeContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -50,6 +62,10 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+var cultureInfo = new CultureInfo("en-US");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -68,5 +84,10 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
 });
 
-app.MapControllers();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await DbInitializer.SeedAdminAsync(services);
+}
+
 app.Run();

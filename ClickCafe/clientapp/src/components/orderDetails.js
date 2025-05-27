@@ -7,18 +7,17 @@ function OrderDetails() {
     const { totalAmount } = location.state || {};
     const [orderItems, setOrderItems] = useState([]);
     const [menuItems, setMenuItems] = useState([]);
+    const [customizationMap, setCustomizationMap] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
     useEffect(() => {
-        fetch(`/api/orders/${orderId}/items`, { credentials: "include" })
-            .then((res) => {
+        const fetchOrderDetails = async () => {
+            try {
+                const res = await fetch(`/api/orders/${orderId}/items`, { credentials: "include" });
                 if (!res.ok) throw new Error("Failed to load order items");
-                return res.json();
-            })
-            .then(async data => {
+                const data = await res.json();
                 setOrderItems(data);
-                console.log("Order Items:", data);
 
                 const menuItemIds = [...new Set(data.map(item => item.menuItemId))];
                 const menuItemResponses = await Promise.all(
@@ -36,15 +35,31 @@ function OrderDetails() {
                     if (menuItem && menuItem.menuItemId) acc[menuItem.menuItemId] = menuItem.name;
                     return acc;
                 }, {});
-
                 setMenuItems(menuItems);
+
+                const customizationFetches = await Promise.all(
+                    data.map(item =>
+                        fetch(`/api/customizations/orderItem/${item.orderItemId}/options`, { credentials: "include" })
+                            .then(res => res.ok ? res.json() : [])
+                            .catch(() => [])
+                    )
+                );
+
+                const customizationMap = {};
+                data.forEach((item, i) => {
+                    customizationMap[item.orderItemId] = customizationFetches[i];
+                });
+
+                setCustomizationMap(customizationMap);
                 setLoading(false);
-            })
-            .catch((err) => {
+            } catch (err) {
                 console.error(err);
                 setError("Could not load order details");
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchOrderDetails();
     }, [orderId]);
 
     if (loading) return <p>Loading order details...</p>;
@@ -56,12 +71,19 @@ function OrderDetails() {
             <h3>Items:</h3>
             <ul>
                 {orderItems.map(item => (
-                    <li key={item.orderItemId}>
-                        {menuItems[item.menuItemId]} - Quantity: {item.quantity} - Price: €{(item.price*item.quantity).toFixed(2)}
+                    <li key={item.orderItemId} style={{ marginBottom: "1rem" }}>
+                        <strong>{menuItems[item.menuItemId]}</strong> — Quantity: {item.quantity} — Price: €{(item.price * item.quantity).toFixed(2)}
+                        {customizationMap[item.orderItemId] && customizationMap[item.orderItemId].length > 0 && (
+                            <ul style={{ marginLeft: "1rem", marginTop: "0.5rem" }}>
+                                {customizationMap[item.orderItemId].map(opt => (
+                                    <li key={opt.customizationOptionId}>{opt.name}</li>
+                                ))}
+                            </ul>
+                        )}
                     </li>
                 ))}
             </ul>
-            <h3>Total price: {totalAmount.toFixed(2) }€</h3>
+            <h3>Total price: €{totalAmount.toFixed(2)}</h3>
         </div>
     );
 }

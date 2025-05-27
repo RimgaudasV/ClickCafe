@@ -9,6 +9,6 @@ namespace ClickCafeAPI.DTOs
         public string MenuItemName { get; set; }
         public int Quantity { get; set; }
         public decimal Price { get; set; }
-        public IEnumerable<int> CustomizationIds { get; set; } = new List<int>();
+        public IEnumerable<int> SelectedOptionIds { get; set; } = new List<int>();
     }
 }

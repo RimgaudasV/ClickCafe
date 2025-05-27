@@ -1,41 +1,90 @@
-﻿import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import Bell from './bell';
+import { useOrder } from "../context/OrderContext";
 
 function Navbar({ user, setUser }) {
     const navigate = useNavigate();
+    const { clearOrder } = useOrder();
 
     const handleLogoutClick = async () => {
         await fetch("/api/auth/logout", { method: "POST", credentials: "include" });
+        clearOrder();
         setUser(null);
         navigate('/login');
     };
 
     return (
-        <nav className="ui raised very padded segment">
-            <div className="ui right floated header">
-                <button className="ui red button" onClick={handleLogoutClick}>
-                    Logout
-                </button>
-            </div>
-            <div className="ui left floated header">
-                {user?.role === "Barista" ? (
+        <div
+            className="ui menu"
+            style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "80px",
+                zIndex: 1000,
+                display: "flex",
+                alignItems: "center",
+                padding: 30
+            }}
+        >
+
+
+            <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                {user?.role === "Admin" ? (
+                    <Link to="/admin" style={linkStyle}>Admin Panel</Link>
+                ) : user?.role === "Barista" ? (
                     <>
-                        <Link to="/barista"><button className="ui button">Main</button></Link>
-                        <Link to="/status"><button className="ui button">Orders</button></Link>
+                        <Link to="/barista" style={linkStyle}>Main</Link>
+                        <Link to="/status" style={linkStyle}>Orders</Link>
                     </>
                 ) : (
                     <>
-                        <Link to="/home"><button className="ui button">Home</button></Link>
-                        <Link to="/cafes"><button className="ui button">New Order</button></Link>
-                        <Link to="/rewards"><button className="ui button">Rewards</button></Link>
-                        <Link to="/history"><button className="ui button">History</button></Link>
+                        <Link to="/home" style={linkStyle}>Home</Link>
+                        <Link to="/cafes" style={linkStyle}>New Order</Link>
+                        <Link to="/rewards" style={linkStyle}>Rewards</Link>
+                        <Link to="/history" style={linkStyle}>History</Link>
                     </>
                 )}
-
-                <Link to="/account"><button className="ui button">Account</button></Link>
-                <Link to="/settings"><button className="ui button">Settings</button></Link>
+                <Link to="/account" style={linkStyle}>Account</Link>
+                <Link to="/settings" style={linkStyle}>Settings</Link>
             </div>
-        </nav>
+            <div className="right menu">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                    <Bell />
+                    <button
+                        onClick={handleLogoutClick}
+                        style={{
+                            backgroundColor: '#db2828',
+                            color: '#fff',
+                            border: 'none',
+                            padding: '0.5rem 1rem',
+                            borderRadius: '8px',
+                            cursor: 'pointer',
+                            fontWeight: 'bold',
+                            transition: 'background-color 0.2s ease',
+                        }}
+                        onMouseEnter={e => e.target.style.backgroundColor = '#b91d1d'}
+                        onMouseLeave={e => e.target.style.backgroundColor = '#db2828'}
+                    >
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
     );
 }
+
+const linkStyle = {
+    textDecoration: 'none',
+    backgroundColor: '#2185d0',
+    color: '#fff',
+    padding: '0.5rem 1rem',
+    borderRadius: '8px',
+    transition: 'background-color 0.2s ease',
+    fontWeight: '500'
+};
 
 export default Navbar;

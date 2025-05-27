@@ -1,11 +1,24 @@
-﻿import React, { createContext, useContext, useState } from "react";
+﻿import React, { createContext, useContext, useState, useEffect } from "react";
 
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
-    const [orderItems, setOrderItems] = useState([]);
 
-    const addToOrder = (item) => {
+    const [orderItems, setOrderItems] = useState(() => {
+        const stored = sessionStorage.getItem("orderItems");
+        return stored ? JSON.parse(stored) : [];
+    });
+
+    useEffect(() => {
+        sessionStorage.setItem("orderItems", JSON.stringify(orderItems));
+    }, [orderItems]);
+
+    const [orderCafeId, setOrderCafeId] = useState([]);
+
+    const addToOrder = (item, cafeId) => {
+        if (orderItems.length === 0) {
+            setOrderCafeId(cafeId);
+        }
         setOrderItems(prev => [...prev, item]);
     };
 
@@ -16,7 +29,7 @@ export const OrderProvider = ({ children }) => {
     };
 
     return (
-        <OrderContext.Provider value={{ orderItems, addToOrder, clearOrder, removeFromOrder }}>
+        <OrderContext.Provider value={{ orderItems, addToOrder, clearOrder, removeFromOrder, orderCafeId, setOrderCafeId }}>
             {children}
         </OrderContext.Provider>
     );

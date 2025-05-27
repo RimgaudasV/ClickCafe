@@ -1,11 +1,11 @@
-﻿import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+﻿import { BrowserRouter as Router } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+
 import LoginPage from './components/auth/login';
 import RegisterPage from './components/auth/register';
 import MainPage from './components/main';
 import Cafes from './components/cafes';
-import Menu from './components/menu'
-
+import Menu from './components/menu';
 import Status from './components/status';
 import Rewards from './components/rewards';
 import History from './components/history';
@@ -14,7 +14,7 @@ import Settings from './components/settings';
 import Navbar from './components/navbar';
 import PrivateRoute from './PrivateRoute';
 import MenuItem from './components/menuItem';
-import Checkout from './components/checkout'
+import Checkout from './components/checkout';
 import OrderDetails from './components/orderDetails';
 import PaymentPage from './components/payment';
 import PaymentResultPage from './components/paymentResult';
@@ -22,12 +22,10 @@ import OrderConfirmationPage from './components/orderConfirmation';
 import BaristaRoute from './BaristaRoute';
 import CustomerHomePage from './components/customerHomePage';
 import BaristaHomePage from './components/baristaHomePage';
-
-import { OrderProvider } from './context/OrderContext';
-import { Navigate } from 'react-router-dom';
-
-
-
+import OrderMenu from './components/orderMenu';
+import AdminRoute from './AdminRoute';
+import AdminPanel from './components/adminPanel';
+import AppRoutes from './AppRoutes';
 
 function App() {
     const [user, setUser] = useState(null);
@@ -39,107 +37,16 @@ function App() {
                 if (!res.ok) throw new Error("Not authenticated");
                 return res.json();
             })
-            .then(data => {
-                setUser(data);
-            })
-            .catch(() => {
-                setUser(null);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
+            .then(data => setUser(data))
+            .catch(() => setUser(null))
+            .finally(() => setLoading(false));
     }, []);
 
     if (loading) return <p>Loading...</p>;
 
     return (
         <Router>
-            {user && <Navbar user={user} setUser={setUser} />}
-            <Routes>
-                <Route path="/login" element={<LoginPage setUser={setUser} user={user} />} />
-                <Route path="/register" element={<RegisterPage />} />
-
-                <Route path="/" element={
-                    user?.role === "Barista"
-                        ? <Navigate to="/barista" />
-                        : <Navigate to="/home" />
-                } />
-                <Route path="/barista" element={
-                    <BaristaRoute user={user}>
-                        <BaristaHomePage user={user} />
-                    </BaristaRoute>
-                } />
-                <Route path="/home" element={
-                    <PrivateRoute user={user}>
-                        <CustomerHomePage />
-                    </PrivateRoute>
-                } />
-                <Route path="/cafes" element={
-                    <PrivateRoute user={user}>
-                        <Cafes />
-                    </PrivateRoute>
-                } />
-                <Route path="/menu/:cafeId" element={
-                    <PrivateRoute user={user}>
-                        <OrderProvider>
-                            <Menu />
-                        </OrderProvider>
-                    </PrivateRoute>
-                } />
-                <Route path="/menuItem/:itemId" element={
-                    <PrivateRoute user={user}>
-                        <OrderProvider>
-                            <MenuItem />
-                        </OrderProvider>
-                    </PrivateRoute>
-                } />
-                <Route path="/checkout" element={
-                    <PrivateRoute user={user}>
-                        <OrderProvider>
-                            <Checkout />
-                        </OrderProvider>
-                    </PrivateRoute>
-                } />
-                <Route path="/status" element={
-                    <BaristaRoute user={user}>
-                        <Status />
-                    </BaristaRoute>
-                } />
-                <Route path="/rewards" element={
-                    <PrivateRoute user={user}>
-                        <Rewards />
-                    </PrivateRoute>
-                } />
-                <Route path="/history" element={
-                    <PrivateRoute user={user}>
-                        <OrderProvider>
-                            <History />
-                        </OrderProvider>
-                    </PrivateRoute>
-                } />
-                <Route path="/account" element={
-                    <PrivateRoute user={user}>
-                        <Account />
-                    </PrivateRoute>
-                } />
-                <Route path="/settings" element={
-                    <PrivateRoute user={user}>
-                        <Settings />
-                    </PrivateRoute>
-                } />
-                <Route path="/order/:orderId" element={
-                    <PrivateRoute user={user}>
-                        <OrderDetails />
-                    </PrivateRoute>
-                } />
-                <Route path="/payment/:orderId" element={<PaymentPage />} />
-                <Route path="/payment-result" element={<PaymentResultPage />} />
-                <Route path="/order/:orderId/confirmation" element={
-                    <PrivateRoute user={user}>
-                        <OrderConfirmationPage />
-                    </PrivateRoute>
-                } />
-            </Routes>
+            <AppRoutes user={user} setUser={setUser} />
         </Router>
     );
 }

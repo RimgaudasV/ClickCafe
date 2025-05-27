@@ -1,8 +1,6 @@
 ﻿import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useOrder } from "../context/OrderContext";
-import { useLocation } from "react-router-dom";
-
 
 function MenuItem() {
     const { itemId } = useParams();
@@ -10,12 +8,9 @@ function MenuItem() {
     const [customizations, setCustomizations] = useState([]);
     const [error, setError] = useState(null);
     const [quantity, setQuantity] = useState(1);
-    const [selectedIds, setSelectedIds] = useState([]);
-
-    const { orderItems, addToOrder, removeFromOrder } = useOrder();
+    const [selectedOptionIds, setSelectedOptionIds] = useState([]);
+    const { orderItems, orderCafeId, setOrderCafeId, addToOrder, removeFromOrder } = useOrder();
     const navigate = useNavigate();
-
-
     const location = useLocation();
     const orderItemIndex = location.state?.orderItemIndex;
 
@@ -24,145 +19,114 @@ function MenuItem() {
             const item = orderItems[orderItemIndex];
             if (item) {
                 setQuantity(item.quantity);
-                setSelectedIds(item.customizations.map(opt => opt.customizationOptionId));
+                setSelectedOptionIds(item.selectedOptionIds || []);
             }
-
         }
     }, [orderItemIndex]);
 
     useEffect(() => {
         fetch(`https://localhost:7281/api/MenuItems/${itemId}`, { credentials: "include" })
-            .then(r => {
-                if (!r.ok) throw new Error("Item not found");
-                return r.json();
-            })
+            .then(r => r.ok ? r.json() : Promise.reject("Item not found"))
             .then(setItem)
-            .catch(err => {
-                console.error(err);
-                setError("Could not load item");
-            });
+            .catch(err => setError("Could not load item"));
 
         fetch(`https://localhost:7281/api/Customizations/menuItem/${itemId}`, { credentials: "include" })
-            .then(r => {
-                if (!r.ok) throw new Error("Failed to fetch customizations");
-                return r.json();
-            })
+            .then(r => r.ok ? r.json() : Promise.reject("Failed to fetch customizations"))
             .then(setCustomizations)
-            .catch(err => {
-                console.error(err);
-                setCustomizations([]);
-            });
+            .catch(() => setCustomizations([]));
     }, [itemId]);
 
     const handleChange = (customization, optionId) => {
         if (customization.type === 1) {
-            const otherOptionIds = customization.options.map(o => o.customizationOptionId);
-            setSelectedIds([
-                ...selectedIds.filter(id => !otherOptionIds.includes(id)),
-                optionId,
-            ]);
+            const ids = customization.options.map(o => o.customizationOptionId);
+            setSelectedOptionIds(prev => [...prev.filter(id => !ids.includes(id)), optionId]);
         } else {
-            if (selectedIds.includes(optionId)) {
-                setSelectedIds(selectedIds.filter(id => id !== optionId));
-            } else {
-                setSelectedIds([...selectedIds, optionId]);
-            }
+            setSelectedOptionIds(prev =>
+                prev.includes(optionId)
+                    ? prev.filter(id => id !== optionId)
+                    : [...prev, optionId]
+            );
         }
     };
 
     const calculateExtraCost = () => {
-        let total = 0;
-        for (const c of customizations) {
-            for (const opt of c.options) {
-                if (selectedIds.includes(opt.customizationOptionId)) {
-                    total += opt.extraCost || 0;
-                }
-            }
-        }
-        return total;
+        return customizations.flatMap(c => c.options)
+            .filter(o => selectedOptionIds.includes(o.customizationOptionId))
+            .reduce((acc, o) => acc + (o.extraCost || 0), 0);
     };
 
     const handleAddToOrder = () => {
-        const selectedOptions = customizations
-            .flatMap(c => c.options) 
-            .filter(opt => selectedIds.includes(opt.customizationOptionId));
-
         const newItem = {
             menuItemId: item.menuItemId,
             name: item.name,
             total: totalPrice,
             quantity,
-            customizations: selectedOptions
+            selectedOptionIds
         };
-        if (orderItemIndex != null) {
-            removeFromOrder(orderItemIndex)
-        }
-        addToOrder(newItem);
+        if (orderItemIndex != null) removeFromOrder(orderItemIndex);
+        addToOrder(newItem, item.cafeId);
         navigate(`/menu/${item.cafeId}`);
     };
 
     const totalPrice = item ? (item.basePrice + calculateExtraCost()) * quantity : 0;
-
-
     if (!item) return <p>Loading item...</p>;
 
-
     return (
-        <div>
+        <div style={{ padding: '2rem', fontFamily: 'Segoe UI, sans-serif' }}>
             <h2>{item.name}</h2>
-            <p>{item.description}</p>
-            <h3>Customizations:</h3>
-            {customizations.length === 0 && <p>No customizations available.</p>}
-            <ul>
-                {customizations.map(c => (
-                    <li key={c.customizationId}>
-                        <p>{c.name}</p>
-                        <div style={{ display: "flex", gap: "16px", flexWrap: "wrap", marginBottom: "10px" }}>
-                            {c.options?.map(opt => {
-                                const inputType = c.type === 1 ? "radio" : "checkbox";
-                                const inputName = `customization-${c.customizationId}`;
-                                const isChecked = selectedIds.includes(opt.customizationOptionId);
+            <p style={{ color: '#666' }}>{item.description}</p>
 
-                                return (
-                                    <label
-                                        key={opt.customizationOptionId}
-                                    >
-                                        <input
-                                            type={inputType}
-                                            name={inputType === "radio" ? inputName : undefined}
-                                            value={opt.customizationOptionId}
-                                            checked={isChecked}
-                                            onChange={() => handleChange(c, opt.customizationOptionId)}
-                                        />
-                                        <span>
+            <h3 style={{ marginTop: '2rem' }}>Customizations</h3>
+            {customizations.length === 0 ? (
+                <p style={{ color: '#888' }}>No customizations available.</p>
+            ) : (
+                <ul style={{ paddingLeft: 0, listStyle: 'none' }}>
+                    {customizations.map(c => (
+                        <li key={c.customizationId} style={{ marginBottom: '1rem' }}>
+                            <p><strong>{c.name}</strong></p>
+                            <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+                                {c.options?.map(opt => {
+                                    const inputType = c.type === 1 ? "radio" : "checkbox";
+                                    const inputName = `customization-${c.customizationId}`;
+                                    const isChecked = selectedOptionIds.includes(opt.customizationOptionId);
+                                    return (
+                                        <label key={opt.customizationOptionId} style={{ cursor: 'pointer' }}>
+                                            <input
+                                                type={inputType}
+                                                name={inputType === "radio" ? inputName : undefined}
+                                                value={opt.customizationOptionId}
+                                                checked={isChecked}
+                                                onChange={() => handleChange(c, opt.customizationOptionId)}
+                                                style={{ marginRight: '5px' }}
+                                            />
                                             {opt.name}
                                             {opt.extraCost > 0 && (
-                                                <span style={{ marginLeft: "6px", color: "gray" }}>
+                                                <span style={{ marginLeft: "4px", color: "gray" }}>
                                                     (+€{opt.extraCost.toFixed(2)})
                                                 </span>
                                             )}
-                                        </span>
-                                    </label>
-                                );
-                            })}
-                        </div>
-                    </li>
-                ))}
-            </ul>
+                                        </label>
+                                    );
+                                })}
+                            </div>
+                        </li>
+                    ))}
+                </ul>
+            )}
 
-            <div style={{ marginTop: "20px" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <button
-                        onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                        disabled={quantity === 1}
-                    >–</button>
+            <div style={{ marginTop: '2rem' }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+                    <button onClick={() => setQuantity(q => Math.max(1, q - 1))} disabled={quantity === 1}>
+                        –
+                    </button>
                     <span>Quantity: {quantity}</span>
                     <button onClick={() => setQuantity(q => q + 1)}>+</button>
                 </div>
 
                 <button
-                    style={{ marginTop: "10px", padding: "8px 16px", fontSize: "16px" }}
                     onClick={handleAddToOrder}
+                    className="ui green button"
+                    style={{ marginTop: "1.5rem", padding: "0.75rem 1.5rem", fontSize: "1rem" }}
                 >
                     Add to order — €{totalPrice.toFixed(2)}
                 </button>

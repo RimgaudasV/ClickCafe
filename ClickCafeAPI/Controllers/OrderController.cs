@@ -5,41 +5,23 @@ using ClickCafeAPI.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Identity;
 
 namespace ClickCafeAPI.Controllers
 {
     [ApiController]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Route("api/")]
     public class OrderController : ControllerBase
     {
         private readonly ClickCafeContext _db;
-
-        private readonly UserManager<User> _userManager;
-        public OrderController(ClickCafeContext db, UserManager<User> userManager)
-        {
-            _db = db;
-            _userManager = userManager;
-        }
+        public OrderController(ClickCafeContext db)
+           => _db = db;
 
         // GET: api/orders
         [HttpGet("orders")]
         public async Task<ActionResult<IEnumerable<OrderDto>>> GetAll()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null) return Unauthorized();
-
-            var user = await _db.Users.FindAsync(userId);
-            if (user == null) return Unauthorized();
-
-            IQueryable<Order> query = _db.Orders.Include(o => o.Items);
-
-            if (user.Role == UserRole.Barista && user.CafeId.HasValue)
-            {
-                query = query.Where(o => o.CafeId == user.CafeId);
-            }
-
-            var orders = await query.ToListAsync();
+            var orders = await _db.Orders.Include(o => o.Items).ToListAsync();
 
             var dto = orders.Select(o => new OrderDto
             {
@@ -56,7 +38,6 @@ namespace ClickCafeAPI.Controllers
 
             return Ok(dto);
         }
-
 
         // GET: api/orders/{id}
         [HttpGet("orders/{id}")]
@@ -100,6 +81,7 @@ namespace ClickCafeAPI.Controllers
             {
                 OrderId = o.OrderId,
                 UserId = o.UserId,
+                CafeId = o.CafeId,
                 OrderDateTime = o.OrderDateTime,
                 Status = o.Status,
                 PaymentStatus = o.PaymentStatus,
@@ -113,24 +95,27 @@ namespace ClickCafeAPI.Controllers
         }
 
 
-        // POST: api/orders
         [HttpPost("orders")]
         public async Task<ActionResult<OrderPaymentResponseDto>> CreateOrderWithPayment(CreateOrderWithPaymentDto createDto)
         {
+            var firstMenuItem = await _db.MenuItems.FindAsync(createDto.Items.First().MenuItemId);
+            if (firstMenuItem == null)
+                return BadRequest("MenuItem not found.");
+
             var order = new Order
             {
                 UserId = createDto.UserId.ToString(),
-
-                CafeId = createDto.CafeId,
-                OrderDateTime = createDto.OrderDateTime,
-                Status = createDto.Status,
-                PaymentStatus = createDto.PaymentStatus,
-
+                CafeId = firstMenuItem.CafeId,
+                OrderDateTime = DateTime.UtcNow,
+                Status = OrderStatus.Pending,
+                PaymentStatus = OrderPaymentStatus.Unpaid,
                 TotalAmount = createDto.TotalAmount,
                 ItemQuantity = createDto.ItemQuantity,
                 PickupDateTime = createDto.PickupDateTime,
                 Items = new List<OrderItem>()
             };
+
+            var customizationMap = new Dictionary<int, List<int>>();
 
             foreach (var itemDto in createDto.Items)
             {
@@ -138,22 +123,44 @@ namespace ClickCafeAPI.Controllers
                 if (menuItem == null)
                     return BadRequest($"MenuItem with ID {itemDto.MenuItemId} not found.");
 
+                var selectedOptionIds = itemDto.SelectedOptionIds ?? new List<int>();
+
+                var selectedOptions = await _db.CustomizationOptions
+                    .Where(opt => selectedOptionIds.Contains(opt.CustomizationOptionId))
+                    .ToListAsync();
+
+                var extraCostPerUnit = selectedOptions.Sum(opt => opt.ExtraCost);
+
                 var orderItem = new OrderItem
                 {
                     MenuItemId = itemDto.MenuItemId,
                     Quantity = itemDto.Quantity,
-                    Price = menuItem.BasePrice,
-                    Customizations = await _db.Customizations
-                        .Include(c => c.Options)
-                        .Where(c => itemDto.CustomizationIds != null && itemDto.CustomizationIds.Contains(c.CustomizationId))
-                        .ToListAsync()
+                    Price = menuItem.BasePrice + extraCostPerUnit
                 };
+
                 order.Items.Add(orderItem);
-                order.TotalAmount += orderItem.Price * orderItem.Quantity + orderItem.Customizations.Sum(c => c.Options.Sum(o => o.ExtraCost)) * orderItem.Quantity;
+                customizationMap[orderItem.GetHashCode()] = (List<int>)selectedOptionIds;
+
                 order.ItemQuantity += orderItem.Quantity;
             }
 
             _db.Orders.Add(order);
+            await _db.SaveChangesAsync();
+
+            foreach (var orderItem in order.Items)
+            {
+                var optionIds = customizationMap[orderItem.GetHashCode()];
+
+                foreach (var optionId in optionIds)
+                {
+                    _db.OrderItemCustomizationOptions.Add(new OrderItemCustomizationOption
+                    {
+                        OrderItemId = orderItem.OrderItemId,
+                        CustomizationOptionId = optionId
+                    });
+                }
+            }
+
             await _db.SaveChangesAsync();
 
             var payment = new Payment
@@ -183,7 +190,7 @@ namespace ClickCafeAPI.Controllers
         {
             var order = await _db.Orders
                 .Include(o => o.Items)
-                .ThenInclude(oi => oi.Customizations)
+                .ThenInclude(oi => oi.SelectedOptions)
                 .FirstOrDefaultAsync(o => o.OrderId == id);
 
             if (order == null) return NotFound();
@@ -196,7 +203,7 @@ namespace ClickCafeAPI.Controllers
             if (updateDto.OrderDateTime != default) order.OrderDateTime = updateDto.OrderDateTime;
 
             if (updateDto.ItemsToAdd != null)
-            { 
+            {
                 foreach (var itemDto in updateDto.ItemsToAdd)
                 {
                     var menuItem = await _db.MenuItems.FindAsync(itemDto.MenuItemId);
@@ -207,15 +214,15 @@ namespace ClickCafeAPI.Controllers
                         MenuItemId = itemDto.MenuItemId,
                         Quantity = itemDto.Quantity,
                         Price = menuItem.BasePrice,
-                        Customizations = new List<Customization>()
+                        SelectedOptions = new List<OrderItemCustomizationOption>()
                     };
 
-                    if (itemDto.CustomizationIds != null)
+                    if (itemDto.SelectedOptionIds != null)
                     {
-                        var customizations = await _db.Customizations
-                            .Where(c => itemDto.CustomizationIds.Contains(c.CustomizationId))
+                        var selectedOptions = await _db.OrderItemCustomizationOptions
+                            .Where(c => itemDto.SelectedOptionIds.Contains(c.CustomizationOptionId))
                             .ToListAsync();
-                        orderItem.Customizations = customizations;
+                        orderItem.SelectedOptions = selectedOptions;
                     }
                     order.Items.Add(orderItem);
                 }
@@ -260,6 +267,25 @@ namespace ClickCafeAPI.Controllers
 
             order.Status = dto.Status;
             await _db.SaveChangesAsync();
+
+            // Alert info
+            string? text = dto.Status switch
+            {
+                OrderStatus.Ready => $"Order {order.OrderId} is ready for pickup",
+                OrderStatus.Canceled => $"Order {order.OrderId} was canceled",
+                _ => null
+            };
+
+            if (text is not null)
+            {
+                _db.OrderAlerts.Add(new OrderAlert
+                {
+                    UserId = order.UserId,
+                    OrderId = order.OrderId,
+                    Text = text
+                });
+                await _db.SaveChangesAsync();
+            }
 
             return NoContent();
         }

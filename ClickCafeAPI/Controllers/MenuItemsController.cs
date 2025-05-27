@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ClickCafeAPI.Controllers
 {
     [ApiController]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Route("api/[controller]")]
     public class MenuItemsController : ControllerBase
     {
@@ -88,9 +89,24 @@ namespace ClickCafeAPI.Controllers
 
         // POST: api/MenuItems
         [HttpPost]
-        public async Task<ActionResult<MenuItemDto>> Create(CreateMenuItemDto createDto)
+        public async Task<ActionResult<MenuItemDto>> Create([FromForm] CreateMenuItemDto createDto)
         {
             if (createDto == null) return BadRequest("Menu item cannot be null.");
+
+            string imageFileName = null;
+            if (createDto.Image != null && createDto.Image.Length > 0)
+            {
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images");
+                Directory.CreateDirectory(uploadsFolder);
+
+                imageFileName = Guid.NewGuid().ToString() + Path.GetExtension(createDto.Image.FileName);
+                var filePath = Path.Combine(uploadsFolder, imageFileName);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await createDto.Image.CopyToAsync(stream);
+                }
+            }
 
             var customizations = createDto.AvailableCustomizationIds != null
                 ? await _db.Customizations
@@ -105,7 +121,7 @@ namespace ClickCafeAPI.Controllers
                 Description = createDto.Description,
                 BasePrice = createDto.BasePrice,
                 Category = createDto.Category,
-                Image = createDto.Image,
+                Image = imageFileName,
                 AvailableCustomizations = customizations
             };
 
@@ -126,6 +142,7 @@ namespace ClickCafeAPI.Controllers
 
             return CreatedAtAction(nameof(GetById), new { id = menuItem.MenuItemId }, itemDto);
         }
+
 
         // PUT: api/MenuItems/{id}
         [HttpPut("{id}")]

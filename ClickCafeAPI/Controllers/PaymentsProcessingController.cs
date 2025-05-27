@@ -9,6 +9,7 @@ using ClickCafeAPI.DTOs;
 namespace ClickCafeAPI.Controllers
 {
     [ApiController]
+    [ServiceFilter(typeof(LoggingActionFilter))]
     [Route("api/payments")]
     public class PaymentProcessingController : ControllerBase
     {
@@ -38,6 +39,36 @@ namespace ClickCafeAPI.Controllers
                 .ToListAsync();
 
             return Ok(payments);
+        }
+
+        [HttpPost("{paymentId}/create-payment-intent")]
+        public async Task<IActionResult> CreatePaymentIntent(int paymentId)
+        {
+            var payment = await _db.Payments.Include(p => p.Order).FirstOrDefaultAsync(p => p.PaymentId == paymentId);
+            if (payment == null)
+                return NotFound("Payment not found.");
+
+            StripeConfiguration.ApiKey = _config["Stripe:SecretKey"];
+
+            var options = new PaymentIntentCreateOptions
+            {
+                Amount = (long)(payment.Amount * 100), // convert to cents
+                Currency = "eur",
+                AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions
+                {
+                    Enabled = true
+                },
+                Metadata = new Dictionary<string, string>
+                {
+                    { "order_id", payment.OrderId.ToString() },
+                    { "payment_id", payment.PaymentId.ToString() }
+                }
+            };
+
+            var service = new PaymentIntentService();
+            var intent = await service.CreateAsync(options);
+
+            return Ok(new { clientSecret = intent.ClientSecret });
         }
 
         [HttpPost("{paymentId}/process-card")]

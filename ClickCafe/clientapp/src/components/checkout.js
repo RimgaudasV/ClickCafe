@@ -59,7 +59,6 @@ function Checkout() {
     };
 
     const handleConfirmCheckout = async () => {
-        console.log("Order Items before processing:", orderItems);
         if (!pickupTime) {
             setError("Please select a pickup time.");
             return;
@@ -88,8 +87,6 @@ function Checkout() {
                 })),
                 paymentMethod: paymentOption,
             };
-
-            console.log("Order Data being sent:", JSON.stringify(orderData, null, 2));
 
             const res = await fetch("/api/orders", {
                 method: "POST",

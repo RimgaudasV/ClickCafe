@@ -87,28 +87,106 @@ const CustomerHomePage = () => {
             ) : orders.length === 0 ? (
                 <p>No active orders yet.</p>
             ) : (
-                <div style={{ display: "grid", gap: "1rem", marginTop: "1rem" }}>
+                        <div
+                            style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                gap: "1.5rem",
+                                alignItems: "center",
+                                marginTop: "1rem",
+                                padding: "0 1rem"
+                            }}
+                        >
+
                     {orders.map(order => {
                         const cafe = cafes[order.cafeId];
 
                         return (
-                            <div key={order.orderId} style={{ border: "1px solid #ccc", borderRadius: "8px", padding: "1rem", display: "flex", alignItems: "center", gap: "1rem" }}>
+                            <div
+                                key={order.orderId}
+                                style={{
+                                    display: "flex",
+                                    gap: "1.5rem",
+                                    padding: "1rem",
+                                    borderRadius: "12px",
+                                    border: "2px solid #4e342e",
+                                    backgroundColor: "#fff",
+                                    boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                                    alignItems: "flex-start",
+                                    flexWrap: "wrap",
+                                    maxWidth: "850px",
+                                    width: "100%"
+                                }}
+                            >
+
                                 {cafe?.image ? (
-                                    <img src={cafe.image} alt={cafe.name} style={{ width: "100px", height: "100px", objectFit: "cover", borderRadius: "8px" }} />
+                                    <img
+                                        src={cafe.image}
+                                        alt={cafe.name}
+                                        style={{
+                                            width: "120px",
+                                            height: "120px",
+                                            objectFit: "cover",
+                                            borderRadius: "12px",
+                                            flexShrink: 0
+                                        }}
+                                    />
                                 ) : (
-                                    <div style={{ width: "100px", height: "100px", background: "#eee", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>No Photo</div>
+                                        <div
+                                            style={{
+                                                width: "120px",
+                                                height: "120px",
+                                                background: "#eee",
+                                                borderRadius: "12px",
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                                color: "#999",
+                                                fontSize: "0.9rem"
+                                            }}
+                                        >
+                                            No Photo
+                                        </div>
                                 )}
 
-                                <div style={{ flex: 1 }}>
-                                    <h4>{cafe?.name || "Unknown Cafe"}</h4>
-                                    <p>{cafe?.address || "Address not available"}</p>
-                                    <p>Status: <strong>{getStatusLabel(order.status)}</strong></p>
-                                    <p>Pickup time: {new Date(order.pickupDateTime).toLocaleString()}</p>
-                                    <p>Total: €{order.totalAmount.toFixed(2)}</p>
-                                    <p>Id: {order.orderId}</p>
-                                    <Link to={`/order/${order.orderId}`} className="ui button" state={{ totalAmount: order.totalAmount }}>
-                                        View Order
-                                    </Link>
+                                <div style={{
+                                    flex: 1,
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    textAlign: "left"
+                                }}>
+
+                                    <div style={{ marginBottom: "0.5rem" }}>
+                                        <h4 style={{ margin: 0 }}>{cafe?.name || "Unknown Cafe"}</h4>
+                                        <p style={{ margin: "0.25rem 0", color: "#666" }}>{cafe?.address || "Address not available"}</p>
+                                    </div>
+
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "1rem", fontSize: "0.95rem", color: "#444" }}>
+                                        <div>Status: <strong>{getStatusLabel(order.status)}</strong></div>
+                                        <div>Pickup: <strong>{new Date(order.pickupDateTime).toLocaleString()}</strong></div>
+                                        <div>Total: <strong>€{order.totalAmount.toFixed(2)}</strong></div>
+                                        <div>ID: {order.orderId}</div>
+                                    </div>
+
+                                    <div style={{ marginTop: "1rem" }}>
+                                        <Link
+                                            to={`/order/${order.orderId}`}
+                                            className="ui button"
+                                            style={{
+                                                padding: "0.5rem 1.2rem",
+                                                backgroundColor: "#2185d0",
+                                                color: "white",
+                                                border: "none",
+                                                borderRadius: "6px",
+                                                textDecoration: "none",
+                                                fontWeight: "bold"
+                                            }}
+                                            state={{ totalAmount: order.totalAmount }}
+                                        >
+                                            View Order
+                                        </Link>
+                                    </div>
                                 </div>
                             </div>
                         );
@@ -121,7 +199,7 @@ const CustomerHomePage = () => {
 
 const cardStyle = {
     display: "block",
-    width: "220px",
+    width: "240px",
     padding: "1.5rem",
     borderRadius: "10px",
     textDecoration: "none",
@@ -130,7 +208,9 @@ const cardStyle = {
     border: "1px solid #ddd",
     boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
     transition: "transform 0.2s, box-shadow 0.2s",
-    textAlign: "center"
+    textAlign: "center",
+    maxWidth: "600px",
+    width: "100%"
 };
 
 const iconStyle = {

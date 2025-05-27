@@ -12,6 +12,5 @@ namespace ClickCafeAPI.DTOs
         public DateTime PickupDateTime { get; set; }
         public List<CreateOrderItemDto> Items { get; set; }
         public string PaymentMethod { get; set; } // "Cash" or "CreditCard" (matching enum names)
-
     }
 }

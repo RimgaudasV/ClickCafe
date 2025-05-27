@@ -28,7 +28,7 @@ namespace ClickCafeAPI.Controllers
         {
             // loadinas visos
             var cafes = await _db.Cafes
-                .Include(c => c.MenuItems)    // turi menuitems tai parodom
+                .Include(c => c.MenuItems)    
                 .ToListAsync();
 
             //  Map each Cafe entity to a CafeDto
@@ -40,6 +40,7 @@ namespace ClickCafeAPI.Controllers
                 PhoneNumber = c.PhoneNumber,
                 OperatingHours = c.OperatingHours,
                 Image = c.Image,
+                RowVersion = c.RowVersion,
                 MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId)
             });
 
@@ -66,6 +67,7 @@ namespace ClickCafeAPI.Controllers
                 PhoneNumber = c.PhoneNumber,
                 OperatingHours = c.OperatingHours,
                 Image = c.Image,
+                RowVersion = c.RowVersion,
                 MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId)
             };
             return Ok(dto);
@@ -109,6 +111,7 @@ namespace ClickCafeAPI.Controllers
                 PhoneNumber = cafe.PhoneNumber,
                 OperatingHours = cafe.OperatingHours,
                 Image = cafe.Image,
+                RowVersion = cafe.RowVersion,
                 MenuItemIds = new List<int>()
             };
 

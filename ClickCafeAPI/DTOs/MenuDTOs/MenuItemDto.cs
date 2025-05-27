@@ -12,5 +12,6 @@ namespace ClickCafeAPI.DTOs.MenuDTOs
         public MenuItemCategory Category { get; set; }
         public string? Image { get; set; }
         public IEnumerable<int> AvailableCustomizationIds { get; set; } = new List<int>();
+        public byte[] RowVersion { get; set; } = null!;
     }
 }

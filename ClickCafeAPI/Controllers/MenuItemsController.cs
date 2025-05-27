@@ -56,6 +56,7 @@ namespace ClickCafeAPI.Controllers
                 BasePrice = mi.BasePrice,
                 Category = mi.Category,
                 Image = mi.Image,
+                RowVersion = mi.RowVersion,
                 AvailableCustomizationIds = mi.AvailableCustomizations.Select(c => c.CustomizationId)
             });
 
@@ -82,6 +83,7 @@ namespace ClickCafeAPI.Controllers
                 BasePrice = menuItem.BasePrice,
                 Category = menuItem.Category,
                 Image = menuItem.Image,
+                RowVersion = menuItem.RowVersion,
                 AvailableCustomizationIds = menuItem.AvailableCustomizations.Select(c => c.CustomizationId)
             };
 
@@ -138,6 +140,7 @@ namespace ClickCafeAPI.Controllers
                 BasePrice = menuItem.BasePrice,
                 Category = menuItem.Category,
                 Image = menuItem.Image,
+                RowVersion = menuItem.RowVersion,
                 AvailableCustomizationIds = customizations.Select(c => c.CustomizationId)
             };
 

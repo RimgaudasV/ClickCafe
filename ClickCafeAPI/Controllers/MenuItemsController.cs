@@ -147,7 +147,7 @@ namespace ClickCafeAPI.Controllers
 
         // PUT: api/MenuItems/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] UpdateMenuItemDto updateDto)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateMenuItemDto updateDto, bool force = false)
         {
             var menuItem = await _db.MenuItems
                 .Include(mi => mi.AvailableCustomizations)
@@ -182,8 +182,26 @@ namespace ClickCafeAPI.Controllers
                 menuItem.AvailableCustomizations = customizations;
             }
 
-            await _db.SaveChangesAsync();
-            return NoContent();
+            _db.Entry(menuItem).Property(mi => mi.RowVersion).OriginalValue = updateDto.RowVersion;
+
+            try
+            {
+                await _db.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateConcurrencyException ex) when (!force)
+            {
+                var dbEntry = ex.Entries.Single();
+                var current = await dbEntry.GetDatabaseValuesAsync();
+
+                return Conflict(new
+                {
+                    message = "This entity was changed by another user",
+                    currentValues = current?.ToObject(),
+                    currentRowVersion = current?["RowVersion"]
+                });
+            }
+
         }
 
 

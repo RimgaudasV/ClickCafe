@@ -22,7 +22,7 @@ namespace ClickCafeAPI.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ClickCafeAPI.Models.Cafe", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.CafeModels.Cafe", b =>
                 {
                     b.Property<int>("CafeId")
                         .ValueGeneratedOnAdd()
@@ -54,7 +54,7 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("Cafes");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.Customization", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.MenuModels.CustomizationModels.Customization", b =>
                 {
                     b.Property<int>("CustomizationId")
                         .ValueGeneratedOnAdd()
@@ -74,7 +74,7 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("Customizations");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.CustomizationOption", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.MenuModels.CustomizationModels.CustomizationOption", b =>
                 {
                     b.Property<int>("CustomizationOptionId")
                         .ValueGeneratedOnAdd()
@@ -99,7 +99,7 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("CustomizationOptions");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.MenuItem", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.MenuModels.MenuItem", b =>
                 {
                     b.Property<int>("MenuItemId")
                         .ValueGeneratedOnAdd()
@@ -134,7 +134,7 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("MenuItems");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.Order", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderModels.Order", b =>
                 {
                     b.Property<int>("OrderId")
                         .ValueGeneratedOnAdd()
@@ -178,7 +178,7 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.OrderAlert", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderModels.OrderAlert", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -208,7 +208,7 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("OrderAlerts");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.OrderItem", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderModels.OrderItemModels.OrderItem", b =>
                 {
                     b.Property<int>("OrderItemId")
                         .ValueGeneratedOnAdd()
@@ -237,7 +237,7 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.OrderItemCustomizationOption", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderModels.OrderItemModels.OrderItemCustomizationOption", b =>
                 {
                     b.Property<int>("OrderItemId")
                         .HasColumnType("int");
@@ -250,7 +250,7 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("OrderItemCustomizationOptions");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.Payment", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.PaymentModels.Payment", b =>
                 {
                     b.Property<int>("PaymentId")
                         .ValueGeneratedOnAdd()
@@ -283,7 +283,7 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("Payments");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.User", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.UserModels.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -509,16 +509,16 @@ namespace ClickCafeAPI.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.CustomizationOption", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.MenuModels.CustomizationModels.CustomizationOption", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.Customization", null)
+                    b.HasOne("ClickCafeAPI.Models.MenuModels.CustomizationModels.Customization", null)
                         .WithMany("Options")
                         .HasForeignKey("CustomizationId");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.MenuItem", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.MenuModels.MenuItem", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.Cafe", "Cafe")
+                    b.HasOne("ClickCafeAPI.Models.CafeModels.Cafe", "Cafe")
                         .WithMany("MenuItems")
                         .HasForeignKey("CafeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -527,15 +527,15 @@ namespace ClickCafeAPI.Migrations
                     b.Navigation("Cafe");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.Order", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderModels.Order", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.Cafe", "Cafe")
+                    b.HasOne("ClickCafeAPI.Models.CafeModels.Cafe", "Cafe")
                         .WithMany()
                         .HasForeignKey("CafeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClickCafeAPI.Models.User", "User")
+                    b.HasOne("ClickCafeAPI.Models.UserModels.User", "User")
                         .WithMany("OrderHistory")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -546,44 +546,44 @@ namespace ClickCafeAPI.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.OrderItem", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderModels.OrderItemModels.OrderItem", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.MenuItem", "MenuItem")
+                    b.HasOne("ClickCafeAPI.Models.MenuModels.MenuItem", "MenuItem")
                         .WithMany("OrderItems")
                         .HasForeignKey("MenuItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClickCafeAPI.Models.Order", null)
+                    b.HasOne("ClickCafeAPI.Models.OrderModels.Order", null)
                         .WithMany("Items")
                         .HasForeignKey("OrderId");
 
                     b.Navigation("MenuItem");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.OrderItemCustomizationOption", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderModels.OrderItemModels.OrderItemCustomizationOption", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.OrderItem", null)
+                    b.HasOne("ClickCafeAPI.Models.OrderModels.OrderItemModels.OrderItem", null)
                         .WithMany("SelectedOptions")
                         .HasForeignKey("OrderItemId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.Payment", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.PaymentModels.Payment", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.Order", "Order")
+                    b.HasOne("ClickCafeAPI.Models.OrderModels.Order", "Order")
                         .WithOne()
-                        .HasForeignKey("ClickCafeAPI.Models.Payment", "OrderId")
+                        .HasForeignKey("ClickCafeAPI.Models.PaymentModels.Payment", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.User", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.UserModels.User", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.Cafe", "Cafe")
+                    b.HasOne("ClickCafeAPI.Models.CafeModels.Cafe", "Cafe")
                         .WithMany()
                         .HasForeignKey("CafeId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -593,13 +593,13 @@ namespace ClickCafeAPI.Migrations
 
             modelBuilder.Entity("CustomizationMenuItem", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.Customization", null)
+                    b.HasOne("ClickCafeAPI.Models.MenuModels.CustomizationModels.Customization", null)
                         .WithMany()
                         .HasForeignKey("AvailableCustomizationsCustomizationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClickCafeAPI.Models.MenuItem", null)
+                    b.HasOne("ClickCafeAPI.Models.MenuModels.MenuItem", null)
                         .WithMany()
                         .HasForeignKey("MenuItemsMenuItemId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -617,7 +617,7 @@ namespace ClickCafeAPI.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.User", null)
+                    b.HasOne("ClickCafeAPI.Models.UserModels.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -626,7 +626,7 @@ namespace ClickCafeAPI.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.User", null)
+                    b.HasOne("ClickCafeAPI.Models.UserModels.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -641,7 +641,7 @@ namespace ClickCafeAPI.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ClickCafeAPI.Models.User", null)
+                    b.HasOne("ClickCafeAPI.Models.UserModels.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -650,39 +650,39 @@ namespace ClickCafeAPI.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("ClickCafeAPI.Models.User", null)
+                    b.HasOne("ClickCafeAPI.Models.UserModels.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.Cafe", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.CafeModels.Cafe", b =>
                 {
                     b.Navigation("MenuItems");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.Customization", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.MenuModels.CustomizationModels.Customization", b =>
                 {
                     b.Navigation("Options");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.MenuItem", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.MenuModels.MenuItem", b =>
                 {
                     b.Navigation("OrderItems");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.Order", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderModels.Order", b =>
                 {
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.OrderItem", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderModels.OrderItemModels.OrderItem", b =>
                 {
                     b.Navigation("SelectedOptions");
                 });
 
-            modelBuilder.Entity("ClickCafeAPI.Models.User", b =>
+            modelBuilder.Entity("ClickCafeAPI.Models.UserModels.User", b =>
                 {
                     b.Navigation("OrderHistory");
                 });

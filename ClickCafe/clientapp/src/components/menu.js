@@ -62,6 +62,25 @@ function Menu() {
                 message="Do you want to go back to the cafes page? Your current order will be lost."
             />
 
+            <div style={{ marginLeft: '0rem' }}>
+                {cafe.image && (
+                    <img
+                        src={cafe.image}
+                        alt={`${cafe.name} logo`}
+                        style={{
+                            width: 120,
+                            height: 120,
+                            objectFit: "cover",
+                            borderRadius: "50%",
+                            margin: "0.5rem 0"
+                        }}
+                    />
+                )}
+
+                <h2 style={{ marginBottom: 0 }}>{cafe.name}</h2>
+                <p style={{ marginTop: 0, color: '#444' }}>{cafe.address}</p>
+            </div>
+
             <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center' }}>
                 <label>
                     <strong>Category:</strong>
@@ -83,20 +102,19 @@ function Menu() {
                 </label>
             </div>
 
-            {cafe.image && (
-                <img src={`https://localhost:7281/images/${cafe.image}`} alt={`${cafe.name} logo`} style={{
-                    width: 120,
-                    height: 120,
-                    objectFit: "cover",
-                    borderRadius: "50%",
-                    margin: "1.5rem 0"
-                }} />
-            )}
+            <h3
+                style={{
+                    marginTop: '2rem',
+                    paddingBottom: '0.5rem',
+                    borderBottom: '2px solid #4e342e',
+                    color: '#333',
+                    fontWeight: '600',
+                    fontSize: '1.4rem'
+                }}
+            >
+                Menu
+            </h3>
 
-            <h2 style={{ marginBottom: 0 }}>{cafe.name}</h2>
-            <p style={{ marginTop: 0, color: '#777' }}>{cafe.address}</p>
-
-            <h3 style={{ marginTop: '2rem', borderBottom: '1px solid #ccc', paddingBottom: '0.5rem' }}>Menu</h3>
 
             {items.length === 0 ? (
                 <p>No items yet.</p>
@@ -112,14 +130,24 @@ function Menu() {
                             key={item.menuItemId}
                             className="ui card"
                             onClick={() => navigate(`/menuItem/${item.menuItemId}`)}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.transform = 'scale(1.03)';
+                                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.2)';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.transform = 'scale(1)';
+                                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.1)';
+                            }}
                             style={{
                                 cursor: 'pointer',
                                 height: '100%',
                                 boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
-                                transition: 'transform 0.2s',
-                                borderRadius: '10px'
+                                transition: 'transform 0.2s, box-shadow 0.2s',
+                                borderRadius: '10px',
+                                backgroundColor: '#fff'
                             }}
                         >
+
                             {item.image && (
                                 <div className="image">
                                     <img
@@ -145,6 +173,7 @@ function Menu() {
             )}
         </div>
     );
+
 }
 
 export default Menu;

@@ -53,7 +53,7 @@ function Cafes() {
                         style={{
                             cursor: "pointer",
                             width: '220px',
-                            border: '1px solid #ddd',
+                            border: '4px solid #D4A35B',
                             borderRadius: '8px',
                             boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
                             transition: 'transform 0.2s, box-shadow 0.2s',

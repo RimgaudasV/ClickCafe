@@ -56,7 +56,7 @@ const containerStyle = {
     alignItems: "flex-start",    
     paddingTop: "140px",        
     minHeight: "calc(100vh - 80px)",
-    background: "#f8f9fa"
+    background: "#EFC88E"
 };
 
 const cardStyle = {
@@ -71,8 +71,7 @@ const cardStyle = {
 
 const titleStyle = {
     marginBottom: "1.5rem",
-    fontSize: "1.75rem",
-    color: "#2185d0"
+    fontSize: "1.75rem"
 };
 
 const formStyle = {

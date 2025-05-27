@@ -1,6 +1,8 @@
-﻿using ClickCafeAPI.Models;
+﻿using ClickCafeAPI.DTOs.OrderDTOs.OrderItemDTOs;
+using ClickCafeAPI.Models;
+using ClickCafeAPI.Models.OrderModels;
 
-namespace ClickCafeAPI.DTOs
+namespace ClickCafeAPI.DTOs.OrderDTOs
 {
     public class CreateOrderWithPaymentDto
     {

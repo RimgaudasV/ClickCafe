@@ -142,11 +142,10 @@ namespace ClickCafeAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
 
-
-                    b.Property<int>("CafeId");
+                    b.Property<int>("CafeId")
+                        .HasColumnType("int");
 
                     b.Property<int>("ItemQuantity")
-
                         .HasColumnType("int");
 
                     b.Property<DateTime>("OrderDateTime")
@@ -177,6 +176,36 @@ namespace ClickCafeAPI.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("ClickCafeAPI.Models.OrderAlert", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OrderAlerts");
                 });
 
             modelBuilder.Entity("ClickCafeAPI.Models.OrderItem", b =>

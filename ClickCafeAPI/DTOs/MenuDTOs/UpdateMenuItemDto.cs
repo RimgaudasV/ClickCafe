@@ -1,4 +1,5 @@
 ﻿using ClickCafeAPI.Models.MenuModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ClickCafeAPI.DTOs.MenuDTOs
 {
@@ -10,7 +11,10 @@ namespace ClickCafeAPI.DTOs.MenuDTOs
         public string? Description { get; set; }
         public decimal BasePrice { get; set; }
         public MenuItemCategory Category { get; set; }
-        public string? Image { get; set; }
-        public IEnumerable<int> AvailableCustomizationIds { get; set; } = new List<int>();
+        [FromForm(Name = "image")]
+        public IFormFile? Image { get; set; }
+
+        [FromForm(Name = "AvailableCustomizationIds")]
+        public List<int> AvailableCustomizationIds { get; set; } = new();
     }
 }

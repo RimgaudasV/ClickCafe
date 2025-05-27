@@ -23,8 +23,10 @@ import CustomerHomePage from './components/customerHomePage';
 import BaristaHomePage from './components/baristaHomePage';
 import OrderMenu from './components/orderMenu';
 import AdminRoute from './AdminRoute';
-import AdminPanel from './components/adminPanel';
+import AdminPanel from './components/admin/adminPanel';
 import About from './components/about';
+import EditMenu from './components/admin/editMenu';
+import EditMenuItem from './components/admin/editMenuItem';
 
 function AppRoutes({ user, setUser }) {
     const location = useLocation();
@@ -138,6 +140,16 @@ function AppRoutes({ user, setUser }) {
                     <Route path="/admin" element={
                         <AdminRoute user={user}>
                             <AdminPanel />
+                        </AdminRoute>
+                    } />
+                    <Route path="/admin/menu/:cafeId" element={
+                        <AdminRoute user={user}>
+                            <EditMenu />
+                        </AdminRoute>
+                    } />
+                    <Route path="/admin/menuItem/:itemId" element={
+                        <AdminRoute user={user}>
+                            <EditMenuItem />
                         </AdminRoute>
                     } />
                 </Routes>

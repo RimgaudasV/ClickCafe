@@ -91,40 +91,58 @@ function History() {
     if (error) return <p style={{ color: "red" }}>{error}</p>
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Order History</h2>
-            <table className="min-w-full border border-gray-300">
-                <thead>
-                    <tr className="bg-gray-100">
-                        <th className="px-4 py-2 border">Id</th>
-                        <th className="px-4 py-2 border">Order Date & Time</th>
-                        <th className="px-4 py-2 border">Pickup Date & Time</th>
-                        <th className="px-4 py-2 border">Item Quantity</th>
-                        <th className="px-4 py-2 border">Order Price (€)</th>
-                        <th className="px-4 py-2 border">Order Status</th>
-                        <th className="px-4 py-2 border">Payment Status</th>
-                        <th className="px-4 py-2 border">View Order</th>
-                        <th className="px-4 py-2 border">Repeat Order</th>
+        <div style={{ padding: "2rem", maxWidth: "100%", overflowX: "auto" }}>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: "600", marginBottom: "1.5rem" }}>
+                Order History
+            </h2>
+
+            <table style={{
+                width: "100%",
+                borderCollapse: "collapse",
+                boxShadow: "0 0 10px rgba(0,0,0,0.05)",
+                borderRadius: "10px",
+                overflow: "hidden"
+            }}>
+                <thead style={{ backgroundColor: "#f3f3f3" }}>
+                    <tr>
+                        {["Id", "Order Date & Time", "Pickup Date & Time", "Item Quantity", "Order Price (€)", "Order Status", "Payment Status", "View", "Repeat"].map((header, i) => (
+                            <th key={i} style={{
+                                padding: "0.75rem 1rem",
+                                fontWeight: "600",
+                                fontSize: "0.95rem",
+                                borderBottom: "2px solid #ddd",
+                                textAlign: "left"
+                            }}>
+                                {header}
+                            </th>
+                        ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {orders.map((order) => (
-                        <tr key={order.orderId} className="text-center border-t">
-                            <td className="px-4 py-2 border">{order.orderId}</td>
-                            <td className="px-4 py-2 border">{new Date(order.orderDateTime).toLocaleString()}</td>
-                            <td className="px-4 py-2 border">{new Date(order.pickupDateTime).toLocaleString()}</td>
-                            <td className="px-4 py-2 border">{order.itemQuantity}</td>
-                            <td className="px-4 py-2 border">{order.totalAmount.toFixed(2)}</td>
-                            <td className="px-4 py-2 border">{OrderStatus[order.status]}</td>
-                            <td className="px-4 py-2 border">{PaymentStatus[order.paymentStatus]}</td>
-                            <td className="px-4 py-2 border">
-                                <Link to={`/order/${order.orderId}`} className="ui button" state={{ totalAmount: order.totalAmount }}>
-                                    View Order
+                    {orders.map((order, i) => (
+                        <tr key={order.orderId} style={{ backgroundColor: i % 2 === 0 ? "#fff" : "#fafafa" }}>
+                            <td style={cellStyle}>{order.orderId}</td>
+                            <td style={cellStyle}>{new Date(order.orderDateTime).toLocaleString()}</td>
+                            <td style={cellStyle}>{new Date(order.pickupDateTime).toLocaleString()}</td>
+                            <td style={cellStyle}>{order.itemQuantity}</td>
+                            <td style={cellStyle}>€{order.totalAmount.toFixed(2)}</td>
+                            <td style={cellStyle}>{OrderStatus[order.status]}</td>
+                            <td style={cellStyle}>{PaymentStatus[order.paymentStatus]}</td>
+                            <td style={cellStyle}>
+                                <Link
+                                    to={`/order/${order.orderId}`}
+                                    state={{ totalAmount: order.totalAmount }}
+                                    style={linkButtonStyle}
+                                >
+                                    View
                                 </Link>
                             </td>
-                            <td className="px-4 py-2 border">
-                                <button className="ui button" onClick={() => handleRepeatOrder(order.orderItemIds, order.orderId)}>
-                                    Repeat Order
+                            <td style={cellStyle}>
+                                <button
+                                    onClick={() => handleRepeatOrder(order.orderItemIds, order.orderId)}
+                                    style={repeatButtonStyle}
+                                >
+                                    Repeat
                                 </button>
                             </td>
                         </tr>
@@ -133,6 +151,33 @@ function History() {
             </table>
         </div>
     );
+
 }
+
+const cellStyle = {
+    padding: "0.75rem 1rem",
+    fontSize: "0.95rem",
+    borderBottom: "1px solid #ddd",
+    textAlign: "left",
+    verticalAlign: "middle"
+};
+
+const linkButtonStyle = {
+    padding: "0.4rem 0.8rem",
+    backgroundColor: "#2185d0",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    textDecoration: "none",
+    fontWeight: "bold",
+    cursor: "pointer",
+    display: "inline-block"
+};
+
+const repeatButtonStyle = {
+    ...linkButtonStyle,
+    backgroundColor: "#21ba45"
+};
+
 
 export default History;

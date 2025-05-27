@@ -69,29 +69,60 @@ function OrderDetails() {
     if (error) return <p style={{ color: "red" }}>{error}</p>;
 
     return (
-        <div className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Order Details</h2>
-            <h3>Items:</h3>
-            <ul>
+        <div style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem" }}>
+            <h2 style={{ fontSize: "1.75rem", fontWeight: "600", marginBottom: "1.5rem" }}>
+                Order Details
+            </h2>
+
+            <h3 style={{ fontSize: "1.25rem", marginBottom: "1rem" }}>Items:</h3>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
                 {orderItems.map(item => (
-                    <li key={item.orderItemId} style={{ marginBottom: "1rem" }}>
-                        <strong>{menuItems[item.menuItemId]}</strong> — Quantity: {item.quantity} — Price: €{(item.price * item.quantity).toFixed(2)}
-                        {customizationMap[item.orderItemId] && customizationMap[item.orderItemId].length > 0 && (
-                            <ul style={{ marginLeft: "1rem", marginTop: "0.5rem" }}>
-                                {customizationMap[item.orderItemId].map(opt => (
-                                    <li key={opt.customizationOptionId}>{opt.name}</li>
-                                ))}
-                            </ul>
-                        )}
-                    </li>
+                    <div
+                        key={item.orderItemId}
+                        style={{
+                            padding: "1rem",
+                            border: "1px solid #ccc",
+                            borderRadius: "10px",
+                            backgroundColor: "#fff",
+                            boxShadow: "0 2px 6px rgba(0, 0, 0, 0.05)"
+                        }}
+                    >
+                        <div style={{ fontWeight: "600", fontSize: "1.1rem" }}>
+                            {menuItems[item.menuItemId]}
+                        </div>
+                        <div style={{ margin: "0.5rem 0", color: "#555" }}>
+                            Quantity: <strong>{item.quantity}</strong> &nbsp;|&nbsp; Price: <strong>€{(item.price * item.quantity).toFixed(2)}</strong>
+                        </div>
+
+                        {customizationMap[item.orderItemId] &&
+                            customizationMap[item.orderItemId].length > 0 && (
+                                <div style={{ marginTop: "0.5rem", fontSize: "0.95rem" }}>
+                                    <div style={{ fontWeight: "500", marginBottom: "0.25rem" }}>Customizations:</div>
+                                    <ul style={{ marginLeft: "1rem", color: "#444" }}>
+                                        {customizationMap[item.orderItemId].map(opt => (
+                                            <li key={opt.customizationOptionId}>{opt.name}</li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+                    </div>
                 ))}
-            </ul>
-            {isDiscounted && (
-                <h3>Discount: €{(fullTotal - totalAmount).toFixed(2)}</h3>
-            )}
-            <h3>Total price: €{totalAmount.toFixed(2)}</h3>
+            </div>
+
+            <div style={{ marginTop: "2rem", fontSize: "1.1rem" }}>
+                {isDiscounted && (
+                    <div style={{ color: "#d9534f", marginBottom: "0.5rem" }}>
+                        <strong>Discount:</strong> €{(fullTotal - totalAmount).toFixed(2)}
+                    </div>
+                )}
+                <div style={{ fontWeight: "bold", fontSize: "1.3rem" }}>
+                    Total Price: €{totalAmount.toFixed(2)}
+                </div>
+            </div>
         </div>
     );
+
 }
 
 export default OrderDetails;

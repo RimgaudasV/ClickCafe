@@ -1,5 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+
 
 function EditMenu(){ 
 
@@ -12,6 +14,8 @@ function EditMenu(){
     const [data, setData] = useState(null);
     const [cafes, setCafes] = useState([]);
     const navigate = useNavigate();
+    const { cafeId } = useParams();
+
 
     const [menuForm, setMenuForm] = useState({
         cafeId: '', name: '', description: '', basePrice: '', category: '', image: null, availableCustomizationIds: []
@@ -151,7 +155,20 @@ function EditMenu(){
 
     return (
         <div>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+            <button
+                className="ui button"
+                onClick={() => navigate('/admin')}
+                style={{ marginLeft: '1rem', marginTop: '1rem' }}
+            >
+                ← Go Back
+            </button>
+            {cafeId && (
+                <h2 style={{ paddingLeft: '1rem', marginBottom: '1rem' }}>
+                    Editing Menu for: <strong>{cafes.find(c => c.cafeId === parseInt(cafeId))?.name || `Cafe ID: ${cafeId}`}</strong>
+                </h2>
+            )}
+
+            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', marginBottom: '2rem', flexWrap: 'wrap', paddingLeft: '1rem' }}>
                 <button className="ui green button" onClick={() => setShowMenuItemForm(!showMenuItemForm)}>
                     {showMenuItemForm ? "Cancel" : "Add a Menu Item"}
                 </button>
@@ -166,63 +183,67 @@ function EditMenu(){
                 </button>
             </div>
 
-            {
-            showMenuItemForm && (
-                <form onSubmit={handleMenuSubmit} className="ui form" style={{ marginTop: '1rem', width: '300px' }}>
-                    <select name="cafeId" value={menuForm.cafeId} onChange={handleMenuInput} className="ui dropdown" required>
-                        <option value="" disabled>Select a Cafe</option>
-                        {cafes.map(c => (<option key={c.cafeId} value={c.cafeId}>{c.name}</option>))}
-                    </select>
-                    <input type="text" name="name" placeholder="Item Name" value={menuForm.name} onChange={handleMenuInput} required />
-                    <input type="text" name="description" placeholder="Description" value={menuForm.description} onChange={handleMenuInput} />
-                    <input type="number" step="0.01" name="basePrice" placeholder="Base Price" value={menuForm.basePrice} onChange={handleMenuInput} required />
-                    <select name="category" value={menuForm.category} onChange={handleMenuInput} className="ui dropdown" required>
-                        <option value="" disabled>Select a Category</option>
-                        <option value="1">Coffee</option>
-                        <option value="2">Tea</option>
-                        <option value="3">Smoothie</option>
-                    </select>
-                    <input type="file" name="image" accept="image/*" onChange={handleMenuImage} required />
-                    <div style={{ marginTop: '1rem' }}>
-                        <label><strong>Customizations:</strong></label>
-                        {customizations.map(c => (
-                            <div key={c.customizationId}>
-                                <label>
-                                    <input type="checkbox" value={c.customizationId} checked={menuForm.availableCustomizationIds.includes(c.customizationId)} onChange={handleCustomizationChange} />
-                                    {c.name}
-                                </label>
-                            </div>
-                        ))}
-                    </div>
-                    <button className="ui green button" type="submit" style={{ marginTop: '1rem' }}>
-                        Add Menu Item
-                    </button>
-                </form>)}
+            {showMenuItemForm && (
+                <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
+                    <form onSubmit={handleMenuSubmit} className="ui form" style={{ marginTop: '1rem', width: '300px', marginBottom: '2rem' }}>
+                        <select name="cafeId" value={menuForm.cafeId} onChange={handleMenuInput} className="ui dropdown" required>
+                            <option value="" disabled>Select a Cafe</option>
+                            {cafes.map(c => (<option key={c.cafeId} value={c.cafeId}>{c.name}</option>))}
+                        </select>
+                        <input type="text" name="name" placeholder="Item Name" value={menuForm.name} onChange={handleMenuInput} required />
+                        <input type="text" name="description" placeholder="Description" value={menuForm.description} onChange={handleMenuInput} />
+                        <input type="number" step="0.01" name="basePrice" placeholder="Base Price" value={menuForm.basePrice} onChange={handleMenuInput} required />
+                        <select name="category" value={menuForm.category} onChange={handleMenuInput} className="ui dropdown" required>
+                            <option value="" disabled>Select a Category</option>
+                            <option value="1">Coffee</option>
+                            <option value="2">Tea</option>
+                            <option value="3">Smoothie</option>
+                        </select>
+                        <input type="file" name="image" accept="image/*" onChange={handleMenuImage} required />
+                        <div style={{ marginTop: '1rem' }}>
+                            <label><strong>Customizations:</strong></label>
+                            {customizations.map(c => (
+                                <div key={c.customizationId}>
+                                    <label>
+                                        <input type="checkbox" value={c.customizationId} checked={menuForm.availableCustomizationIds.includes(c.customizationId)} onChange={handleCustomizationChange} />
+                                        {c.name}
+                                    </label>
+                                </div>
+                            ))}
+                        </div>
+                        <button className="ui green button" type="submit" style={{ marginTop: '1rem' }}>
+                            Add Menu Item
+                        </button>
+                    </form>
+                </div>
+            )}
 
-    
             {showDeleteMenuItemForm && (
-                <form onSubmit={handleDeleteMenuItem} className="ui form" style={{ marginTop: '1rem' }}>
-                    <select
-                        className="ui dropdown"
-                        style={{ width: '300px' }}
-                        value={selectedMenuItemId || ''}
-                        onChange={(e) => setSelectedMenuItemId(e.target.value)}
-                        required
-                    >
-                        <option value="" disabled>Select a menu item to remove</option>
-                        {menuItems.map(mi => (
-                            <option key={mi.menuItemId} value={mi.menuItemId}>{mi.name} ({getCafeNameById(mi.cafeId)})</option>
-                        ))}
-                    </select>
-                    <button type="submit" className="ui red button" style={{ marginTop: '0.5rem' }}>
-                        Confirm Remove Menu Item
-                    </button>
-                </form>)}
+                <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
+                    <form onSubmit={handleDeleteMenuItem} className="ui form" style={{ marginTop: '1rem', marginBottom: '2rem' }}>
+                        <select
+                            className="ui dropdown"
+                            style={{ width: '300px' }}
+                            value={selectedMenuItemId || ''}
+                            onChange={(e) => setSelectedMenuItemId(e.target.value)}
+                            required
+                        >
+                            <option value="" disabled>Select a menu item to remove</option>
+                            {menuItems.map(mi => (
+                                <option key={mi.menuItemId} value={mi.menuItemId}>{mi.name} ({getCafeNameById(mi.cafeId)})</option>
+                            ))}
+                        </select>
+                        <button type="submit" className="ui red button" style={{ marginTop: '0.5rem' }}>
+                            Confirm Remove Menu Item
+                        </button>
+                    </form>
+                </div>
+            )}
 
             {showCustomizationForm && (
-                <div style={{ marginTop: '3rem' }}>
+                <div style={{ paddingLeft: '1rem', paddingRight: '1rem', marginTop: '3rem' }}>
                     <h2>Add Customization</h2>
-                    <form className="ui form" onSubmit={handleCustomSubmit} style={{ maxWidth: '400px' }}>
+                    <form className="ui form" onSubmit={handleCustomSubmit} style={{ maxWidth: '400px', marginBottom: '2rem' }}>
                         <input type="text" name="name" placeholder="Customization Name" value={customForm.name} onChange={handleCustomInput} required />
                         <select name="type" value={customForm.type} onChange={handleCustomInput} className="ui dropdown" required>
                             <option value="" disabled>Select Type</option>
@@ -244,26 +265,31 @@ function EditMenu(){
                             Create Customization
                         </button>
                     </form>
-                </div>)}
- 
+                </div>
+            )}
+
             {showDeleteCustomizationForm && (
-                <form onSubmit={handleDeleteCustomization} className="ui form" style={{ marginTop: '1rem' }}>
-                    <select
-                        className="ui dropdown"
-                        style={{ width: '300px' }}
-                        value={selectedCustomizationId || ''}
-                        onChange={(e) => setSelectedCustomizationId(e.target.value)}
-                        required
-                    >
-                        <option value="" disabled>Select a customization to remove</option>
-                        {customizations.map(c => (
-                            <option key={c.customizationId} value={c.customizationId}>{c.name}</option>
-                        ))}
-                    </select>
-                    <button type="submit" className="ui red button" style={{ marginTop: '0.5rem' }}>
-                        Confirm Remove Customization
-                    </button>
-                </form>)}
+                <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
+                    <form onSubmit={handleDeleteCustomization} className="ui form" style={{ marginTop: '1rem', marginBottom: '2rem' }}>
+                        <select
+                            className="ui dropdown"
+                            style={{ width: '300px' }}
+                            value={selectedCustomizationId || ''}
+                            onChange={(e) => setSelectedCustomizationId(e.target.value)}
+                            required
+                        >
+                            <option value="" disabled>Select a customization to remove</option>
+                            {customizations.map(c => (
+                                <option key={c.customizationId} value={c.customizationId}>{c.name}</option>
+                            ))}
+                        </select>
+                        <button type="submit" className="ui red button" style={{ marginTop: '0.5rem' }}>
+                            Confirm Remove Customization
+                        </button>
+                    </form>
+                </div>
+            )}
+
 
 
             <div style={{
@@ -312,7 +338,7 @@ function EditMenu(){
                         <div style={{ padding: '0.75rem' }}>
                             <h3 style={{ margin: '0 0 0.5rem' }}>{item.name}</h3>
                             <p style={{ fontSize: '0.9rem', color: '#555' }}>{item.description}</p>
-                            <p style={{ fontWeight: 'bold', marginTop: '0.5rem' }}>{item.price} €</p>
+                            <p style={{ fontWeight: 'bold', marginTop: '0.5rem' }}>{item.basePrice} €</p>
                         </div>
                     </div>
                 ))}

@@ -73,43 +73,49 @@ function AdminPanel() {
 
     return (
         <div>
-            <h1>Admin Dashboard</h1>
-            <ul>
-                <li>Total Users: {data.userCount}</li>
-                <li>Total Cafes: {data.cafeCount}</li>
-                <li>Total Menu Items: {data.menuItemCount}</li>
-            </ul>
+            <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
+                <h1>Admin Dashboard</h1>
+                <ul>
+                    <li>Total Users: {data.userCount}</li>
+                    <li>Total Cafes: {data.cafeCount}</li>
+                    <li>Total Menu Items: {data.menuItemCount}</li>
+                </ul>
 
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
-                <button className="ui blue button" onClick={() => setShowForm(!showForm)}>
-                    {showForm ? "Cancel" : "Add a Cafe"}
-                </button>
-                <button className="ui red button" onClick={() => setShowDeleteForm(!showDeleteForm)}>
-                    {showDeleteForm ? "Cancel" : "Remove a Cafe"}
-                </button>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                    <button className="ui blue button" onClick={() => setShowForm(!showForm)}>
+                        {showForm ? "Cancel" : "Add a Cafe"}
+                    </button>
+                    <button className="ui red button" onClick={() => setShowDeleteForm(!showDeleteForm)}>
+                        {showDeleteForm ? "Cancel" : "Remove a Cafe"}
+                    </button>
+                </div>
             </div>
 
             {showForm && (
-                <form onSubmit={handleSubmit} className="ui form" style={{ marginTop: '1rem', width: '300px' }}>
-                    <input type="text" name="name" placeholder="Name" value={form.name} onChange={handleInput} required />
-                    <input type="text" name="address" placeholder="Address" value={form.address} onChange={handleInput} required />
-                    <input type="text" name="phone" placeholder="Phone Number" value={form.phone} onChange={handleInput} required />
-                    <input type="text" name="hours" placeholder="Operating Hours" value={form.hours} onChange={handleInput} required />
-                    <input type="file" name="image" accept="image/*" onChange={(e) => setForm(f => ({ ...f, image: e.target.files[0] }))} required />
-                    <button className="ui primary button" type="submit">Add Cafe</button>
-                </form>
+                <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
+                    <form onSubmit={handleSubmit} className="ui form" style={{ marginTop: '1rem', width: '300px' }}>
+                        <input type="text" name="name" placeholder="Name" value={form.name} onChange={handleInput} required />
+                        <input type="text" name="address" placeholder="Address" value={form.address} onChange={handleInput} required />
+                        <input type="text" name="phone" placeholder="Phone Number" value={form.phone} onChange={handleInput} required />
+                        <input type="text" name="hours" placeholder="Operating Hours" value={form.hours} onChange={handleInput} required />
+                        <input type="file" name="image" accept="image/*" onChange={(e) => setForm(f => ({ ...f, image: e.target.files[0] }))} required />
+                        <button className="ui primary button" type="submit">Add Cafe</button>
+                    </form>
+                </div>
             )}
 
             {showDeleteForm && (
-                <form onSubmit={handleDeleteCafe} className="ui form" style={{ marginTop: '1rem' }}>
-                    <select className="ui dropdown" style={{ width: '300px' }} value={selectedCafeId || ''} onChange={(e) => setSelectedCafeId(e.target.value)} required>
-                        <option value="" disabled>Select a cafe to remove</option>
-                        {cafes.map(c => (<option key={c.cafeId} value={c.cafeId}>{c.name}</option>))}
-                    </select>
-                    <button type="submit" className="ui red button" style={{ marginTop: '0.5rem' }}>
-                        Confirm Remove
-                    </button>
-                </form>
+                <div style={{ paddingLeft: '1rem', paddingRight: '1rem' }}>
+                    <form onSubmit={handleDeleteCafe} className="ui form" style={{ marginTop: '1rem' }}>
+                        <select className="ui dropdown" style={{ width: '300px' }} value={selectedCafeId || ''} onChange={(e) => setSelectedCafeId(e.target.value)} required>
+                            <option value="" disabled>Select a cafe to remove</option>
+                            {cafes.map(c => (<option key={c.cafeId} value={c.cafeId}>{c.name}</option>))}
+                        </select>
+                        <button type="submit" className="ui red button" style={{ marginTop: '0.5rem' }}>
+                            Confirm Remove
+                        </button>
+                    </form>
+                 </div>
             )}
 
             <h2 style={{ textAlign: 'center', marginTop: '2rem' }}>Existing Cafés</h2>

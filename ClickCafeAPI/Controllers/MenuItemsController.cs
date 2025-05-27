@@ -147,7 +147,7 @@ namespace ClickCafeAPI.Controllers
 
         // PUT: api/MenuItems/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateMenuItemDto updateDto)
+        public async Task<IActionResult> Update(int id, [FromForm] UpdateMenuItemDto updateDto)
         {
             var menuItem = await _db.MenuItems
                 .Include(mi => mi.AvailableCustomizations)
@@ -160,8 +160,20 @@ namespace ClickCafeAPI.Controllers
             if (!string.IsNullOrEmpty(updateDto.Description)) menuItem.Description = updateDto.Description;
             if (updateDto.BasePrice > 0) menuItem.BasePrice = updateDto.BasePrice;
             if (updateDto.Category > 0) menuItem.Category = updateDto.Category;
-            if (!string.IsNullOrEmpty(updateDto.Image)) menuItem.Image = updateDto.Image;
 
+            // Handle image upload
+            if (updateDto.Image != null && updateDto.Image.Length > 0)
+            {
+                var fileName = Path.GetFileName(updateDto.Image.FileName);
+                var savePath = Path.Combine("wwwroot/images", fileName);
+                using (var stream = new FileStream(savePath, FileMode.Create))
+                {
+                    await updateDto.Image.CopyToAsync(stream);
+                }
+                menuItem.Image = fileName;
+            }
+
+            // Handle customizations
             if (updateDto.AvailableCustomizationIds != null)
             {
                 var customizations = await _db.Customizations
@@ -169,9 +181,11 @@ namespace ClickCafeAPI.Controllers
                     .ToListAsync();
                 menuItem.AvailableCustomizations = customizations;
             }
+
             await _db.SaveChangesAsync();
             return NoContent();
         }
+
 
         // DELETE: api/MenuItems/{id}
         [HttpDelete("{id}")]

@@ -150,7 +150,7 @@ namespace ClickCafeAPI.Controllers
 
         // PUT: api/MenuItems/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] UpdateMenuItemDto updateDto, bool force = false)
+        public async Task<IActionResult> Update(int id, [FromForm] UpdateMenuItemDto updateDto, bool force = false)
         {
             var menuItem = await _db.MenuItems
                 .Include(mi => mi.AvailableCustomizations)
@@ -185,21 +185,35 @@ namespace ClickCafeAPI.Controllers
                 menuItem.AvailableCustomizations = customizations;
             }
 
-            _db.Entry(menuItem).Property(mi => mi.RowVersion).OriginalValue = updateDto.RowVersion;
+            if (force)
+            {
+                var dbVersion = await _db.MenuItems
+                    .AsNoTracking()
+                    .Where(m => m.MenuItemId == id)
+                    .Select(m => m.RowVersion)
+                    .SingleAsync();
+
+                _db.Entry(menuItem).Property(m => m.RowVersion).OriginalValue = dbVersion;
+            }
+            else
+            {
+                _db.Entry(menuItem).Property(m => m.RowVersion).OriginalValue = updateDto.RowVersion;
+            }
+
+            _db.Entry(menuItem).Property(m => m.RowVersion).IsModified = false;
 
             try
             {
                 await _db.SaveChangesAsync();
                 return NoContent();
             }
-            catch (DbUpdateConcurrencyException ex) when (!force)
+            catch (DbUpdateConcurrencyException) when (!force)
             {
-                var dbEntry = ex.Entries.Single();
-                var current = await dbEntry.GetDatabaseValuesAsync();
-
+                // 409
+                var current = await _db.Entry(menuItem).GetDatabaseValuesAsync();
                 return Conflict(new
                 {
-                    message = "This entity was changed by another user",
+                    message = "Įrašas buvo pakeistas kito naudotojo.",
                     currentValues = current?.ToObject(),
                     currentRowVersion = current?["RowVersion"]
                 });

@@ -6,7 +6,7 @@ function EditMenuItem() {
     const navigate = useNavigate();
 
     const [menuForm, setMenuForm] = useState({
-        cafeId: '', name: '', description: '', basePrice: '', category: '', image: null, availableCustomizationIds: []
+        cafeId: '', name: '', description: '', basePrice: '', category: '', image: null, availableCustomizationIds: [], rowVersion: ''
     });
 
     const [cafes, setCafes] = useState([]);
@@ -29,7 +29,8 @@ function EditMenuItem() {
                     basePrice: data.basePrice,
                     category: data.category,
                     image: null,
-                    availableCustomizationIds: data.availableCustomizations?.map(c => c.customizationId) || []
+                    availableCustomizationIds: data.availableCustomizations?.map(c => c.customizationId) || [],
+                    rowVersion: data.rowVersion
                 });
                 setExistingImageUrl(`https://localhost:7281/images/${data.image}`);
             });
@@ -47,46 +48,75 @@ function EditMenuItem() {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e, overwrite = false) => {
         e.preventDefault();
 
         const formData = new FormData();
-        formData.append("name", menuForm.name);
-        formData.append("cafeId", menuForm.cafeId);
-        formData.append("description", menuForm.description);
-        formData.append("basePrice", menuForm.basePrice);
-        formData.append("category", menuForm.category);
+        formData.append('cafeId', menuForm.cafeId);
+        formData.append('name', menuForm.name);
+        formData.append('description', menuForm.description);
+        formData.append('basePrice', menuForm.basePrice);
+        formData.append('category', menuForm.category);
+        formData.append('RowVersion', menuForm.rowVersion);
 
         if (menuForm.image) {
-            formData.append("image", menuForm.image);
+            formData.append('image', menuForm.image);
         }
-
         menuForm.availableCustomizationIds.forEach(id =>
-            formData.append("AvailableCustomizationIds", id)
+            formData.append('AvailableCustomizationIds', id)
         );
 
-        for (let [key, value] of formData.entries()) {
-            console.log(`${key}:`, value);
-        }
-        try {
-            const res = await fetch(`https://localhost:7281/api/menuitems/${itemId}`, {
-                method: "PUT",
-                body: formData,
-                credentials: "include"
-            });
+        const url = `https://localhost:7281/api/menuitems/${itemId}` +
+            (overwrite ? '?force=true' : '');
 
-            if (res.ok) {
-                alert("Menu item updated!");
-                navigate(`/admin/menu/${menuForm.cafeId}`);
-            } else {
-                const err = await res.text();
-                console.error("Update failed:", err);
-                alert("Failed to update menu item.");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("An error occurred while updating.");
+        const res = await fetch(url, {
+            method: 'PUT',
+            body: formData,
+            credentials: 'include'
+        });
+
+        if (res.ok) {
+            alert('Menu item updated!');
+            navigate(`/admin/menu/${menuForm.cafeId}`);
+            return;
         }
+
+        //409 
+        if (res.status === 409) {
+            const conflict = await res.json();// { message, currentValues, currentRowVersion }
+
+            const wantOverwrite = window.confirm(
+                `Object was changed.\n`
+                + `• „OK“ – Overwrite,\n`
+                + `• „Cancel“ – Update newest version and repeat editing`
+            );
+
+            if (wantOverwrite) {
+                // overwrite
+                setMenuForm(f => ({ ...f, rowVersion: conflict.currentRowVersion }));
+                await handleSubmit(e, true);
+            } else {
+                const v = conflict.currentValues;
+                setMenuForm({
+                    cafeId: v.cafeId,
+                    name: v.name,
+                    description: v.description,
+                    basePrice: v.basePrice,
+                    category: v.category,
+                    image: null,
+                    availableCustomizationIds:
+                        v.availableCustomizationIds ?? [],
+                    rowVersion: conflict.currentRowVersion
+                });
+                setExistingImageUrl(`https://localhost:7281/images/${v.image}`);
+                alert('Updated, try again');
+            }
+            return;
+        }
+
+        const err = await res.text();
+        console.error('Update failed:', err);
+        alert('Failed to update menu item.');
     };
 
 

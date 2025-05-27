@@ -1,4 +1,4 @@
-﻿using ClickCafeAPI.Models;
+﻿using ClickCafeAPI.Models.UserModels;
 using System.ComponentModel.DataAnnotations;
 
 namespace ClickCafeAPI.ViewModels

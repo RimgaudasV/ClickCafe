@@ -1,10 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using ClickCafeAPI.Context;
-using ClickCafeAPI.Models;
-using ClickCafeAPI.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using ClickCafeAPI.DTOs.OrderDTOs;
+using ClickCafeAPI.DTOs.PaymentDTOs;
+using ClickCafeAPI.Models.OrderModels.OrderItemModels;
+using ClickCafeAPI.Models.OrderModels;
+using ClickCafeAPI.Models.PaymentModels;
+using ClickCafeAPI.Services.Discount.Interfaces;
 
 namespace ClickCafeAPI.Controllers
 {
@@ -14,8 +18,13 @@ namespace ClickCafeAPI.Controllers
     public class OrderController : ControllerBase
     {
         private readonly ClickCafeContext _db;
-        public OrderController(ClickCafeContext db)
-           => _db = db;
+        private readonly IDiscountService _discountService;
+
+        public OrderController(ClickCafeContext db, IDiscountService discountService)
+        {
+            _db = db;
+            _discountService = discountService;
+        }
 
         // GET: api/orders
         [HttpGet("orders")]
@@ -109,7 +118,7 @@ namespace ClickCafeAPI.Controllers
                 OrderDateTime = DateTime.UtcNow,
                 Status = OrderStatus.Pending,
                 PaymentStatus = OrderPaymentStatus.Unpaid,
-                TotalAmount = createDto.TotalAmount,
+                TotalAmount = _discountService.CalculateDiscountedTotal(createDto.TotalAmount, createDto.UserId.ToString()),
                 ItemQuantity = createDto.ItemQuantity,
                 PickupDateTime = createDto.PickupDateTime,
                 Items = new List<OrderItem>()
@@ -178,7 +187,8 @@ namespace ClickCafeAPI.Controllers
             var responseDto = new OrderPaymentResponseDto
             {
                 OrderId = order.OrderId,
-                PaymentId = payment.PaymentId
+                PaymentId = payment.PaymentId,
+                TotalAmount = order.TotalAmount
             };
 
             return CreatedAtAction(nameof(GetById), new { id = order.OrderId }, responseDto);

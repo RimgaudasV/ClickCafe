@@ -1,4 +1,10 @@
-﻿using ClickCafeAPI.Models;
+﻿using ClickCafeAPI.Models.CafeModels;
+using ClickCafeAPI.Models.MenuModels;
+using ClickCafeAPI.Models.MenuModels.CustomizationModels;
+using ClickCafeAPI.Models.OrderModels;
+using ClickCafeAPI.Models.OrderModels.OrderItemModels;
+using ClickCafeAPI.Models.PaymentModels;
+using ClickCafeAPI.Models.UserModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

@@ -1,5 +1,5 @@
 ﻿using ClickCafeAPI.Context;
-using ClickCafeAPI.DTOs;
+using ClickCafeAPI.DTOs.OrderDTOs.OrderItemDTOs;
 using ClickCafeAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

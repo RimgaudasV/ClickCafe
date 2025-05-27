@@ -1,8 +1,6 @@
-﻿using ClickCafeAPI.DTOs.OrderDTOs.OrderItemDTOs;
-using ClickCafeAPI.Models;
-using ClickCafeAPI.Models.OrderModels;
+﻿using ClickCafeAPI.Models;
 
-namespace ClickCafeAPI.DTOs.OrderDTOs
+namespace ClickCafeAPI.DTOs
 {
     public class CreateOrderWithPaymentDto
     {
@@ -14,7 +12,6 @@ namespace ClickCafeAPI.DTOs.OrderDTOs
         public DateTime PickupDateTime { get; set; }
         public List<CreateOrderItemDto> Items { get; set; }
         public string PaymentMethod { get; set; } // "Cash" or "CreditCard" (matching enum names)
-        public int CafeId { get; set; }
-        public OrderPaymentStatus PaymentStatus { get; set; }
+
     }
 }

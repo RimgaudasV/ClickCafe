@@ -1,5 +1,5 @@
 ﻿import React from "react";
-import "../confirmModal.css"; 
+import "../../confirmModal.css"; 
 
 const ConfirmModal = ({ show, onConfirm, onCancel, message }) => {
     if (!show) return null;

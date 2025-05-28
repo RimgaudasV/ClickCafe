@@ -33,7 +33,7 @@ function EditMenuItem() {
                     basePrice: data.basePrice,
                     category: data.category,
                     image: null,
-                    availableCustomizationIds: data.availableCustomizations?.map(c => c.customizationId) || [],
+                    availableCustomizationIds: data.availableCustomizationIds || [],
                     rowVersion: data.rowVersion
                 });
 

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import Bell from './bell';
-import { useOrder } from "../context/OrderContext";
+import { useOrder } from "../../context/OrderContext";
 
 function Navbar({ user, setUser }) {
     const navigate = useNavigate();
@@ -42,7 +42,6 @@ function Navbar({ user, setUser }) {
                     <>
                         <Link to="/home" style={linkStyle}>Home</Link>
                         <Link to="/cafes" style={linkStyle}>New Order</Link>
-                        <Link to="/rewards" style={linkStyle}>Rewards</Link>
                         <Link to="/history" style={linkStyle}>History</Link>
                     </>
                 )}

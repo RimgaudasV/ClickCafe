@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { useOrder } from "../context/OrderContext";
+import { useOrder } from "../../context/OrderContext";
 
 function MenuItem() {
     const { itemId } = useParams();

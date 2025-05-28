@@ -2,29 +2,27 @@
 
 import LoginPage from './components/auth/login';
 import RegisterPage from './components/auth/register';
-import MainPage from './components/main';
-import Cafes from './components/cafes';
-import Menu from './components/menu';
-import Status from './components/status';
-import Rewards from './components/rewards';
-import History from './components/history';
-import Account from './components/account';
-import Settings from './components/settings';
-import Navbar from './components/navbar';
+import Cafes from './components/customer/cafes';
+import Menu from './components/customer/menu';
+import Status from './components/barista/status';
+import History from './components/customer/history';
+import Account from './components/shared/account';
+import Settings from './components/shared/settings';
+import Navbar from './components/shared/navbar';
 import PrivateRoute from './PrivateRoute';
-import MenuItem from './components/menuItem';
-import Checkout from './components/checkout';
-import OrderDetails from './components/orderDetails';
-import PaymentPage from './components/payment';
-import PaymentResultPage from './components/paymentResult';
-import OrderConfirmationPage from './components/orderConfirmation';
+import MenuItem from './components/customer/menuItem';
+import Checkout from './components/customer/checkout';
+import OrderDetails from './components/customer/orderDetails';
+import PaymentPage from './components/customer/payment';
+import PaymentResultPage from './components/customer/paymentResult';
+import OrderConfirmationPage from './components/customer/orderConfirmation';
 import BaristaRoute from './BaristaRoute';
-import CustomerHomePage from './components/customerHomePage';
-import BaristaHomePage from './components/baristaHomePage';
-import OrderMenu from './components/orderMenu';
+import CustomerHomePage from './components/customer/customerHomePage';
+import BaristaHomePage from './components/barista/baristaHomePage';
+import OrderMenu from './components/customer/orderMenu';
 import AdminRoute from './AdminRoute';
 import AdminPanel from './components/admin/adminPanel';
-import About from './components/about';
+import About from './components/shared/about';
 import EditMenu from './components/admin/editMenu';
 import EditMenuItem from './components/admin/editMenuItem';
 
@@ -99,11 +97,6 @@ function AppRoutes({ user, setUser }) {
                         <BaristaRoute user={user}>
                             <Status />
                         </BaristaRoute>
-                    } />
-                    <Route path="/rewards" element={
-                        <PrivateRoute user={user}>
-                            <Rewards />
-                        </PrivateRoute>
                     } />
                     <Route path="/history" element={
                         <PrivateRoute user={user}>

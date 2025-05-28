@@ -1,7 +1,7 @@
 ﻿function Settings() {
     return (
         <div>
-            <h2>Settings to be implemented</h2>
+            <h2>Settings are disabled right now. Get back later</h2>
         </div>
     );
 }

@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useOrder } from "../context/OrderContext";
+import { useOrder } from "../../context/OrderContext";
 
 function Cafes() {
     const [cafes, setCafes] = useState([]);

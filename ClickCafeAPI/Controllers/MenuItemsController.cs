@@ -56,6 +56,7 @@ namespace ClickCafeAPI.Controllers
                 BasePrice = mi.BasePrice,
                 Category = mi.Category,
                 Image = mi.Image,
+                RowVersion = mi.RowVersion,
                 AvailableCustomizationIds = mi.AvailableCustomizations.Select(c => c.CustomizationId)
             });
 
@@ -82,6 +83,7 @@ namespace ClickCafeAPI.Controllers
                 BasePrice = menuItem.BasePrice,
                 Category = menuItem.Category,
                 Image = menuItem.Image,
+                RowVersion = menuItem.RowVersion,
                 AvailableCustomizationIds = menuItem.AvailableCustomizations.Select(c => c.CustomizationId)
             };
 
@@ -138,6 +140,7 @@ namespace ClickCafeAPI.Controllers
                 BasePrice = menuItem.BasePrice,
                 Category = menuItem.Category,
                 Image = menuItem.Image,
+                RowVersion = menuItem.RowVersion,
                 AvailableCustomizationIds = customizations.Select(c => c.CustomizationId)
             };
 
@@ -147,7 +150,7 @@ namespace ClickCafeAPI.Controllers
 
         // PUT: api/MenuItems/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromForm] UpdateMenuItemDto updateDto)
+        public async Task<IActionResult> Update(int id, [FromForm] UpdateMenuItemDto updateDto, bool force = false)
         {
             var menuItem = await _db.MenuItems
                 .Include(mi => mi.AvailableCustomizations)
@@ -182,8 +185,40 @@ namespace ClickCafeAPI.Controllers
                 menuItem.AvailableCustomizations = customizations;
             }
 
-            await _db.SaveChangesAsync();
-            return NoContent();
+            if (force)
+            {
+                var dbVersion = await _db.MenuItems
+                    .AsNoTracking()
+                    .Where(m => m.MenuItemId == id)
+                    .Select(m => m.RowVersion)
+                    .SingleAsync();
+
+                _db.Entry(menuItem).Property(m => m.RowVersion).OriginalValue = dbVersion;
+            }
+            else
+            {
+                _db.Entry(menuItem).Property(m => m.RowVersion).OriginalValue = updateDto.RowVersion;
+            }
+
+            _db.Entry(menuItem).Property(m => m.RowVersion).IsModified = false;
+
+            try
+            {
+                await _db.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateConcurrencyException) when (!force)
+            {
+                // 409
+                var current = await _db.Entry(menuItem).GetDatabaseValuesAsync();
+                return Conflict(new
+                {
+                    message = "Įrašas buvo pakeistas kito naudotojo.",
+                    currentValues = current?.ToObject(),
+                    currentRowVersion = current?["RowVersion"]
+                });
+            }
+
         }
 
 

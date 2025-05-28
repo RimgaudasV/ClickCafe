@@ -16,5 +16,6 @@ namespace ClickCafeAPI.DTOs.MenuDTOs
 
         [FromForm(Name = "AvailableCustomizationIds")]
         public List<int> AvailableCustomizationIds { get; set; } = new();
+        public byte[] RowVersion { get; set; } = null!;
     }
 }

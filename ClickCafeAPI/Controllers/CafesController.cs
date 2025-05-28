@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using ClickCafeAPI.Context;
+﻿using ClickCafeAPI.Context;
+using ClickCafeAPI.DTOs.CafeDTOs;
 using ClickCafeAPI.Models.CafeModels;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Hosting;
-using ClickCafeAPI.DTOs.CafeDTOs;
+using Stripe;
+using System.Collections.Generic;
 
 namespace ClickCafeAPI.Controllers
 {
@@ -27,7 +28,7 @@ namespace ClickCafeAPI.Controllers
         {
             // loadinas visos
             var cafes = await _db.Cafes
-                .Include(c => c.MenuItems)    // turi menuitems tai parodom
+                .Include(c => c.MenuItems)    
                 .ToListAsync();
 
             //  Map each Cafe entity to a CafeDto
@@ -39,6 +40,7 @@ namespace ClickCafeAPI.Controllers
                 PhoneNumber = c.PhoneNumber,
                 OperatingHours = c.OperatingHours,
                 Image = c.Image,
+                RowVersion = c.RowVersion,
                 MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId)
             });
 
@@ -65,6 +67,7 @@ namespace ClickCafeAPI.Controllers
                 PhoneNumber = c.PhoneNumber,
                 OperatingHours = c.OperatingHours,
                 Image = c.Image,
+                RowVersion = c.RowVersion,
                 MenuItemIds = c.MenuItems.Select(mi => mi.MenuItemId)
             };
             return Ok(dto);
@@ -108,6 +111,7 @@ namespace ClickCafeAPI.Controllers
                 PhoneNumber = cafe.PhoneNumber,
                 OperatingHours = cafe.OperatingHours,
                 Image = cafe.Image,
+                RowVersion = cafe.RowVersion,
                 MenuItemIds = new List<int>()
             };
 
@@ -147,7 +151,7 @@ namespace ClickCafeAPI.Controllers
 
         // PUT : api/Cafes/{id}
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateCafeDto updateDto)
+        public async Task<IActionResult> Update(int id, UpdateCafeDto updateDto, bool force = false)
         {
             var cafe = await _db.Cafes
                 .Include(ca => ca.MenuItems)
@@ -161,8 +165,27 @@ namespace ClickCafeAPI.Controllers
             if (!string.IsNullOrEmpty(updateDto.OperatingHours)) cafe.OperatingHours = updateDto.OperatingHours;
             if (!string.IsNullOrEmpty(updateDto.Image)) cafe.Image = updateDto.Image;
 
-            await _db.SaveChangesAsync();
-            return NoContent();
+            _db.Entry(cafe).Property(c => c.RowVersion).OriginalValue = updateDto.RowVersion;
+
+            try
+            {
+                await _db.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (DbUpdateConcurrencyException ex) when (!force)
+            {
+                // someone changed this object
+                var dbEntry = ex.Entries.Single();
+                var current = await dbEntry.GetDatabaseValuesAsync();
+
+                return Conflict(new
+                {
+                    message = "This entity was changed by another user",
+                    currentValues = current?.ToObject(),
+                    currentRowVersion = current?["RowVersion"]
+                });
+            }
+
         }
         // DELETE: api/Cafes/{id}
         [HttpDelete("{id}")]

@@ -9,5 +9,6 @@
         public string OperatingHours { get; set; } = null!;
         public string? Image { get; set; }
         public IEnumerable<int> MenuItemIds { get; set; } = new List<int>();
+        public byte[] RowVersion { get; set; } = null!;
     }
 }

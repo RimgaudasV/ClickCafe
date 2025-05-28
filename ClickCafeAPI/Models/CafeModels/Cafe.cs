@@ -16,5 +16,7 @@ namespace ClickCafeAPI.Models.CafeModels
         public string OperatingHours { get; set; }
         public string? Image { get; set; }
         public ICollection<MenuItem> MenuItems { get; set; }
+        [Timestamp]                      
+        public byte[] RowVersion { get; set; } = null!;
     }
 }

@@ -21,5 +21,7 @@ namespace ClickCafeAPI.Models.MenuModels
         public ICollection<Customization> AvailableCustomizations { get; set; }
         public Cafe Cafe { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
+        [Timestamp]
+        public byte[] RowVersion { get; set; } = null!;
     }
 }
